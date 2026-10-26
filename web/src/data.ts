@@ -1,4 +1,6 @@
-export type Outcome = "exists" | "exists_before_contract" | "relocated" | "probable_ghost" | "cant_verify";
+import { url } from "./api";
+
+export type Outcome = "exists" | "exists_before_contract" | "built_late" | "relocated" | "probable_ghost" | "cant_verify";
 
 export type Columns = {
   id: string[];
@@ -20,6 +22,7 @@ export const OUTCOME_COLOR: Record<Outcome | "pending" | "running", string> = {
   running: "#ffffff",
   exists: "#3fe3a7",
   exists_before_contract: "#f2c94c",
+  built_late: "#ff8f3f",
   relocated: "#b38bff",
   probable_ghost: "#ff4b3a",
   cant_verify: "#8a95a6",
@@ -28,6 +31,7 @@ export const OUTCOME_COLOR: Record<Outcome | "pending" | "running", string> = {
 export const OUTCOME_LABEL: Record<Outcome, string> = {
   exists: "Exists",
   exists_before_contract: "Existed before the contract",
+  built_late: "Declared before built",
   relocated: "Built elsewhere",
   probable_ghost: "Probable ghost",
   cant_verify: "Can't verify",
@@ -35,7 +39,7 @@ export const OUTCOME_LABEL: Record<Outcome, string> = {
 
 let cache: Promise<Columns> | null = null;
 export function loadProjects(): Promise<Columns> {
-  cache ??= fetch("/data/projects.min.json").then((r) => r.json());
+  cache ??= fetch(url.data("projects.min.json")).then((r) => r.json());
   return cache;
 }
 

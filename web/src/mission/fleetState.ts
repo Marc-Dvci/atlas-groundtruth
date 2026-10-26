@@ -6,6 +6,7 @@ export const AGENTS: { key: string; label: string; model: string }[] = [
   { key: "locator", label: "Locator", model: "Muse Spark" },
   { key: "existence", label: "Existence", model: "SAM 3.1 · Muse Spark" },
   { key: "ground", label: "Ground", model: "Mapillary · Muse Spark" },
+  { key: "relocation", label: "Relocation", model: "SAM 3.1 · Muse Spark" },
   { key: "timeline", label: "Timeline", model: "code" },
   { key: "valuation", label: "Valuation", model: "code" },
   { key: "impact", label: "Impact", model: "Meta HRSL" },
@@ -23,7 +24,8 @@ export type FleetState = {
   php: number;
   outcomes: Partial<Record<Outcome, number>>;
   spent: number;
-  plan: { projects: number; full_depth: number; budget_usd: number; deadline: string | null; php_total: number; mission: string } | null;
+  plan: { projects: number; full_depth: number; budget_usd: number; deadline: string | null; php_total: number; mission: string;
+    lm?: string; screening_depth?: number } | null;
   log: { t: number; agent: string; case: string; text: string }[];
   costById: Record<string, number>;
 };
@@ -36,6 +38,9 @@ const short = (s: unknown, n = 64) => {
   const t = typeof s === "string" ? s : JSON.stringify(s);
   return t.length > n ? t.slice(0, n - 1) + "…" : t;
 };
+
+/** The model behind a lane, as the run actually used it. */
+export const laneModel = (model: string, lm?: string) => (lm === "open" ? model.replace("Muse Spark", "Muse Spark Open") : model);
 
 export function describe(e: Ev): string | null {
   const d = e.data;
@@ -60,6 +65,10 @@ export function describe(e: Ev): string | null {
     case "verdict:verdict": return short(d.headline, 64);
     case "casebuilder:case_file": return short(d.headline, 64);
     case "casebuilder:illustration": return "illustration of the declared wall";
+    case "relocation:start": return `walking the waterway · ${d.before} vs ${d.after}`;
+    case "relocation:window": return `${d.offset_m > 0 ? "+" : ""}${d.offset_m} m · ${d.new_len_m} m of new hard bank`;
+    case "relocation:candidate": return d.found ? `new wall ${d.distance_m} m away` : `candidate ${d.distance_m} m away: nothing new`;
+    case "relocation:none": return "nothing built elsewhere on this waterway";
     default: return null;
   }
 }
@@ -70,7 +79,7 @@ export function reduce(s: FleetState, e: Ev): FleetState {
     return { ...s, plan: d as FleetState["plan"], total: d.projects };
   }
   if (e.kind === "progress") {
-    return { ...s, spent: d.spent_usd ?? s.spent };
+    return { ...s, spent: d.spent_usd ?? s.spent, total: d.total ?? s.total };
   }
   const status = { ...s.status };
   let { done, php, outcomes, costById, total } = s;

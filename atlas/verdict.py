@@ -12,6 +12,9 @@ them. The rules are plain code so an investigator (or a court) can read them:
 * One source is a lead, not a finding: it yields "can't verify", with the reason.
 * 10 m pixels can date a change and testify to absence, but they cannot say a
   wall is there: only sub-metre or street-level imagery establishes presence.
+* "Declared before it was built" needs two chains too: sub-metre imagery shows
+  the reach bare after the declared completion, and a 10 m series that was
+  unchanged until then dates a lasting change only afterwards.
 """
 from __future__ import annotations
 
@@ -21,7 +24,7 @@ from typing import Literal
 
 Claim = Literal["present", "absent", "inconclusive"]
 Window = Literal["before_award", "during_contract", "after_completion"]
-Outcome = Literal["exists", "exists_before_contract", "relocated", "probable_ghost", "cant_verify"]
+Outcome = Literal["exists", "exists_before_contract", "built_late", "relocated", "probable_ghost", "cant_verify"]
 
 QUALITY_FLOOR = 0.6
 # Shortest structure (m) a sensor family may testify about, from pixel size.
@@ -190,6 +193,36 @@ def decide(
                  f"{first.source}: {first.note}.",
                  "No sub-metre capture between that change and the award shows the bank bare."],
                 sorted({*present_after, first.capture_root}),
+                decisions,
+            )
+
+    # 1c. Bare after the declared completion in sub-metre imagery, and the bank changes only later: the work was
+    # certified complete before it was done (if it was done at all).
+    vhr_bare = [f for f, w in usable if f.claim == "absent" and w == "after_completion" and f.site == "declared"
+                and f.family in PRESENCE_FAMILIES]
+    if vhr_bare and not present_after and not elsewhere:
+        last_bare = max(vhr_bare, key=lambda f: f.observed)
+        later = sorted((f for f, w in dating if f.observed > last_bare.observed), key=lambda f: f.observed)
+        if later:
+            first = later[0]
+            gap = (date.fromisoformat(last_bare.observed[:10]) - date.fromisoformat(completion[:10])).days // 30
+            mark({last_bare.capture_root: last_bare}, "bare after the declared completion")
+            decisions.append(SourceDecision(first, True, f"dates the first lasting change on the bank to {first.observed}, "
+                                                         f"after the bare capture"))
+            for f, w in dating:
+                if f is not first:
+                    decisions.append(SourceDecision(f, False, "dates a change on the bank; corroborates only"))
+            mark_rest()
+            return Verdict(
+                "built_late",
+                "BARE_AFTER_DECLARED_CHANGED_LATER",
+                f"Declared complete on {completion}; still bare on {last_bare.observed}, {gap} months later. "
+                f"The bank changed only around {first.observed}.",
+                [f"{last_bare.source}: no structure at the located reach, after the completion date.",
+                 f"{first.source}: {first.note}.",
+                 "Two independent capture chains agree the works were not there when they were certified complete. "
+                 "A 10 m change dates work; it does not show what was built."],
+                sorted({last_bare.capture_root, first.capture_root}),
                 decisions,
             )
 

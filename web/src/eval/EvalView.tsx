@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { OUTCOME_COLOR, OUTCOME_LABEL, type Outcome } from "../data";
+import { url } from "../api";
 
 type Row = {
   id: string; match: string; official: string; who: string; atlas: Outcome; reason: string; agree: boolean;
@@ -24,8 +25,8 @@ export function EvalView({ run }: { run: string }) {
   const [cmp, setCmp] = useState<Cmp | null>(null);
   const other = new URLSearchParams(window.location.search).get("open") ?? `${run}-open`;
   useEffect(() => {
-    fetch(`/api/runs/${run}/evaluation`).then((r) => r.json()).then(setEv);
-    fetch(`/api/runs/${run}/compare/${other}`).then((r) => (r.ok ? r.json() : null)).then((d) => d?.cases && setCmp(d)).catch(() => {});
+    fetch(url.evaluation(run)).then((r) => r.json()).then(setEv);
+    fetch(url.compare(run, other)).then((r) => (r.ok ? r.json() : null)).then((d) => d?.cases && setCmp(d)).catch(() => {});
   }, [run, other]);
   if (!ev) return null;
   return (

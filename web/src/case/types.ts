@@ -102,7 +102,8 @@ export type CaseFile = {
   s2: {
     before: { n: number; ndvi: number; bright: number; from: string; to: string } | null;
     after: { n: number; ndvi: number; bright: number; from: string; to: string } | null;
-    first_change: { date: string; ndvi_before: number; ndvi_after: number; shift: number } | null;
+    first_change: { date: string; ndvi_before: number; ndvi_after: number; shift: number; bank?: string } | null;
+    disturbance?: { date: string; ndvi_before: number; ndvi_after: number; bank: string } | null;
     rows: { date: string; ndvi: number; bright: number }[];
   };
   timeline: { events: { date: string; kind: string; label: string; source: string }[]; first_seen: string | null; flags: string[] };
@@ -116,6 +117,7 @@ export type CaseFile = {
     overlaps: { other: string; overlap_m: number; other_desc: string; other_year: number; other_cost: number }[];
     same_amount: number;
     prior?: { id: string; distance_m: number; completion: string; cost: number; contractor: string; desc: string }[];
+    barangay_total?: { barangay: string; n: number; php: number; years: [number, number] | null; contractors: number; ids: string[] } | null;
   };
   impact: {
     people_low_ground: number;

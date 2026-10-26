@@ -165,6 +165,10 @@ def main() -> None:
         import bisect
         return bisect.bisect_left(cpm, v) / max(1, len(cpm))
 
+    def _decimals(x: float) -> str:
+        t = repr(float(x))
+        return t.split(".")[1] if "." in t else ""
+
     for r in recs:
         flags = []
         shared = len(pin_groups.get((round(r["lon"] or 0, 5), round(r["lat"] or 0, 5)), [])) - 1 if r["lon"] else 0
@@ -173,6 +177,9 @@ def main() -> None:
             flags.append({"code": "SHARED_PIN", "text": f"Same map pin as {shared} other project(s)"})
         if r["lon"] is not None and (abs(r["lon"] * 1e3 - round(r["lon"] * 1e3)) < 1e-6 and abs(r["lat"] * 1e3 - round(r["lat"] * 1e3)) < 1e-6):
             flags.append({"code": "COARSE_PIN", "text": "Pin rounded to 3 decimals (~100 m)"})
+        if r["lon"] is not None and _decimals(r["lon"]) == _decimals(r["lat"]) and len(_decimals(r["lon"])) >= 4:
+            flags.append({"code": "PIN_COPIED_DECIMALS", "text": f"Pin latitude repeats the longitude's decimals "
+                                                                 f"({r['lon']}, {r['lat']}): typed, not measured"})
         same_amt = amt_groups.get((r["deo"], round(r["cost"] or 0, -3)), 0) - 1 if r["cost"] else 0
         r["same_amount"] = max(0, same_amt)
         if same_amt >= 2:
@@ -200,7 +207,8 @@ def main() -> None:
             elif r["cost"] and days < 120 and r["cost"] > 50e6:
                 flags.append({"code": "FAST_COMPLETION", "text": f"₱{r['cost'] / 1e6:.0f}M completed in {days} days"})
         r["flags"] = flags
-        weights = {"ABOVE_ABC": 0.8, "SHARED_PIN": 1.0, "COARSE_PIN": 0.3, "REPEATED_AMOUNT": 0.6, "BID_AT_CEILING": 0.4,
+        weights = {"ABOVE_ABC": 0.8, "SHARED_PIN": 1.0, "COARSE_PIN": 0.3, "PIN_COPIED_DECIMALS": 1.0, "REPEATED_AMOUNT": 0.6,
+                   "BID_AT_CEILING": 0.4,
                    "COST_PER_M_HIGH": 0.8, "CONTRACTOR_CONCENTRATION": 0.5, "COMPLETED_BEFORE_START": 1.0,
                    "FAST_COMPLETION": 0.6}
         r["suspicion"] = round(sum(weights[f["code"]] for f in flags), 2)

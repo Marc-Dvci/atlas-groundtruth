@@ -296,29 +296,42 @@ def _root(f: dict) -> str:
 def run_s2(case: Case, award: str, completion: str) -> dict:
     loc = case.facts["locator"]
     reach = shape(loc["reach"])
-    start = max("2019-01-01", (date.fromisoformat(award) - timedelta(days=4 * 365)).isoformat())
+    # full depth: four years before the award; screening: two and a half, still two seasons of each kind for the baseline
+    years = 4 if case.facts.get("depth") == "full" else 2.5
+    start = max("2019-01-01", (date.fromisoformat(award) - timedelta(days=int(years * 365))).isoformat())
     rows = s2series.series(mapping(reach), start, date.today().isoformat(), DATA / "cache/s2")
     rows = [r for r in rows if r.get("ndvi") is not None]
     before = s2series.window_stats(rows, None, award)
     after = s2series.window_stats(rows, (date.fromisoformat(completion) + timedelta(days=30)).isoformat(), None)
-    change = s2series.first_change(rows)
-    out = {"rows": rows, "before": before, "after": after, "first_change": change}
-    h = case.record_entry(AGENT, "s2_series", {"before": before, "after": after, "first_change": change, "n": len(rows)})
-    case.say(AGENT, "s2", before=before, after=after, first_change=change,
+    change = s2series.first_change_any_bank(rows)
+    stir = None if change else s2series.disturbance_any_bank(rows, after=award)
+    banks = s2series.side_stats(rows, None, award)
+    out = {"rows": rows, "before": before, "after": after, "first_change": change, "disturbance": stir, "banks_before": banks}
+    h = case.record_entry(AGENT, "s2_series", {"before": before, "after": after, "first_change": change, "disturbance": stir,
+                                               "banks_before": banks, "n": len(rows)})
+    case.say(AGENT, "s2", before=before, after=after, first_change=change, disturbance=stir, banks_before=banks,
              rows=[{k: r[k] for k in ("date", "ndvi", "bright")} for r in rows])
-    # Detectability: a wall on a vegetated bank drops NDVI; on a bare bank it barely shows.
     if not before or not after or after["n"] < 4:
         case.file(Finding(AGENT, "Sentinel-2 (ESA), 10 m", "optical_hr", "s2", completion, "inconclusive", 0.0,
                           "too few clear scenes along the reach", h))
         return out
-    detect = min(1.0, max(0.0, (before["ndvi"] - 0.15) / 0.3))
+    # Detectability: a wall on a vegetated bank drops NDVI; on a bank already bare it barely shows. The wall may be on
+    # either bank, so the barer bank sets how much an unchanged series can say.
+    floor = min(banks.values()) if banks else before["ndvi"]
+    detect = min(1.0, max(0.0, (floor - 0.15) / 0.3))
     if change and change["date"] < (date.fromisoformat(award) - timedelta(days=60)).isoformat():
-        claim, when, note = "present", change["date"], f"hard bank appears {change['date']}, before the award"
+        claim, note = "present", f"hard bank appears {change['date']} on the {change['bank']}, before the award"
     elif change:
-        claim, when, note = "present", after["to"], f"hard bank appears {change['date']} (NDVI {change['ndvi_before']} to {change['ndvi_after']})"
+        claim, note = "present", (f"hard bank appears {change['date']} on the {change['bank']} "
+                                  f"(NDVI {change['ndvi_before']} to {change['ndvi_after']})")
+    elif stir:
+        claim, note = "inconclusive", (f"work-like disturbance on the {stir['bank']} from {stir['date']} (NDVI {stir['ndvi_before']} "
+                                       f"to {stir['ndvi_after']}), then regrowth; 10 m pixels cannot tell whether a wall stands")
     else:
-        claim, when, note = "absent", after["to"], (f"no lasting change along the reach: NDVI {before['ndvi']} before the award, "
-                                                    f"{after['ndvi']} after completion ({after['n']} clear scenes)")
-    case.file(Finding(AGENT, f"Sentinel-2 (ESA) {when[:7]}, 10 m", "optical_hr", "s2", when, claim,
-                      round(0.5 + 0.4 * detect, 2) if claim == "absent" else 0.8, note, h))
+        claim, note = "absent", (f"no lasting change on either bank: NDVI {before['ndvi']} before the award, "
+                                 f"{after['ndvi']} after completion ({after['n']} clear scenes)")
+    # a change is dated by its first scene; an unchanged bank testifies as of the last scene
+    when = change["date"] if change else stir["date"] if stir else after["to"]
+    q = round(0.5 + 0.4 * detect, 2) if claim == "absent" else 0.8 if claim == "present" else 0.0
+    case.file(Finding(AGENT, f"Sentinel-2 (ESA) {when[:7]}, 10 m", "optical_hr", "s2", when, claim, q, note, h))
     return out

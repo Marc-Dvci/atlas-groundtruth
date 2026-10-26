@@ -37,8 +37,13 @@ def score(run: str) -> dict:
         v = c.get("verdict") or {}
         oc = v.get("outcome")
         agree = oc in k["expected"]
-        # Atlas confirms a structure the officials say predates the contract, but cannot date it: consistent, less specific.
-        partial = (not agree) and oc == "exists" and k["finding"] == "existed_before_contract"
+        # Consistent but less specific: Atlas confirms a structure the officials say predates the contract without dating
+        # it, or finds the declared site bare when certified complete (then a later change) where officials found the
+        # works missing or built at another site.
+        # A structure that predates the contract where officials found no new construction is the same fact.
+        partial = (not agree) and ((oc == "exists" and k["finding"] == "existed_before_contract")
+                                   or (oc == "built_late" and k["finding"] in ("ghost", "not_built_at_site", "relocated"))
+                                   or (oc == "exists_before_contract" and k["finding"] == "not_built_at_site"))
         rows.append({"id": k["id"], "match": k["match"], "official": k["finding"], "who": k["who"],
                      "atlas": oc, "reason": v.get("reason"), "agree": agree, "partial": partial, "abstain": oc == "cant_verify",
                      "contradict": (not agree) and (not partial) and oc != "cant_verify", "headline": v.get("headline"),

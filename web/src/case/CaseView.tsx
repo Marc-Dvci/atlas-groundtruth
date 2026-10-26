@@ -6,6 +6,7 @@ import { reachCoords, setupCaseLayers, type CaseLayers } from "./caseMap";
 import { Dossier } from "./Dossier";
 import { Scrubber } from "./Scrubber";
 import type { CaseFile } from "./types";
+import { url } from "../api";
 
 type Beat = { key: string; label: string };
 
@@ -44,8 +45,8 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
   const reached = useCallback((k: string) => at(k) >= 0 && beat >= at(k), [at, beat]);
 
   useEffect(() => {
-    fetch(`/api/runs/${run}/cases/${id}`).then((r) => r.json()).then(setC);
-    fetch(`/api/runs/${run}/ledger?case=${id}`)
+    fetch(url.case(run, id)).then((r) => r.json()).then(setC);
+    fetch(url.caseLedger(run, id))
       .then((r) => r.json())
       .then((rows: { kind: string; actor: string; payload: { tool: string; args: Record<string, unknown>; refused?: string } }[]) =>
         setTools(rows.filter((e) => e.kind === "tool_call" && e.actor === "locator").map((e) => e.payload)),
@@ -92,7 +93,7 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
       map.fitBounds(bounds([...pts, ...reach]), { padding: pad, duration: 2600, pitch: 0, maxZoom: 16.5 });
     }
     if (key === "impact") {
-      fetch(`/api/evidence/${c.impact.cells_blob}`).then((r) => r.json()).then((cells) => L.showPeople(true, cells));
+      fetch(url.evidence(c.impact.cells_blob)).then((r) => r.json()).then((cells) => L.showPeople(true, cells));
       map.easeTo({ zoom: 14.2, pitch: 30, duration: 2600 });
     } else L.showPeople(false);
     if (reached("verdict") && reach.length) map.fitBounds(bounds(reach), { padding: pad, duration: 1800, maxZoom: 17.6, pitch: 20 });

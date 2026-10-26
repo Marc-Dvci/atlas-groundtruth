@@ -2,6 +2,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { OUTCOME_COLOR, OUTCOME_LABEL, fmt } from "../data";
 import type { CaseFile } from "./types";
+import { STATIC, url } from "../api";
+import { readLines, sealLocal } from "../ledger/verify";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const php = (v: number | null | undefined) =>
@@ -131,7 +133,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
           <div className="filmstrip">
             {c.frames.map((f, i) => (
               <button key={f.release} onClick={() => onPickFrame(i)} className={i === active ? "on" : ""}>
-                <img src={`/api/evidence/${f.blob}`} alt={f.captured} />
+                <img src={url.evidence(f.blob)} alt={f.captured} />
                 <span className="mono">{f.captured.slice(0, 7)}</span>
                 {f.coverage != null && <span className={`mono cov ${f.coverage >= 0.3 ? "yes" : ""}`}>{Math.round(f.coverage * 100)}%</span>}
               </button>
@@ -186,7 +188,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
         <Section id="ground" eyebrow="Street level · Mapillary">
           {c.photos!.map((p) => (
             <figure key={p.id} className="photo">
-              <img src={`/api/evidence/${p.blob}`} alt={`Mapillary ${p.date}`} />
+              <img src={url.evidence(p.blob)} alt={`Mapillary ${p.date}`} />
               <figcaption>
                 <span className="mono">{p.date} · {p.distance_m} m from the reach · CC BY-SA, {p.creator}</span>
                 {p.reading && <span className="prose">{p.reading.what_i_see}</span>}
@@ -198,6 +200,14 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
 
       {reached("money") && (
         <Section id="money" eyebrow="Timeline and money · computed from the record">
+          {c.valuation.barangay_total && c.valuation.barangay_total.n > 1 && (
+            <div style={{ display: "flex", gap: 40, marginBottom: 18 }}>
+              <Stat value={php(c.valuation.barangay_total.php).replace(" billion", "B").replace(" million", "M")}
+                label={`${c.valuation.barangay_total.n} contracts name ${c.valuation.barangay_total.barangay}`} color="#ffc98a" />
+              <Stat value={String(c.valuation.barangay_total.contractors)}
+                label={`contractors${c.valuation.barangay_total.years ? `, ${c.valuation.barangay_total.years[0]} to ${c.valuation.barangay_total.years[1]}` : ""}`} />
+            </div>
+          )}
           <ul className="flags">
             {[...c.timeline.flags, ...c.valuation.flags.map((f) => f.text)].map((t, i) => (
               <li key={i}>{t}</li>
@@ -233,11 +243,12 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
           {v.explanation.slice(1).map((t, i) => <p key={i} className="prose" style={{ fontSize: 14 }}>{t}</p>)}
           {c.illustration && (
             <Compare
-              observed={`/api/evidence/${c.frames.find((f) => f.captured === c.illustration!.base_capture)?.blob ?? c.frames[c.frames.length - 1].blob}`}
-              declared={`/api/evidence/${c.illustration.blob}`}
+              observed={url.evidence(c.frames.find((f) => f.captured === c.illustration!.base_capture)?.blob ?? c.frames[c.frames.length - 1].blob)}
+              declared={url.evidence(c.illustration.blob)}
               when={c.illustration.base_capture}
             />
           )}
+          <Chains c={c} />
           <ul className="decisions">
             {v.decisions.map((d, i) => (
               <li key={i} className={d.counted ? "counted" : "refused"}>
@@ -259,7 +270,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
                 <p key={i} className="prose">
                   {p.text}{" "}
                   {p.cites.map((n) => (
-                    <a key={n} className="cite mono" href={`#ledger-${n}`}>#{n}</a>
+                    <a key={n} className="cite mono" href={`#/ledger/${run}/${c.id}`} title="open the evidence ledger">#{n}</a>
                   ))}
                 </p>
               ))}
@@ -273,6 +284,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
           ) : (
             <p className="note">No case file: this outcome does not need one, or the run had no model access.</p>
           )}
+          <a className="mono ledger-link" href={`#/ledger/${run}/${c.id}`}>Evidence ledger · verify every seal →</a>
           <Sign c={c} run={run} />
         </Section>
       )}
@@ -302,8 +314,8 @@ function Elsewhere({ c, spark }: { c: CaseFile; spark: string }) {
       <div className="note" style={{ marginTop: 6 }}>New hard bank per window, along the waterway.</div>
       {r.blob_before && r.blob_after && (
         <div className="pair">
-          <figure><img src={`/api/evidence/${r.blob_before}`} alt="before" /><figcaption className="mono">{r.before}</figcaption></figure>
-          <figure><img src={`/api/evidence/${r.blob_after}`} alt="after" /><figcaption className="mono">{r.after}</figcaption></figure>
+          <figure><img src={url.evidence(r.blob_before)} alt="before" /><figcaption className="mono">{r.before}</figcaption></figure>
+          <figure><img src={url.evidence(r.blob_after)} alt="after" /><figcaption className="mono">{r.after}</figcaption></figure>
         </div>
       )}
       {r.confirm ? (
@@ -327,6 +339,12 @@ function Sign({ c, run }: { c: CaseFile; run: string }) {
   const [err, setErr] = useState("");
   const go = async (decision: string) => {
     setErr("");
+    if (STATIC) {
+      const lines = readLines(await (await fetch(url.ledgerRaw(run))).text());
+      const e = await sealLocal(lines, c.id, `human:${name}`, "signature",
+        { decision, note: "", verdict: c.verdict.outcome, reason: c.verdict.reason });
+      return setSeal({ hash: e.hash, seq: e.seq });
+    }
     const r = await fetch(`/api/runs/${run}/cases/${c.id}/sign`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -379,5 +397,38 @@ function Compare({ observed, declared, when }: { observed: string; declared: str
       </div>
       <figcaption className="note">Left: Muse Image draws what the contract describes onto the real capture. It is an illustration, never evidence.</figcaption>
     </figure>
+  );
+}
+
+const CHAIN: Record<string, string> = {
+  maxar: "Maxar constellation · WorldView, GeoEye, Legion",
+  airbus: "Airbus · Pléiades, SPOT",
+  s2: "Sentinel-2 · ESA, 10 m",
+};
+
+/** One row per physical capture chain: however many captures it holds, it is one source. */
+function Chains({ c }: { c: CaseFile }) {
+  const rows = new Map<string, { n: number; counted: boolean; claims: Set<string> }>();
+  for (const d of c.verdict.decisions) {
+    const k = d.finding.capture_root;
+    const r = rows.get(k) ?? { n: 0, counted: false, claims: new Set<string>() };
+    r.n += 1;
+    r.counted ||= d.counted;
+    if (d.counted) r.claims.add(d.finding.claim);
+    rows.set(k, r);
+  }
+  if (!rows.size) return null;
+  const name = (k: string) => CHAIN[k] ?? (k.startsWith("mapillary:") ? `Mapillary · street photos by ${k.slice(10)}` : k.replace(/^vhr:/, ""));
+  return (
+    <div className="chains">
+      <div className="eyebrow" style={{ marginBottom: 8 }}>Independent sources: {[...rows.values()].filter((r) => r.counted).length} counted</div>
+      {[...rows.entries()].map(([k, r]) => (
+        <div key={k} className={`chain-row ${r.counted ? "on" : ""}`}>
+          <span className="chain-dots">{Array.from({ length: Math.min(r.n, 8) }, (_, i) => <i key={i} />)}</span>
+          <span className="chain-name">{name(k)}</span>
+          <span className="mono chain-n">{r.n} {r.n === 1 ? "finding" : "findings"} = 1 source{r.counted ? ` · ${[...r.claims].join(", ")}` : ""}</span>
+        </div>
+      ))}
+    </div>
   );
 }

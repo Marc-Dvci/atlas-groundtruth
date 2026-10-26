@@ -66,6 +66,31 @@ def prior_contracts(case: Case, award: str, radius_m: float = 200) -> list[dict]
     return sorted(out, key=lambda x: x["distance_m"])
 
 
+def same_barangay(case: Case) -> dict | None:
+    """Every contract whose description names the barangay this one names, in the same municipality."""
+    import re
+    global _recs
+    from ..geo.index import muni_key
+    names = ((case.facts.get("locator") or {}).get("answer") or {}).get("barangays") or []
+    if not names:
+        return None
+    if _recs is None:
+        _recs = json.loads((DATA / "portfolio/projects.json").read_text(encoding="utf-8"))
+    words = lambda t: " " + re.sub(r"[^a-z0-9ñ]+", " ", re.sub(r"\bsta\.?\s", "santa ", (t or "").lower())) + " "  # noqa: E731
+    name = words(names[0]).strip()
+    if len(name) < 3:
+        return None
+    pat = re.compile(rf"\b{re.escape(name)}\b")
+    muni = muni_key(case.record.get("muni"))
+    hits = [r for r in _recs if muni_key(r.get("muni")) == muni and pat.search(words(r.get("desc")))]
+    if not hits:
+        return None
+    years = sorted({r.get("year") for r in hits if r.get("year")})
+    return {"barangay": names[0], "n": len(hits), "php": round(sum(r.get("cost") or 0 for r in hits)),
+            "years": [years[0], years[-1]] if years else None,
+            "contractors": len({r.get("contractor") for r in hits}), "ids": [r["id"] for r in hits][:40]}
+
+
 def valuation(case: Case, award: str | None = None) -> dict:
     global _overlaps
     r = case.record
@@ -86,6 +111,7 @@ def valuation(case: Case, award: str | None = None) -> dict:
                       "other_cost": o["b_cost"] if o["a"] == r["id"] else o["a_cost"]} for o in ov],
         "same_amount": r.get("same_amount"),
         "prior": prior_contracts(case, award or r.get("start") or "9999"),
+        "barangay_total": same_barangay(case),
     }
     case.record_entry("valuation", "valuation", out)
     case.say("valuation", "valuation", **out)

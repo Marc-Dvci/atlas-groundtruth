@@ -339,3 +339,17 @@ mark.hl-declared {
 .callouts .co-name { font-family: var(--serif); font-size: 22px; fill: #ffd9ad; }
 .callouts .co-muni { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--muted); }
 .callouts .co-num { font-family: var(--mono); font-size: 11.5px; fill: var(--text-2); }
+.chain li.edited .what { text-decoration: underline wavy var(--ghost); text-underline-offset: 4px; }
+.ledger-link { display: inline-block; margin: 18px 0 4px; font-size: 12px; color: var(--declared); text-decoration: none; letter-spacing: 0.04em; }
+.ledger-link:hover { text-decoration: underline; }
+
+/* capture chains: every capture from one constellation is one source */
+.chains { margin: 18px 0 10px; }
+.chain-row { display: grid; grid-template-columns: 96px 1fr; gap: 2px 12px; padding: 7px 0; color: var(--muted); }
+.chain-row.on { color: var(--text); }
+.chain-dots { grid-row: span 2; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.chain-dots i { width: 8px; height: 8px; border-radius: 99px; background: var(--faint); }
+.chain-row.on .chain-dots i { background: var(--observed); box-shadow: 0 0 8px rgba(255, 241, 220, 0.5); }
+.chain-name { font-size: 13.5px; }
+.chain-n { font-size: 11px; color: var(--muted); }
+.planline { font-size: 11px; color: var(--muted); margin: 16px 0 0; letter-spacing: 0.02em; }

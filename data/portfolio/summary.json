@@ -13,7 +13,8 @@
    "SHARED_PIN": 548,
    "FAST_COMPLETION": 246,
    "COST_PER_M_HIGH": 96,
-   "COARSE_PIN": 64
+   "COARSE_PIN": 64,
+   "PIN_COPIED_DECIMALS": 6
   },
   "top_contractors": [
    [
@@ -72,6 +73,7 @@
    "FAST_COMPLETION": 32,
    "SHARED_PIN": 29,
    "CONTRACTOR_CONCENTRATION": 5,
+   "PIN_COPIED_DECIMALS": 3,
    "COARSE_PIN": 1
   },
   "top_contractors": [
@@ -131,7 +133,8 @@
    "SHARED_PIN": 44,
    "FAST_COMPLETION": 43,
    "CONTRACTOR_CONCENTRATION": 37,
-   "COARSE_PIN": 5
+   "COARSE_PIN": 5,
+   "PIN_COPIED_DECIMALS": 4
   },
   "top_contractors": [
    [

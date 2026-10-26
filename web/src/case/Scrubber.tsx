@@ -61,7 +61,15 @@ export function Scrubber({ c, active, onPick, width, showSeries }: Props) {
       {showSeries && fc && (
         <g>
           <line x1={x(fc.date)} x2={x(fc.date)} y1={30} y2={base} stroke="#ffc46b" strokeWidth={1} />
-          <text x={x(fc.date) + 5} y={34} fill="#ffc46b" fontSize={10.5} className="mono">bank change {fc.date.slice(0, 7)}</text>
+          <text x={x(fc.date) + 5} y={34} fill="#ffc46b" fontSize={10.5} className="mono">bank change {fc.date.slice(0, 7)}{fc.bank && fc.bank !== "both banks" ? ` · ${fc.bank}` : ""}</text>
+        </g>
+      )}
+      {showSeries && !fc && c.s2.disturbance && (
+        <g>
+          <line x1={x(c.s2.disturbance.date)} x2={x(c.s2.disturbance.date)} y1={30} y2={base} stroke="#ffc46b" strokeWidth={1} strokeDasharray="2 3" />
+          <text x={x(c.s2.disturbance.date) + 5} y={34} fill="#ffc46b" fontSize={10.5} className="mono">
+            work-like disturbance {c.s2.disturbance.date.slice(0, 7)}
+          </text>
         </g>
       )}
       {showSeries && (

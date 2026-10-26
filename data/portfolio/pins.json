@@ -1,0 +1,77 @@
+{
+ "matched": 918,
+ "over_200m": 101,
+ "over_1km": 46,
+ "worst": [
+  {
+   "id": "25CP0033",
+   "barangay": "Maasim",
+   "distance_m": 89085,
+   "desc": "Flood management prog. - const. / maintenance of flood mitigation structs. and drainage systems - const. of flood mitigation struct. including improvement of wa",
+   "cost": 95032794.8
+  },
+  {
+   "id": "25CP0036",
+   "barangay": "Buga",
+   "distance_m": 19909,
+   "desc": "Flood management program - construction/maintenance of flood mitigation structures and drainage systems-construction of slope protection structure along bulo ri",
+   "cost": 95047520.62
+  },
+  {
+   "id": "22CC0009",
+   "barangay": "Pungo",
+   "distance_m": 17774,
+   "desc": "Construction of flood mitigation structure at barangay pungo, calumpit, bulacan",
+   "cost": 19599409.89
+  },
+  {
+   "id": "24CC0018",
+   "barangay": "San Miguel",
+   "distance_m": 17701,
+   "desc": "Construction of Riverbank Protection Structure at Barangay San Miguel, Calumpit, Bulacan",
+   "cost": 77197298.97
+  },
+  {
+   "id": "22CC0265",
+   "barangay": "Caingin",
+   "distance_m": 17242,
+   "desc": "Construction of flood control structure along bocaue river, caingin section sta. 00+527 to sta. 00+850, bocaue, bulacan",
+   "cost": 48999979.47
+  },
+  {
+   "id": "25CC0081",
+   "barangay": "Santa Lucia",
+   "distance_m": 16148,
+   "desc": "Construction of flood control structure along pampanga river at barangay santa lucia (purok 5 to purok 6), calumpit, bulacan",
+   "cost": 82024652.0
+  },
+  {
+   "id": "22CC0262",
+   "barangay": "Turo",
+   "distance_m": 15200,
+   "desc": "Rehabilitation of bocaue river control structure, sta. 01+120 to sta. 01+404, brgy. turo, bocaue, bulacan",
+   "cost": 48999929.5
+  },
+  {
+   "id": "25CP0137",
+   "barangay": "Upig",
+   "distance_m": 14874,
+   "desc": "Convergence and special support program-basic infra.program (bip) - bip - flood mitigation structures protecting major/strategic public bldgs/facilities-const. ",
+   "cost": 97563968.22
+  },
+  {
+   "id": "25C00351",
+   "barangay": "Balaong",
+   "distance_m": 13589,
+   "desc": "Sustainable infra. projects alleviating gaps (sipag)-sipag-flood mitigation structures protecting public infrastructures/facilities-const. of riverbank protecti",
+   "cost": 95051481.18
+  },
+  {
+   "id": "25CP0029",
+   "barangay": "Santa Ines",
+   "distance_m": 10182,
+   "desc": "Flood management program - construction/ maintenance of flood mitigation structures and drainage systems - construction of flood revetment structure along san m",
+   "cost": 47530794.19
+  }
+ ]
+}

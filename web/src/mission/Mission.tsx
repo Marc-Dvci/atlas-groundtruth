@@ -3,8 +3,9 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BaseMap } from "../map/BaseMap";
 import { fmt, loadProjects, OUTCOME_COLOR, OUTCOME_LABEL, toGeoJSON, type Columns, type Outcome } from "../data";
-import { AGENTS, empty, reduce, type Ev, type FleetState } from "./fleetState";
+import { AGENTS, empty, laneModel, reduce, type Ev, type FleetState } from "./fleetState";
 import { VoiceMission, type MissionSpec } from "./VoiceMission";
+import { STATIC, streamEvents, url } from "../api";
 
 type Stage = "globe" | "province" | "fleet";
 type Proj = { id: string; desc: string; muni: string; contractor: string; cost: number; lon: number; lat: number;
@@ -12,7 +13,7 @@ type Proj = { id: string; desc: string; muni: string; contractor: string; cost: 
 
 const BULACAN: [number, number, number, number] = [120.62, 14.68, 121.26, 15.2];
 const ease = [0.22, 1, 0.36, 1] as const;
-const STATUS_CODE: Record<string, number> = { running: 1, exists: 2, exists_before_contract: 3, relocated: 4, probable_ghost: 5, cant_verify: 6 };
+const STATUS_CODE: Record<string, number> = { running: 1, exists: 2, exists_before_contract: 3, relocated: 4, probable_ghost: 5, cant_verify: 6, built_late: 7 };
 
 const params = new URLSearchParams(window.location.search);
 
@@ -31,8 +32,8 @@ export function Mission() {
 
   useEffect(() => {
     loadProjects().then(setCols);
-    fetch("/api/province/bulacan").then((r) => r.json()).then(setProv);
-    fetch("/api/summary").then((r) => r.json()).then(setSummary);
+    fetch(url.province("bulacan")).then((r) => r.json()).then(setProv);
+    fetch(url.summary()).then((r) => r.json()).then(setSummary);
   }, []);
 
   const onReady = useCallback((m: MLMap) => {
@@ -58,18 +59,18 @@ export function Mission() {
       "circle-color": "#dff6ff", "circle-radius": ["interpolate", ["linear"], ["zoom"], 2, 0.7, 6, 1.6, 10, 3.5],
       "circle-opacity": 0.9, "circle-opacity-transition": { duration: 1500 } } });
 
-    map.addSource("bul-water", { type: "geojson", data: "/data/bulacan/waterways.geojson" });
+    map.addSource("bul-water", { type: "geojson", data: url.data("bulacan/waterways.geojson") });
     map.addLayer({ id: "bul-water", type: "line", source: "bul-water", paint: {
       "line-color": "#5fd3ff", "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.6, 13, 1.6], "line-opacity": 0,
       "line-opacity-transition": { duration: 2000 } } });
-    map.addSource("bul-brgy", { type: "geojson", data: "/data/bulacan/barangays.geojson" });
+    map.addSource("bul-brgy", { type: "geojson", data: url.data("bulacan/barangays.geojson") });
     // money per barangay, from the words of the contracts (scripts/hotspots.py), never from the pins
     map.addLayer({ id: "bul-hot", type: "fill", source: "bul-brgy", paint: {
       "fill-color": "#ffb45a",
       "fill-opacity": 0, "fill-opacity-transition": { duration: 2200 } } });
     map.addLayer({ id: "bul-brgy", type: "line", source: "bul-brgy", paint: {
       "line-color": "#d6e4ff", "line-width": 0.4, "line-opacity": 0, "line-opacity-transition": { duration: 2000 } } });
-    map.addSource("bul-outline", { type: "geojson", data: "/data/bulacan/province.geojson" });
+    map.addSource("bul-outline", { type: "geojson", data: url.data("bulacan/province.geojson") });
     map.addLayer({ id: "bul-outline-glow", type: "line", source: "bul-outline", paint: {
       "line-color": "#5fd3ff", "line-width": 8, "line-blur": 8, "line-opacity": 0, "line-opacity-transition": { duration: 2000 } } });
     map.addLayer({ id: "bul-outline", type: "line", source: "bul-outline", paint: {
@@ -80,7 +81,7 @@ export function Mission() {
     const st: maplibregl.ExpressionSpecification = ["coalesce", ["feature-state", "st"], 0];
     const color: maplibregl.ExpressionSpecification = ["match", st,
       1, "#ffffff", 2, OUTCOME_COLOR.exists, 3, OUTCOME_COLOR.exists_before_contract, 4, OUTCOME_COLOR.relocated,
-      5, OUTCOME_COLOR.probable_ghost, 6, OUTCOME_COLOR.cant_verify, "#5fd3ff"];
+      5, OUTCOME_COLOR.probable_ghost, 6, OUTCOME_COLOR.cant_verify, 7, OUTCOME_COLOR.built_late, "#5fd3ff"];
     map.addLayer({ id: "bul-halo", type: "circle", source: "bul", paint: {
       "circle-color": color, "circle-blur": 1,
       "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, ["+", 3, ["*", 0.05, ["get", "cost"]]], 12, ["+", 8, ["*", 0.12, ["get", "cost"]]]],
@@ -105,7 +106,7 @@ export function Mission() {
   // the five barangays where the most money was contracted, labelled on the province view
   useEffect(() => {
     if (!map) return;
-    fetch("/data/bulacan/barangays.geojson").then((r) => r.json()).then((fc: GeoJSON.FeatureCollection) => {
+    fetch(url.data("bulacan/barangays.geojson")).then((r) => r.json()).then((fc: GeoJSON.FeatureCollection) => {
       const rows = fc.features
         .map((f) => {
           const p = f.properties as { name: string; muni: string; n?: number; php?: number };
@@ -172,14 +173,12 @@ export function Mission() {
     map?.setPaintProperty("bul-hot", "fill-opacity", ["interpolate", ["linear"], ["coalesce", ["get", "php"], 0], 0, 0, 1e9, 0.08, 2.2e9, 0.16]);
     const run = params.get("run") ?? "eval";
     const speed = params.get("speed") ?? "8";
-    const es = new EventSource(`/api/runs/${run}/events?speed=${speed}`);
     let s = empty();
     let raf = 0;
-    es.onmessage = (m) => {
-      s = reduce(s, JSON.parse(m.data) as Ev);
+    streamEvents(run, Number(speed), (e) => {
+      s = reduce(s, e as Ev);
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; setFleet(s); });
-    };
-    es.addEventListener("end", () => es.close());
+    });
   };
 
   useEffect(() => {
@@ -194,7 +193,7 @@ export function Mission() {
     if (!prov) return null;
     const c = (code: string) => prov.filter((p) => p.flags.some((f) => f.code === code)).length;
     return { ceiling: c("BID_AT_CEILING") + c("ABOVE_ABC"), above: c("ABOVE_ABC"), withBudget: prov.filter((p: any) => p.abc).length,
-      repeated: c("REPEATED_AMOUNT"), shared: c("SHARED_PIN") };
+      repeated: c("REPEATED_AMOUNT"), shared: c("SHARED_PIN"), copied: c("PIN_COPIED_DECIMALS") };
   }, [prov]);
   const overlaps = summary?.overlaps?.filter((o: any) => o.province === "Bulacan").length ?? 0;
 
@@ -230,7 +229,7 @@ export function Mission() {
                 <span>Audit Bulacan</span>
                 <span className="mono dim" style={{ fontSize: 12 }}>{prov ? fmt.format(prov.length) : "…"} contracts</span>
               </button>
-              <VoiceMission onMission={(m) => { setSpec(m); goProvince(); }} />
+              {!STATIC && <VoiceMission onMission={(m) => { setSpec(m); goProvince(); }} />}
             </div>
           </motion.section>
         )}
@@ -260,13 +259,22 @@ export function Mission() {
                 <li><b className="mono">{fmt.format(flags.above)}</b> have a recorded cost above the approved budget</li>
                 <li><b className="mono">{fmt.format(flags.repeated)}</b> share an identical amount with others in the same office</li>
                 <li><b className="mono">{overlaps}</b> pairs pay twice for overlapping stations of the same bank</li>
+                {summary?.pins && (
+                  <li><b className="mono">{summary.pins.over_1km}</b> pins sit more than 1 km from the barangay their own contract names{flags.copied > 0 && <>; <b className="mono">{flags.copied}</b> repeat the longitude's decimals in the latitude</>}</li>
+                )}
               </ul>
             )}
             {stage === "province" && (
               <button onClick={launch} className="cta" style={{ marginTop: 22 }}>
                 <span className="cta-dot">▸</span><span>Launch the fleet</span>
-                <span className="mono dim" style={{ fontSize: 12 }}>8 agents</span>
+                <span className="mono dim" style={{ fontSize: 12 }}>{AGENTS.length} agents</span>
               </button>
+            )}
+            {stage === "fleet" && fleet.plan && (
+              <p className="planline mono">
+                plan · {fmt.format(fleet.plan.full_depth)} at full depth · {fmt.format(fleet.plan.screening_depth ?? 0)} screened ·
+                ${fleet.plan.budget_usd} budget{fleet.plan.deadline ? ` · by ${fleet.plan.deadline}` : ""}
+              </p>
             )}
             {stage === "fleet" && <Lanes fleet={fleet} />}
           </motion.aside>
@@ -291,7 +299,7 @@ function Lanes({ fleet }: { fleet: FleetState }) {
             <div className="lane-head">
               <span className="lane-dot" />
               <span className="lane-name">{a.label}</span>
-              <span className="mono lane-model">{a.model}</span>
+              <span className="mono lane-model">{laneModel(a.model, fleet.plan?.lm)}</span>
               {l && <span className="mono lane-case">{l.case}</span>}
             </div>
             <AnimatePresence mode="popLayout">
@@ -310,14 +318,18 @@ function Lanes({ fleet }: { fleet: FleetState }) {
 }
 
 function Counters({ fleet }: { fleet: FleetState }) {
-  const order: Outcome[] = ["probable_ghost", "relocated", "exists_before_contract", "exists", "cant_verify"];
+  const order: Outcome[] = ["probable_ghost", "built_late", "relocated", "exists_before_contract", "exists", "cant_verify"];
   return (
     <motion.div className="counters" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease }}>
       <div className="count-main">
         <span className="serif">{fmt.format(fleet.done)}</span>
         <span className="dim"> / {fmt.format(fleet.total || 0)} checked</span>
         <span className="mono dim" style={{ marginLeft: 18 }}>₱{(fleet.php / 1e9).toFixed(2)}B examined</span>
-        <span className="mono dim" style={{ marginLeft: 18 }}>${fleet.spent.toFixed(2)} of ${fleet.plan?.budget_usd ?? "–"} model budget</span>
+        {fleet.plan && (
+          <span className="mono dim" style={{ marginLeft: 18 }}>
+            ${fleet.spent.toFixed(2)} of ${fleet.plan.budget_usd} model budget{fleet.plan.lm === "open" ? " · open weights" : ""}
+          </span>
+        )}
       </div>
       <div className="outcomes">
         {order.map((o) => (

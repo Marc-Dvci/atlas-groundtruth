@@ -1,5 +1,6 @@
 import maplibregl, { type Map as MLMap } from "maplibre-gl";
 import type { CaseFile } from "./types";
+import { url } from "../api";
 
 const DECLARED = "#5fd3ff";
 const OBSERVED = "#fff1dc";
@@ -69,7 +70,7 @@ export function setupCaseLayers(map: MLMap, c: CaseFile): CaseLayers {
   c.frames.forEach((f) => {
     src(`wb-${f.release}`, {
       type: "raster",
-      tiles: [`/api/wayback/${f.release}/{z}/{y}/{x}`],
+      tiles: [url.wayback(f.release)],
       tileSize: 256,
       maxzoom: 18,
       attribution: "Imagery © Esri World Imagery Wayback; Maxar / Vantor",

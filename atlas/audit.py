@@ -24,7 +24,7 @@ from .ledger import Ledger
 from .meta import MetaClient, Meter, load_env
 from .verdict import QUALITY_FLOOR, decide
 
-FLAGGED = {"probable_ghost", "relocated", "exists_before_contract", "cant_verify"}
+FLAGGED = {"probable_ghost", "relocated", "built_late", "exists_before_contract", "cant_verify"}
 
 
 def portfolio() -> dict[str, dict]:
@@ -120,7 +120,7 @@ def audit(record: dict, ledger: Ledger, meta: MetaClient | None, emit: Callable[
         out["findings"] = [f.__dict__ for f in case.findings]
         if casefile and meta and v.outcome in FLAGGED and not (depth == "screening" and v.outcome == "cant_verify"):
             out["case_file"] = casebuilder.build(case, v, frames)
-            if v.outcome in ("probable_ghost", "relocated") and frames:
+            if v.outcome in ("probable_ghost", "relocated", "built_late") and frames:
                 try:
                     out["illustration"] = casebuilder.illustrate(case, frames, loc["answer"].get("structure") or record["desc"],
                                                                  loc.get("declared_length_m"))

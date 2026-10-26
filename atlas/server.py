@@ -36,6 +36,8 @@ def summary():
     s = json.loads((DATA / "portfolio/summary.json").read_text(encoding="utf-8"))
     ov = DATA / "portfolio/overlaps.json"
     s["overlaps"] = json.loads(ov.read_text(encoding="utf-8")) if ov.exists() else []
+    pins = DATA / "portfolio/pins.json"
+    s["pins"] = {k: v for k, v in json.loads(pins.read_text(encoding="utf-8")).items() if k != "worst"} if pins.exists() else None
     return s
 
 
@@ -140,6 +142,15 @@ def ledger(run: str, case: str | None = None, limit: int = 500):
     lg = Ledger(_run_dir(run) / "ledger.jsonl", DATA / "evidence")
     rows = [e.as_dict() for e in lg.entries() if case is None or e.case in (case, "*")]
     return rows[-limit:]
+
+
+@app.get("/api/runs/{run}/ledger.jsonl")
+def ledger_raw(run: str):
+    """The ledger exactly as written, for verification in the browser."""
+    p = _run_dir(run) / "ledger.jsonl"
+    if not p.exists():
+        raise HTTPException(404)
+    return FileResponse(p, media_type="application/x-ndjson")
 
 
 @app.get("/api/runs/{run}/verify")
