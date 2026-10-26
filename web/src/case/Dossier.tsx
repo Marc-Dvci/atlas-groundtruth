@@ -1,0 +1,383 @@
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import { OUTCOME_COLOR, OUTCOME_LABEL, fmt } from "../data";
+import type { CaseFile } from "./types";
+
+const ease = [0.22, 1, 0.36, 1] as const;
+const php = (v: number | null | undefined) =>
+  v == null ? "—" : v >= 1e9 ? `₱${(v / 1e9).toFixed(2)} billion` : `₱${(v / 1e6).toFixed(1)} million`;
+
+function Section({ id, eyebrow, children }: { id: string; eyebrow: string; children: React.ReactNode }) {
+  return (
+    <motion.section
+      id={`sec-${id}`}
+      initial={{ opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.9, ease }}
+      style={{ padding: "26px 0 4px" }}
+    >
+      <div className="eyebrow" style={{ marginBottom: 12 }}>
+        {eyebrow}
+      </div>
+      {children}
+      <div className="thread" style={{ marginTop: 26 }} />
+    </motion.section>
+  );
+}
+
+/** The contract text, with what the Locator read underlined in the "declared" voice. */
+function Declared({ c }: { c: CaseFile }) {
+  const a = c.locator.answer ?? {};
+  const terms = [a.river, ...(a.barangays ?? []), a.purok_or_sitio, a.section, ...(a.stations ?? [])]
+    .filter((x): x is string => !!x && x.length > 2)
+    .map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const desc = c.record.desc;
+  if (!terms.length) return <span>{desc}</span>;
+  const re = new RegExp(`(${terms.join("|")})`, "gi");
+  const parts = desc.split(re);
+  return (
+    <span>
+      {parts.map((p, i) =>
+        re.test(p) || terms.some((t) => new RegExp(`^${t}$`, "i").test(p)) ? (
+          <mark key={i} className="hl-declared">{p}</mark>
+        ) : (
+          <span key={i}>{p}</span>
+        ),
+      )}
+    </span>
+  );
+}
+
+function Stat({ value, label, color }: { value: string; label: string; color?: string }) {
+  return (
+    <div>
+      <div className="serif" style={{ fontSize: 44, lineHeight: 1, color: color ?? "var(--text)" }}>{value}</div>
+      <div className="eyebrow" style={{ marginTop: 8 }}>{label}</div>
+    </div>
+  );
+}
+
+type Props = {
+  c: CaseFile;
+  beat: string; // key of the current beat
+  reached: (key: string) => boolean;
+  active: number;
+  onPickFrame: (i: number) => void;
+  tools: { tool: string; args: Record<string, unknown>; refused?: string | null }[];
+  run: string;
+};
+
+export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: Props) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const spark = c.models?.spark ?? "Muse Spark";
+  useEffect(() => {
+    const el = document.getElementById(`sec-${beat}`);
+    if (el && scroller.current) {
+      scroller.current.scrollTo({ top: el.offsetTop - 40, behavior: "smooth" });
+    }
+  }, [beat]);
+  const v = c.verdict;
+  const loc = c.locator;
+  const r = c.record;
+
+  return (
+    <div ref={scroller} className="dossier">
+      <Section id="head" eyebrow={`Contract ${r.id} · ${r.muni}, ${r.province}`}>
+        <h1 className="serif" style={{ fontSize: 34, lineHeight: 1.08, margin: "0 0 18px", fontWeight: 400 }}>
+          <Declared c={c} />
+        </h1>
+        <div className="facts">
+          <span className="mono">{php(r.cost)}</span>
+          <span>{r.contractor}</span>
+          <span className="mono">start {c.award}</span>
+          <span className="mono" title={c.completion_basis}>declared complete {c.completion}</span>
+        </div>
+        {c.completion_basis && !c.completion_basis.startsWith("DPWH") && (
+          <p className="note">Completion date: {c.completion_basis}.</p>
+        )}
+      </Section>
+
+      {reached("locate") && (
+        <Section id="locate" eyebrow={`Locator · ${loc.mode ?? ""}`}>
+          {loc.located ? (
+            <>
+              <div style={{ display: "flex", gap: 40, marginBottom: 18 }}>
+                <Stat value={(loc.pin_offset_m ?? 0) >= 1000 ? `${((loc.pin_offset_m ?? 0) / 1000).toFixed(1)} km` : `${loc.pin_offset_m} m`}
+                  label="published pin to the site" color="var(--declared)" />
+                <Stat value={`${loc.length_m} m`} label={`reach on ${loc.waterway}`} color="var(--observed)" />
+              </div>
+              <p className="prose">{loc.answer?.reasoning}</p>
+              {tools.length > 0 && (
+                <ol className="tooltrace">
+                  {tools.map((t, i) => (
+                    <li key={i} className={t.refused ? "refused" : ""}>
+                      <span className="mono">{t.tool}</span>
+                      <span className="mono dim">{JSON.stringify(t.args).slice(0, 80)}</span>
+                      {t.refused && <span className="mono refused-tag">refused: {t.refused}</span>}
+                    </li>
+                  ))}
+                </ol>
+              )}
+              <p className="note">Waterway geometry: {loc.waterway_source}.</p>
+            </>
+          ) : (
+            <p className="prose">Not locatable: {loc.note}</p>
+          )}
+        </Section>
+      )}
+
+      {reached("history") && c.frames.length > 0 && (
+        <Section id="history" eyebrow={`Sub-metre history · ${c.frames.length} captures since ${c.frames[0].captured.slice(0, 4)}`}>
+          <div className="filmstrip">
+            {c.frames.map((f, i) => (
+              <button key={f.release} onClick={() => onPickFrame(i)} className={i === active ? "on" : ""}>
+                <img src={`/api/evidence/${f.blob}`} alt={f.captured} />
+                <span className="mono">{f.captured.slice(0, 7)}</span>
+                {f.coverage != null && <span className={`mono cov ${f.coverage >= 0.3 ? "yes" : ""}`}>{Math.round(f.coverage * 100)}%</span>}
+              </button>
+            ))}
+          </div>
+          {c.frames[active]?.reading && (
+            <motion.div key={active} className="reading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+              <div className="eyebrow">{spark} reads {c.frames[active].captured}</div>
+              <p className="prose">{c.frames[active].reading!.what_i_see}</p>
+            </motion.div>
+          )}
+          <p className="note">
+            Mint: SAM 3.1 "riverbank" masks (hard banks). Blue: SAM 3.1 "river". Percentages: share of the located reach
+            with a hard-bank mask beside it.
+          </p>
+          <ul className="findings">
+            {c.findings.filter((f) => f.family === "optical_vhr").map((f) => (
+              <li key={f.entry}>
+                <span className={`claim ${f.claim}`}>{f.claim}</span>
+                <span>{f.source}</span>
+                <span className="dim">{f.note}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {reached("elsewhere") && c.relocation && <Elsewhere c={c} spark={spark} />}
+
+      {reached("series") && (
+        <Section id="series" eyebrow="Sentinel-2 · the bank, every month">
+          {c.s2.before && c.s2.after ? (
+            <div style={{ display: "flex", gap: 40 }}>
+              <Stat value={c.s2.before.ndvi.toFixed(2)} label={`bank NDVI before the award (${c.s2.before.n} scenes)`} />
+              <Stat value={c.s2.after.ndvi.toFixed(2)} label={`after completion (${c.s2.after.n} scenes)`} />
+            </div>
+          ) : (
+            <p className="prose">Too few clear scenes along the bank.</p>
+          )}
+          <ul className="findings">
+            {c.findings.filter((f) => f.family === "optical_hr").map((f) => (
+              <li key={f.entry}>
+                <span className={`claim ${f.claim}`}>{f.claim}</span>
+                <span className="dim">{f.note}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {reached("series") && (c.photos?.length ?? 0) > 0 && (
+        <Section id="ground" eyebrow="Street level · Mapillary">
+          {c.photos!.map((p) => (
+            <figure key={p.id} className="photo">
+              <img src={`/api/evidence/${p.blob}`} alt={`Mapillary ${p.date}`} />
+              <figcaption>
+                <span className="mono">{p.date} · {p.distance_m} m from the reach · CC BY-SA, {p.creator}</span>
+                {p.reading && <span className="prose">{p.reading.what_i_see}</span>}
+              </figcaption>
+            </figure>
+          ))}
+        </Section>
+      )}
+
+      {reached("money") && (
+        <Section id="money" eyebrow="Timeline and money · computed from the record">
+          <ul className="flags">
+            {[...c.timeline.flags, ...c.valuation.flags.map((f) => f.text)].map((t, i) => (
+              <li key={i}>{t}</li>
+            ))}
+            {(c.valuation.prior ?? []).length > 0 && (
+              <li className="strong">
+                {c.valuation.prior!.length} earlier contract{c.valuation.prior!.length > 1 ? "s" : ""} already paid for works within 200 m of
+                this reach, completed before it started: {c.valuation.prior!.slice(0, 4).map((p) => `${p.id} (${php(p.cost)}, ${p.completion})`).join(", ")}
+              </li>
+            )}
+            {c.valuation.overlaps.map((o) => (
+              <li key={o.other} className="strong">
+                {o.overlap_m} m of this reach were also contracted under {o.other} ({o.other_year}, {php(o.other_cost)})
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {reached("impact") && c.impact?.people_low_ground != null && (
+        <Section id="impact" eyebrow="Who lives behind this reach">
+          <Stat value={fmt.format(c.impact.people_low_ground)} label={`people within ${c.impact.radius_m / 1000} km, at most ${c.impact.rise_m} m above the bank`} color="#ffc46b" />
+          <p className="note" style={{ marginTop: 14 }}>{c.impact.method} Population: Meta & CIESIN High Resolution Settlement Layer.</p>
+        </Section>
+      )}
+
+      {reached("verdict") && (
+        <Section id="verdict" eyebrow="Verdict · computed by rules, not by a model">
+          <div className="serif" style={{ fontSize: 54, lineHeight: 1, color: OUTCOME_COLOR[v.outcome], marginBottom: 14 }}>
+            {OUTCOME_LABEL[v.outcome]}
+          </div>
+          <p className="prose" style={{ fontSize: 17 }}>{v.headline}</p>
+          {v.explanation.slice(1).map((t, i) => <p key={i} className="prose" style={{ fontSize: 14 }}>{t}</p>)}
+          {c.illustration && (
+            <Compare
+              observed={`/api/evidence/${c.frames.find((f) => f.captured === c.illustration!.base_capture)?.blob ?? c.frames[c.frames.length - 1].blob}`}
+              declared={`/api/evidence/${c.illustration.blob}`}
+              when={c.illustration.base_capture}
+            />
+          )}
+          <ul className="decisions">
+            {v.decisions.map((d, i) => (
+              <li key={i} className={d.counted ? "counted" : "refused"}>
+                <span className="mark">{d.counted ? "✓" : "✕"}</span>
+                <span>{d.finding.source} <span className="dim">· {d.finding.claim}</span></span>
+                <span className="why">{d.why}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {reached("file") && (
+        <Section id="file" eyebrow={`Case file · ${c.models?.writer ?? "Muse Wonder"}, every paragraph cited`}>
+          {c.case_file ? (
+            <>
+              <h3 className="serif" style={{ fontSize: 26, margin: "0 0 12px", fontWeight: 400 }}>{c.case_file.headline}</h3>
+              {c.case_file.paragraphs.map((p, i) => (
+                <p key={i} className="prose">
+                  {p.text}{" "}
+                  {p.cites.map((n) => (
+                    <a key={n} className="cite mono" href={`#ledger-${n}`}>#{n}</a>
+                  ))}
+                </p>
+              ))}
+              {c.case_file.requests.length > 0 && (
+                <>
+                  <div className="eyebrow" style={{ margin: "18px 0 8px" }}>Request from the agency</div>
+                  <ul className="flags">{c.case_file.requests.map((q, i) => <li key={i}>{q}</li>)}</ul>
+                </>
+              )}
+            </>
+          ) : (
+            <p className="note">No case file: this outcome does not need one, or the run had no model access.</p>
+          )}
+          <Sign c={c} run={run} />
+        </Section>
+      )}
+      <div style={{ height: "45vh" }} />
+    </div>
+  );
+}
+
+
+/** Relocation search: the same waterway walked 1.5 km each way, hard banks before vs after, one candidate read by the model. */
+function Elsewhere({ c, spark }: { c: CaseFile; spark: string }) {
+  const r = c.relocation!;
+  const best = r.best;
+  return (
+    <Section id="elsewhere" eyebrow={`Relocation search · SAM 3.1 · ${spark}`}>
+      <p className="prose">
+        The declared reach is bare after completion, so Atlas walked the same waterway: {r.windows.length} windows, the last capture
+        before the award ({r.before}) against the first after completion ({r.after}), SAM 3.1 hard-bank masks compared window by
+        window.
+      </p>
+      <div className="walk">
+        {r.windows.map((w, i) => (
+          <span key={i} className={`walk-w ${w === best || (best && w.center[0] === best.center[0] && w.center[1] === best.center[1]) ? "best" : ""}`}
+            style={{ height: 6 + Math.min(54, w.new_len_m / 6) }} title={`${w.d_m} m: ${w.new_len_m} m of new hard bank`} />
+        ))}
+      </div>
+      <div className="note" style={{ marginTop: 6 }}>New hard bank per window, along the waterway.</div>
+      {r.blob_before && r.blob_after && (
+        <div className="pair">
+          <figure><img src={`/api/evidence/${r.blob_before}`} alt="before" /><figcaption className="mono">{r.before}</figcaption></figure>
+          <figure><img src={`/api/evidence/${r.blob_after}`} alt="after" /><figcaption className="mono">{r.after}</figcaption></figure>
+        </div>
+      )}
+      {r.confirm ? (
+        <div className="reading">
+          <div className="eyebrow">{spark} reads the best candidate, {r.distance_m} m away</div>
+          <p className="prose">{r.confirm.what_i_see}</p>
+          <p className="prose" style={{ color: r.found ? "var(--relocated)" : "var(--text-2)" }}>
+            {r.found ? "A new structure was built here during the contract window." : "No new structure: nothing was built elsewhere either."}
+          </p>
+        </div>
+      ) : (
+        <p className="prose">No window gained a hard bank as long as the declared works: nothing was built elsewhere on this waterway.</p>
+      )}
+    </Section>
+  );
+}
+
+function Sign({ c, run }: { c: CaseFile; run: string }) {
+  const [name, setName] = useState("");
+  const [seal, setSeal] = useState<{ hash: string; seq: number } | null>(null);
+  const [err, setErr] = useState("");
+  const go = async (decision: string) => {
+    setErr("");
+    const r = await fetch(`/api/runs/${run}/cases/${c.id}/sign`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ investigator: name, decision }),
+    });
+    if (!r.ok) return setErr(await r.text());
+    const e = await r.json();
+    setSeal({ hash: e.hash, seq: e.seq });
+  };
+  return (
+    <div className="sign">
+      <div className="eyebrow" style={{ marginBottom: 10 }}>Investigator</div>
+      <AnimatePresence mode="wait">
+        {seal ? (
+          <motion.div key="seal" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease }}>
+            <div className="serif" style={{ fontSize: 26 }}>Signed by {name}</div>
+            <div className="mono seal">ledger #{seal.seq} · {seal.hash.slice(0, 16)}…{seal.hash.slice(-6)}</div>
+          </motion.div>
+        ) : (
+          <motion.div key="form" exit={{ opacity: 0 }}>
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="name" />
+            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+              <button className="pill" onClick={() => go("concur")} disabled={!name}>Concur and sign</button>
+              <button className="pill ghost" onClick={() => go("refer_for_site_visit")} disabled={!name}>Refer for a site visit</button>
+              <button className="pill ghost" onClick={() => go("dissent")} disabled={!name}>Dissent</button>
+            </div>
+            {err && <div className="note" style={{ color: "var(--ghost)" }}>{err}</div>}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+
+/** Declared vs observed: Muse Image's drawing of what the contract describes, against the real capture. */
+function Compare({ observed, declared, when }: { observed: string; declared: string; when: string }) {
+  const [x, setX] = useState(50);
+  return (
+    <figure className="compare">
+      <div className="compare-box" onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        setX(Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100)));
+      }}>
+        <img src={observed} alt="observed" />
+        <img src={declared} alt="declared" style={{ clipPath: `inset(0 ${100 - x}% 0 0)` }} />
+        <div className="compare-bar" style={{ left: `${x}%` }} />
+        <span className="compare-tag l mono">declared · illustration</span>
+        <span className="compare-tag r mono">observed · {when}</span>
+      </div>
+      <figcaption className="note">Left: Muse Image draws what the contract describes onto the real capture. It is an illustration, never evidence.</figcaption>
+    </figure>
+  );
+}

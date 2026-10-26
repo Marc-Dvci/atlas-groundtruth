@@ -1,0 +1,5 @@
+{
+  "_about": "What was DECLARED about a contract outside the DPWH table (portal status, certificates, payments). Inputs to the audit, not findings. Sources in research/R6_project_data.md.",
+  "25CC0252": {"declared_complete": "2025-08-20", "basis": "Recorded as completed on the President's portal (sumbongsapangulo.ph) when inspected, 20 Aug 2025", "source": "https://www.sunstar.com.ph/manila/marcos-inspects-confirms-ghost-flood-project-in-bulacan"},
+  "25CC0148": {"declared_complete": "2025-05-31", "basis": "Certificate of completion dated May 2025; PHP 67.85 m paid Mar-Jun 2025 (as reported by the ICI)", "source": "https://www.philstar.com/headlines/2025/11/04/2484794/ici-flags-dpwh-topnotch-over-unbuilt-p72-m-bulacan-flood-control-project"}
+}

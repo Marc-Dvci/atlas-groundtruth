@@ -1,0 +1,181 @@
+{
+ "national": {
+  "projects": 9855,
+  "total_php": 547603497105,
+  "with_stations": 1215,
+  "with_length": 1173,
+  "shared_pin_projects": 548,
+  "flags": {
+   "BID_AT_CEILING": 5510,
+   "REPEATED_AMOUNT": 2845,
+   "CONTRACTOR_CONCENTRATION": 2180,
+   "ABOVE_ABC": 710,
+   "SHARED_PIN": 548,
+   "FAST_COMPLETION": 246,
+   "COST_PER_M_HIGH": 96,
+   "COARSE_PIN": 64
+  },
+  "top_contractors": [
+   [
+    "LEGACY CONSTRUCTION CORPORATION (FORMERLY: LEGACY CONSTRUCTION)",
+    115
+   ],
+   [
+    "QM BUILDERS",
+    88
+   ],
+   [
+    "ALPHA & OMEGA GEN. CONTRACTOR & DEVELOPMENT CORP.",
+    84
+   ],
+   [
+    "ST. TIMOTHY CONSTRUCTION CORPORATION",
+    83
+   ],
+   [
+    "SUNWEST, INC. (FORMERLY: SUNWEST CONSTRUCTION & DEVELOPMENT CORPORATION)",
+    67
+   ],
+   [
+    "CENTERWAYS CONSTRUCTION AND DEVELOPMENT INC.",
+    64
+   ],
+   [
+    "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)",
+    57
+   ],
+   [
+    "ROYAL CROWN MONARCH CONSTRUCTION & SUPPLIES CORP.",
+    56
+   ],
+   [
+    "WAWAO BUILDERS",
+    53
+   ],
+   [
+    "L.R. TIQUI BUILDERS, INC.",
+    52
+   ]
+  ]
+ },
+ "bulacan_sumbong": {
+  "projects": 668,
+  "total_php": 43754961322,
+  "with_stations": 207,
+  "with_length": 206,
+  "shared_pin_projects": 29,
+  "flags": {
+   "BID_AT_CEILING": 449,
+   "REPEATED_AMOUNT": 396,
+   "ABOVE_ABC": 144,
+   "COST_PER_M_HIGH": 36,
+   "FAST_COMPLETION": 32,
+   "SHARED_PIN": 29,
+   "CONTRACTOR_CONCENTRATION": 5,
+   "COARSE_PIN": 1
+  },
+  "top_contractors": [
+   [
+    "WAWAO BUILDERS",
+    41
+   ],
+   [
+    "TOPNOTCH CATALYST BUILDERS INC.",
+    39
+   ],
+   [
+    "L.R. TIQUI BUILDERS, INC.",
+    35
+   ],
+   [
+    "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)",
+    33
+   ],
+   [
+    "M3 KONSTRACT CORPORATION (FORMERLY:MARGARITA CONSTRUCTION)",
+    31
+   ],
+   [
+    "JB CONSTRUCTION AND SUPPLY INC. (FORMERLY:JB CONSTRUCTION AND SUPPLY)",
+    25
+   ],
+   [
+    "A.R.L. CONSTRUCTION",
+    20
+   ],
+   [
+    "FLORDES CONSTRUCTION & TRADING CORP. (FORMERLY FLO",
+    17
+   ],
+   [
+    "DARCY & ANNA BUILDERS & TRADING",
+    16
+   ],
+   [
+    "TOPNOTCH CATALYST BUILDERS INC. / ONE FRAME CONSTRUCTION INC.",
+    15
+   ]
+  ]
+ },
+ "bulacan": {
+  "projects": 1096,
+  "total_php": 72472664063,
+  "with_stations": 277,
+  "with_length": 272,
+  "shared_pin_projects": 44,
+  "flags": {
+   "REPEATED_AMOUNT": 572,
+   "BID_AT_CEILING": 449,
+   "ABOVE_ABC": 144,
+   "COST_PER_M_HIGH": 63,
+   "SHARED_PIN": 44,
+   "FAST_COMPLETION": 43,
+   "CONTRACTOR_CONCENTRATION": 37,
+   "COARSE_PIN": 5
+  },
+  "top_contractors": [
+   [
+    "WAWAO BUILDERS",
+    79
+   ],
+   [
+    "TOPNOTCH CATALYST BUILDERS INC.",
+    68
+   ],
+   [
+    "SYMS CONSTRUCTION TRADING",
+    62
+   ],
+   [
+    "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)",
+    52
+   ],
+   [
+    "JB CONSTRUCTION AND SUPPLY INC. (FORMERLY:JB CONSTRUCTION AND SUPPLY)",
+    44
+   ],
+   [
+    "M3 KONSTRACT CORPORATION (FORMERLY:MARGARITA CONSTRUCTION)",
+    42
+   ],
+   [
+    "A.R.L. CONSTRUCTION",
+    41
+   ],
+   [
+    "FLORDES CONSTRUCTION & TRADING CORP. (FORMERLY FLO",
+    37
+   ],
+   [
+    "L.R. TIQUI BUILDERS, INC.",
+    36
+   ],
+   [
+    "11-16 CONSTRUCTION",
+    29
+   ]
+  ]
+ },
+ "cost_per_m_n": 1230,
+ "cost_per_m_median": 153123.04115625
+}

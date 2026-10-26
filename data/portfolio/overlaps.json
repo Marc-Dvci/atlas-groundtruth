@@ -1,0 +1,2714 @@
+[
+ {
+  "a": "23MC0024",
+  "b": "23M00019",
+  "overlap_m": 1170,
+  "a_range": [
+   39600.0,
+   40770.0
+  ],
+  "b_range": [
+   39600.0,
+   40770.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 49000000.0,
+  "b_cost": 72374996.63,
+  "province": "Cotabato (North Cotabato)",
+  "muni": "Makilala (Cotabato (North Cotabato))",
+  "place": "bulacanon",
+  "a_desc": "Construction of Malasila River Flood Control, Sta. 39 + 600 - Sta. 40 + 770, Sta. 40 + 170 - Sta. 40 + 770, Barangay Bulacanon, Makilala, North Cotabato, Package 2",
+  "b_desc": "Construction of Malasila River Flood Control, Sta. 39 + 600 - Sta. 40 + 770, Sta. 40 + 170 - Sta. 40 + 770, Barangay Bulacanon, Makilala, North Cotabato, Package 1",
+  "a_contractor": "MAER SUMMIT KONSTRUKT CO.",
+  "b_contractor": "LLABAN CONSTRUCTION & SUPPLY (FORMERLY: LLABAN CON"
+ },
+ {
+  "a": "23EB0037",
+  "b": "23EB0036",
+  "overlap_m": 865,
+  "a_range": [
+   0.0,
+   865.0
+  ],
+  "b_range": [
+   0.0,
+   946.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 96424967.48,
+  "b_cost": 96496274.13,
+  "province": "Occidental Mindoro",
+  "muni": "Calintaan",
+  "place": "lumintaoriver",
+  "a_desc": "Construction of Flood Control Structure along Lumintao River going to Sitio Cansaliw, New Dagupan, Sta. 0+000 - Sta. 0+865, Calintaan, Occidental Mindoro",
+  "b_desc": "Construction of Flood Control Structure along Lumintao River from Boricotcot to Sitio Marilao, New Dagupan, Sta. 0+000 - Sta. 0+946, Calintaan, Occidental Mindoro",
+  "a_contractor": "EIGHT J'S CONSTRUCTION SERVICES",
+  "b_contractor": "JELSIE CONSTRUCTION & SUPPLY"
+ },
+ {
+  "a": "22CC0096",
+  "b": "22CC0095",
+  "overlap_m": 780,
+  "a_range": [
+   0.0,
+   780.0
+  ],
+  "b_range": [
+   0.0,
+   780.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 45079451.15,
+  "b_cost": 45079500.38,
+  "province": "Bulacan",
+  "muni": "Guiguinto",
+  "place": "malis",
+  "a_desc": "Construction of Slope Protection Structures at Guiguinto River (Bagbag Creek, Sta. 0 + 000 - Sta. 0 + 780), Barangay Malis, Guiguinto, Bulacan",
+  "b_desc": "Construction of Flood Control Structure at Guiguinto River (Bagbag Creek, Sta. 0 + 000 - Sta. 0 + 780), Barangay Malis, Guiguinto Bulacan",
+  "a_contractor": "A.R.L. CONSTRUCTION",
+  "b_contractor": "L.R. TIQUI BUILDERS, INC."
+ },
+ {
+  "a": "23LH0011",
+  "b": "24LH0028",
+  "overlap_m": 750,
+  "a_range": [
+   0.0,
+   750.0
+  ],
+  "b_range": [
+   0.0,
+   750.0
+  ],
+  "a_year": 2023,
+  "b_year": 2024,
+  "a_cost": 71928738.54,
+  "b_cost": 68509429.13,
+  "province": "Davao Del Sur",
+  "muni": "Davao City",
+  "place": "mintalcreek",
+  "a_desc": "Construction of Concrete Revetment along Mintal Creek, Sitio Basak Mintal Section, Sta. 0 + 000 - Sta. 0 + 750, Davao City",
+  "b_desc": "Construction of Concrete Revetment along Mintal Creek, Sitio Basak (Mintal Section), Sta. 0 + 000 - Sta. 0 + 750, Davao City",
+  "a_contractor": "EDCL CONSTRUCTION AND SUPPLY",
+  "b_contractor": "EDCL CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "22LB0124",
+  "b": "22LB0127",
+  "overlap_m": 735,
+  "a_range": [
+   0.0,
+   1790.0
+  ],
+  "b_range": [
+   0.0,
+   735.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 29400000.0,
+  "b_cost": 43727225.07,
+  "province": "Davao Del Sur",
+  "muni": "Davao City",
+  "place": "buhangin",
+  "a_desc": "Rehabilitation of Drainage Structure along Mamay Creek, NHA Zone 2 Section, Sta. 0+000 - Sta. 1+790, Brgy. Buhangin, Davao City",
+  "b_desc": "Rehabilitation of Mamay Creek, Angliongto Section, Sta. 0+000 - Sta. 0+735, Brgy. Buhangin, Davao City",
+  "a_contractor": "JD SOMOZA BUILDERS",
+  "b_contractor": "LANDEVTECH CONSTRUCTION, INC. / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "20FN0097",
+  "b": "20FN0097",
+  "overlap_m": 700,
+  "a_range": [
+   0.0,
+   700.0
+  ],
+  "b_range": [
+   0.0,
+   700.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 70888755.4,
+  "b_cost": 70888755.4,
+  "province": "Camarines Sur",
+  "muni": "",
+  "place": "outfallintersectionbicolriver",
+  "a_desc": "Rehabilation of Flood Control, Baao Lake Outfall Intersection Bicol River, Sta 0+000.00 - Sta 0+700.00, Nubua, Camarines Sur",
+  "b_desc": "Rehabilation of Flood Control, Baao Lake Outfall Intersection Bicol River, Sta 0+000.00 - Sta 0+700.00, Nubua, Camarines Sur",
+  "a_contractor": "ALRO CONSTRUCTION & DEVELOPMENT CORP.",
+  "b_contractor": "ALRO CONSTRUCTION & DEVELOPMENT CORP."
+ },
+ {
+  "a": "24CK0067",
+  "b": "24CK0068",
+  "overlap_m": 612,
+  "a_range": [
+   0.0,
+   612.15
+  ],
+  "b_range": [
+   0.0,
+   634.48
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 96493753.29,
+  "b_cost": 96493309.27,
+  "province": "Tarlac",
+  "muni": "Capas",
+  "place": "lucungriver",
+  "a_desc": "Rehabilitation of Existing Dike along Lucung River (Susuba Section), Phase 3, Sta. 0+000.00 to Sta. 0+612.15, Capas, Tarlac",
+  "b_desc": "Rehabilitation of Existing Dike along Lucung River (Susuba Section), Phase 4, Sta. 0+000.00 to Sta. 0+634.48, Capas, Tarlac",
+  "a_contractor": "HIGH STRENGTH DEV. CORPORATION",
+  "b_contractor": "RD8 BUILDERS CORPORATION UNDER THE NAME OF RD8 BUILDERS"
+ },
+ {
+  "a": "23EB0037",
+  "b": "23EB0039",
+  "overlap_m": 604,
+  "a_range": [
+   0.0,
+   865.0
+  ],
+  "b_range": [
+   0.0,
+   604.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 96424967.48,
+  "b_cost": 49212877.23,
+  "province": "Occidental Mindoro",
+  "muni": "Calintaan",
+  "place": "lumintaoriver",
+  "a_desc": "Construction of Flood Control Structure along Lumintao River going to Sitio Cansaliw, New Dagupan, Sta. 0+000 - Sta. 0+865, Calintaan, Occidental Mindoro",
+  "b_desc": "Construction of Tanyag Flood Control Structure along Lumintao River, Sitio Alipundo, Sta. 0 + 000 - Sta. 0 + 604, Calintaan, Occidental Mindoro",
+  "a_contractor": "EIGHT J'S CONSTRUCTION SERVICES",
+  "b_contractor": "GREAT PACIFIC BUILDERS AND GEN. CONTRACTOR INC. / MICKU ROBIN CONSTRUCTION"
+ },
+ {
+  "a": "23EB0036",
+  "b": "23EB0039",
+  "overlap_m": 604,
+  "a_range": [
+   0.0,
+   946.0
+  ],
+  "b_range": [
+   0.0,
+   604.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 96496274.13,
+  "b_cost": 49212877.23,
+  "province": "Occidental Mindoro",
+  "muni": "Calintaan",
+  "place": "lumintaoriver",
+  "a_desc": "Construction of Flood Control Structure along Lumintao River from Boricotcot to Sitio Marilao, New Dagupan, Sta. 0+000 - Sta. 0+946, Calintaan, Occidental Mindoro",
+  "b_desc": "Construction of Tanyag Flood Control Structure along Lumintao River, Sitio Alipundo, Sta. 0 + 000 - Sta. 0 + 604, Calintaan, Occidental Mindoro",
+  "a_contractor": "JELSIE CONSTRUCTION & SUPPLY",
+  "b_contractor": "GREAT PACIFIC BUILDERS AND GEN. CONTRACTOR INC. / MICKU ROBIN CONSTRUCTION"
+ },
+ {
+  "a": "23BF0046",
+  "b": "23BF0021",
+  "overlap_m": 600,
+  "a_range": [
+   0.0,
+   600.0
+  ],
+  "b_range": [
+   0.0,
+   600.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 47563150.1,
+  "b_cost": 47864304.56,
+  "province": "Isabela",
+  "muni": "Quirino",
+  "place": "sanjuansection",
+  "a_desc": "Construction of Siffu River Flood Control Project (Barangay San Juan Section), Sta. 0+000 - Sta.0+600, Quirino, Isabela,",
+  "b_desc": "Construction of Siffu River Flood Control Project (Barangay San Juan Section), Sta. 0+000 - Sta. 0+600, Barangay San Juan, Quirino, Isabela,",
+  "a_contractor": "MAR-DEB CONSTRUCTION & DEVELOPMENT CORP. (FORMERLY: MAR-DEB CONSTRUCTION & DEVELOPMENT)",
+  "b_contractor": "MAR-DEB CONSTRUCTION & DEVELOPMENT CORP. (FORMERLY: MAR-DEB CONSTRUCTION & DEVELOPMENT)"
+ },
+ {
+  "a": "22CC0263",
+  "b": "22CC0072",
+  "overlap_m": 540,
+  "a_range": [
+   0.0,
+   540.0
+  ],
+  "b_range": [
+   0.0,
+   540.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 86849456.87,
+  "b_cost": 62724996.89,
+  "province": "Bulacan",
+  "muni": "Balagtas",
+  "place": "balagtasriver",
+  "a_desc": "Improvement of Balagtas River Waterways with Flood Control Structure, Sta. 0 + 000 to Sta. 0 + 540, Longos, Balagtas, Bulacan",
+  "b_desc": "Improvement of Waterways with Flood Control Structures along Balagtas River, Sta. 0 + 000 to Sta. 0 + 540, Wawa, Balagtas, Bulacan",
+  "a_contractor": "AZUL BUILDERS / JB CONSTRUCTION AND SUPPLY INC. (FORMERLY:JB CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "L.R. TIQUI BUILDERS, INC."
+ },
+ {
+  "a": "23DB0017",
+  "b": "23DB0016",
+  "overlap_m": 536,
+  "a_range": [
+   0.0,
+   536.0
+  ],
+  "b_range": [
+   0.0,
+   536.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 77198760.0,
+  "b_cost": 96067745.81,
+  "province": "Batangas",
+  "muni": "Balayan",
+  "place": "binambangriver",
+  "a_desc": "Construction of Riverbank Protection along Binambang River, Sta. 0 + 000 - Sta. 0 + 536 (Upstream R/S) at Balayan, Batangas",
+  "b_desc": "Construction of Riverbank Protection along Binambang River, Sta. 0 + 000 - Sta. 0 + 536 (Upstream L/S) at Balayan, Batangas",
+  "a_contractor": "VICMAR CONSTRUCTION, INC. / FRANDEL CONSTRUCTION AND DEVELOPMENT CORP.",
+  "b_contractor": "VICMAR CONSTRUCTION, INC. / FRANDEL CONSTRUCTION AND DEVELOPMENT CORP."
+ },
+ {
+  "a": "23PD0057",
+  "b": "22PD0019",
+  "overlap_m": 500,
+  "a_range": [
+   0.0,
+   533.0
+  ],
+  "b_range": [
+   30.0,
+   530.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 49000000.0,
+  "b_cost": 49000000.0,
+  "province": "Benguet",
+  "muni": "Baguio City",
+  "place": "buedriver",
+  "a_desc": "Construction of Flood Mitigation Facilities/Drainage System along Bued River (Tributaries), Sta. 0 + 000 - Sta. 0 + 120, Sta. 0 + 223 - Sta. 0 + 533, Baguio City",
+  "b_desc": "Construction of Flood Mitigation Facility/Drainage System along Bued River (Tributaries), Sta. 0+030 - Sta. 0+530, Baguio City",
+  "a_contractor": "GOLDRICH CONSTRUCTION & TRADING",
+  "b_contractor": "GOLDRICH CONSTRUCTION & TRADING"
+ },
+ {
+  "a": "23LF0073",
+  "b": "23LF0013",
+  "overlap_m": 500,
+  "a_range": [
+   0.0,
+   500.0
+  ],
+  "b_range": [
+   0.0,
+   540.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 96499472.49,
+  "b_cost": 67549886.03,
+  "province": "Davao Oriental",
+  "muni": "Baganga",
+  "place": "mahanubriver",
+  "a_desc": "Construction of Flood Mitigation Structure along Baganga - Mahan-ub River, Sta. 0 + 000 - Sta. 0 + 500, Baganga, Davao Oriental",
+  "b_desc": "Construction of Flood Mitigation Structure along Baganga - Mahan-ub River, Sta. 0 + 000 - Sta. 0 + 540, Baganga, Davao Oriental",
+  "a_contractor": "GREAT PACIFIC BUILDERS AND GEN. CONTRACTOR INC.",
+  "b_contractor": "O. G. SANTOS CONSTRUCTION"
+ },
+ {
+  "a": "24CK0042",
+  "b": "24CK0033",
+  "overlap_m": 494,
+  "a_range": [
+   0.0,
+   535.2
+  ],
+  "b_range": [
+   0.0,
+   494.34
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 86844861.33,
+  "b_cost": 96482027.45,
+  "province": "Tarlac",
+  "muni": "Capas",
+  "place": "donnellriver",
+  "a_desc": "Rehabilitation of Existing Dike along O' Donnell River, Upstream of Palublub Bridge, Right Bank (Package A), Sta. 0+000 to Sta. 0+535.20, Capas, Tarlac",
+  "b_desc": "Rehabilitation of Dike along O'Donnell River, (Downstream of Palublub Bridge, Left Bank), Phase 1, Sta. 0 + 000 to Sta. 0+494.34, Capas, Tarlac",
+  "a_contractor": "T2B3 BUILDERS AND SUPPLIES CORP.",
+  "b_contractor": "FLORDES CONSTRUCTION & TRADING CORP. (FORMERLY FLO"
+ },
+ {
+  "a": "20LB0027",
+  "b": "20LB0027",
+  "overlap_m": 460,
+  "a_range": [
+   3060.0,
+   3520.0
+  ],
+  "b_range": [
+   3060.0,
+   3520.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 86136865.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "a_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION",
+  "b_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0036",
+  "b": "20LB0036",
+  "overlap_m": 448,
+  "a_range": [
+   1095.0,
+   1543.0
+  ],
+  "b_range": [
+   1095.0,
+   1543.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 77523275.0,
+  "b_cost": 77523275.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 1+095 to Sta. 1+543, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 1+095 to Sta. 1+543, Davao City",
+  "a_contractor": "APEIRON CONSTRUCTION SOLUTIONS / ABU CONSTRUCTION",
+  "b_contractor": "APEIRON CONSTRUCTION SOLUTIONS / ABU CONSTRUCTION"
+ },
+ {
+  "a": "22CC0040",
+  "b": "22CC0056",
+  "overlap_m": 437,
+  "a_range": [
+   0.0,
+   750.0
+  ],
+  "b_range": [
+   313.0,
+   1093.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 45079991.01,
+  "b_cost": 45079988.04,
+  "province": "Bulacan",
+  "muni": "Balagtas",
+  "place": "longos",
+  "a_desc": "Construction of flood control structure along balagtas river (sta. 0+000 to sta. 0+750), barangay longos, balagtas, bulacan",
+  "b_desc": "Construction of slope protection structures at balagtas river (sta. 0+313 - sta. 1+093), barangay longos, balagtas, bulacan",
+  "a_contractor": "VICTORIA DEVELOPMENT AND VENTURES CORP. (FOR: VICTORIA DEV'T AND CONST. CORP.)",
+  "b_contractor": "VICTORIA DEVELOPMENT AND VENTURES CORP. (FOR: VICTORIA DEV'T AND CONST. CORP.)"
+ },
+ {
+  "a": "23LF0058",
+  "b": "22LF0031",
+  "overlap_m": 410,
+  "a_range": [
+   0.0,
+   410.0
+  ],
+  "b_range": [
+   0.0,
+   750.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 57896577.84,
+  "b_cost": 92989850.86,
+  "province": "Davao Oriental",
+  "muni": "Caraga",
+  "place": "caragariver",
+  "a_desc": "Construction of Flood Mitigation Structure along Caraga River, Sta. 0 + 000 - Sta. 0 + 410, Caraga, Davao Oriental",
+  "b_desc": "Construction of Flood Mitigation Structure along Caraga River (Cut-Off Channel), Sta. 0+000 - Sta. 0+750, Caraga, Davao Oriental",
+  "a_contractor": "JHARKHA CONSTRUCTION AND SUPPLY",
+  "b_contractor": "MAVERICK BUILDERS INCORPORATED (FORMERLY MAVERICK"
+ },
+ {
+  "a": "23AG0025",
+  "b": "24AG0013",
+  "overlap_m": 400,
+  "a_range": [
+   17822.0,
+   18602.0
+  ],
+  "b_range": [
+   17829.0,
+   18229.0
+  ],
+  "a_year": 2023,
+  "b_year": 2024,
+  "a_cost": 52809625.0,
+  "b_cost": 96500000.0,
+  "province": "Pangasinan",
+  "muni": "Mabini",
+  "place": "caranglaan",
+  "a_desc": "Construction of Flood Mitigation Structure along Balingcaguing River (Caranglaan Section), Sta. 017 + 822 - Sta. 018 + 602, Barangay Caranglaan, Mabini, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Structure along Balingcaguing River (Caranglaan Section), Sta. 017+829 - Sta. 018+229, Barangay Caranglaan, Mabini, Pangasinan",
+  "a_contractor": "ALCEL CONSTRUCTION",
+  "b_contractor": "ALCEL CONSTRUCTION"
+ },
+ {
+  "a": "22AG0015",
+  "b": "24AG0010",
+  "overlap_m": 400,
+  "a_range": [
+   10362.0,
+   11082.0
+  ],
+  "b_range": [
+   10525.0,
+   10925.0
+  ],
+  "a_year": 2022,
+  "b_year": 2024,
+  "a_cost": 66585000.0,
+  "b_cost": 96500000.0,
+  "province": "Pangasinan",
+  "muni": "Alaminos",
+  "place": "pogo",
+  "a_desc": "Construction of Flood Mitigation Structure along Alaminos River (Pogo Section) Sta.010+362 - Sta.011+082, Brgy. Pogo, Alaminos City, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Structure along Alaminos River (Pogo Section), Sta. 010+525 - Sta. 010+925, Barangay Pogo, Alaminos City, Pangasinan",
+  "a_contractor": "CHIARA2300 INCORPORATED / BERSON'S CONSTRUCTION & TRADING",
+  "b_contractor": "CHIARA2300 INCORPORATED / EJR BUILDERS & CONSTRUCTION SUPPLY"
+ },
+ {
+  "a": "22BF0078",
+  "b": "23BF0018",
+  "overlap_m": 400,
+  "a_range": [
+   0.0,
+   730.0
+  ],
+  "b_range": [
+   0.0,
+   400.0
+  ],
+  "a_year": 2022,
+  "b_year": 2023,
+  "a_cost": 67549855.42,
+  "b_cost": 48248898.3,
+  "province": "Isabela",
+  "muni": "Quirino",
+  "place": "suerte",
+  "a_desc": "Rehabilitation of Siffu River Flood Control Structure (Suerte Section Phase II), Sta. 0 + 000 - Sta. 0 + 730, Brgy. Suerte, Quirino, Isabela",
+  "b_desc": "Construction of Siffu River Flood Control Project (Suerte Section), Phase II, Sta. 0+000 - Sta. 0+400, Barangay Suerte, Quirino, Isabela,",
+  "a_contractor": "DANYSONS CONSTRUCTION AND DEVELOPMENT CORPORATION (FORMERLY: DANYSONS CONSTRUCTION)",
+  "b_contractor": "RRC CO. INC. (FORMERLY: R R C CONSTRUCTION)"
+ },
+ {
+  "a": "22DM0008",
+  "b": "22DM0007",
+  "overlap_m": 375,
+  "a_range": [
+   2000.0,
+   2375.0
+  ],
+  "b_range": [
+   2000.0,
+   2375.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 68515000.0,
+  "b_cost": 54879864.36,
+  "province": "Quezon",
+  "muni": "Catanauan",
+  "place": "catanauanriver",
+  "a_desc": "Construction of Flood Control Structure along Catanauan River (Sta. 2+000 - Sta. 2+375 Left-Side) Catanauan, Quezon",
+  "b_desc": "Construction of Flood Control Structure along Catanauan River (Sta. 2+000 - Sta. 2+375 Right-Side) Catanauan, Quezon",
+  "a_contractor": "WAYCON BUILDERS AND CONSTRUCTION SUPPLY CORP. (FOR:WAYCON BUILDERS & CONSTRUCTION SUPPLY) / ROMHEAD S.J. BUILDERS AND DEVELOPMENT INCORPORATED.",
+  "b_contractor": "ST. GERRARD CONSTRUCTION GEN. CONTRACTOR & DEVELOPMENT CORP. (FORMERLY:ST. GERRARD CONSTRUCTION)"
+ },
+ {
+  "a": "23DM0044",
+  "b": "22DM0053",
+  "overlap_m": 375,
+  "a_range": [
+   3250.0,
+   3675.0
+  ],
+  "b_range": [
+   3250.0,
+   3625.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 77200000.0,
+  "b_cost": 68997500.0,
+  "province": "Quezon",
+  "muni": "Catanauan",
+  "place": "catanauanriver",
+  "a_desc": "Construction of Flood Control Structure along Catanauan River, Sta. 3 + 250 - Sta. 3 + 675, Right Side, Catanauan, Quezon",
+  "b_desc": "Construction of Flood Control Structure along Catanauan River (Sta. 3+250 - Sta. 3+625) Catanauan, Quezon",
+  "a_contractor": "R.A. MENDIOLA CONSTRUCTION & DEVELOPER",
+  "b_contractor": "RAPID FOREMOST CONST. CO."
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0291",
+  "overlap_m": 375,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3065.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 28950000.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "MITZ CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "24CK0035",
+  "b": "24CK0036",
+  "overlap_m": 372,
+  "a_range": [
+   991.76,
+   1489.18
+  ],
+  "b_range": [
+   1080.0,
+   1451.91
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 96492882.96,
+  "b_cost": 96500000.0,
+  "province": "Tarlac",
+  "muni": "Capas",
+  "place": "donnellriver",
+  "a_desc": "Rehabilitation of Dike along O'Donnell River, (Downstream of Palublub Bridge, Left Bank), Phase 3, Sta. 0 + 991.76 to Sta. 1 + 489.18, Capas, Tarlac",
+  "b_desc": "Rehabilitation of Dike along O'Donnell River, Downstream of Palublub Bridge, Right Bank, Lawy Section, Phase 1, Sta. 1+080.00 to Sta. 1+451.91, Capas, Tarlac.",
+  "a_contractor": "ROYAL CROWN MONARCH CONSTRUCTION & SUPPLIES CORP.",
+  "b_contractor": "ROYAL CROWN MONARCH CONSTRUCTION & SUPPLIES CORP."
+ },
+ {
+  "a": "20LB0037",
+  "b": "20LB0037",
+  "overlap_m": 351,
+  "a_range": [
+   2790.0,
+   3141.0
+  ],
+  "b_range": [
+   2790.0,
+   3141.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 60296095.0,
+  "b_cost": 60296095.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 2+790 to Sta. 3+141, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 2+790 to Sta. 3+141, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "23AG0021",
+  "b": "22AG0014",
+  "overlap_m": 343,
+  "a_range": [
+   10621.0,
+   11401.0
+  ],
+  "b_range": [
+   11058.0,
+   11778.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 72375000.0,
+  "b_cost": 66971000.0,
+  "province": "Pangasinan",
+  "muni": "Alaminos",
+  "place": "poblacion",
+  "a_desc": "Construction of Flood Mitigation Structure along Alaminos River (Poblacion Section), Sta. 010 + 621 - Sta. 011 + 401, Barangay Poblacion, Alaminos City, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Structure along Alaminos River (Poblacion Section) Sta.011+058 - Sta.011+778, Brgy. Poblacion, Alaminos City, Pangasinan",
+  "a_contractor": "CHIARA2300 INCORPORATED / BERSON'S CONSTRUCTION & TRADING",
+  "b_contractor": "CHIARA2300 INCORPORATED / EJR BUILDERS & CONSTRUCTION SUPPLY"
+ },
+ {
+  "a": "23PD0057",
+  "b": "22PD0018",
+  "overlap_m": 343,
+  "a_range": [
+   0.0,
+   533.0
+  ],
+  "b_range": [
+   190.0,
+   640.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 49000000.0,
+  "b_cost": 49000000.0,
+  "province": "Benguet",
+  "muni": "Baguio City",
+  "place": "buedriver",
+  "a_desc": "Construction of Flood Mitigation Facilities/Drainage System along Bued River (Tributaries), Sta. 0 + 000 - Sta. 0 + 120, Sta. 0 + 223 - Sta. 0 + 533, Baguio City",
+  "b_desc": "Construction of Flood Mitigation Facility/Drainage System along Bued River (Tributaries) Sta. 0+190 - Sta. 0+640, Baguio City",
+  "a_contractor": "GOLDRICH CONSTRUCTION & TRADING",
+  "b_contractor": "GOLDRICH CONSTRUCTION & TRADING"
+ },
+ {
+  "a": "22PD0019",
+  "b": "22PD0018",
+  "overlap_m": 340,
+  "a_range": [
+   30.0,
+   530.0
+  ],
+  "b_range": [
+   190.0,
+   640.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 49000000.0,
+  "b_cost": 49000000.0,
+  "province": "Benguet",
+  "muni": "Baguio City",
+  "place": "buedriver",
+  "a_desc": "Construction of Flood Mitigation Facility/Drainage System along Bued River (Tributaries), Sta. 0+030 - Sta. 0+530, Baguio City",
+  "b_desc": "Construction of Flood Mitigation Facility/Drainage System along Bued River (Tributaries) Sta. 0+190 - Sta. 0+640, Baguio City",
+  "a_contractor": "GOLDRICH CONSTRUCTION & TRADING",
+  "b_contractor": "GOLDRICH CONSTRUCTION & TRADING"
+ },
+ {
+  "a": "20LB0040",
+  "b": "20LB0040",
+  "overlap_m": 332,
+  "a_range": [
+   3141.0,
+   3473.0
+  ],
+  "b_range": [
+   3141.0,
+   3473.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 86136865.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "a_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "23AG0022",
+  "b": "22AG0015",
+  "overlap_m": 330,
+  "a_range": [
+   9912.0,
+   10692.0
+  ],
+  "b_range": [
+   10362.0,
+   11082.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 72375000.0,
+  "b_cost": 66585000.0,
+  "province": "Pangasinan",
+  "muni": "Alaminos",
+  "place": "pogo",
+  "a_desc": "Construction of Flood Mitigation Structure along Alaminos River (Pogo Section), Sta. 009 + 912 - Sta. 010 + 692, Barangay Pogo, Alaminos City, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Structure along Alaminos River (Pogo Section) Sta.010+362 - Sta.011+082, Brgy. Pogo, Alaminos City, Pangasinan",
+  "a_contractor": "CDC CONSTRUCTION & SUPPLIES",
+  "b_contractor": "CHIARA2300 INCORPORATED / BERSON'S CONSTRUCTION & TRADING"
+ },
+ {
+  "a": "22DM0039",
+  "b": "23DM0042",
+  "overlap_m": 325,
+  "a_range": [
+   3625.0,
+   4000.0
+  ],
+  "b_range": [
+   3675.0,
+   4100.0
+  ],
+  "a_year": 2022,
+  "b_year": 2023,
+  "a_cost": 68997500.0,
+  "b_cost": 67550000.0,
+  "province": "Quezon",
+  "muni": "Catanauan",
+  "place": "catanauanriver",
+  "a_desc": "Construction of Flood Control Structure along Catanauan River (Sta. 3+625 - Sta. 4+000) Catanauan, Quezon",
+  "b_desc": "Construction of Flood Control Structure along Catanauan River, Sta. 3 + 675 - Sta. 4 + 100, Right Side, Catanauan, Quezon",
+  "a_contractor": "RAPID FOREMOST CONST. CO. / JELCON-CONSTRUCTION AND TRADING CORPORATION",
+  "b_contractor": "R.A. MENDIOLA CONSTRUCTION & DEVELOPER"
+ },
+ {
+  "a": "23DM0043",
+  "b": "22DM0045",
+  "overlap_m": 323,
+  "a_range": [
+   4100.0,
+   4525.0
+  ],
+  "b_range": [
+   4202.0,
+   4577.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 67550000.0,
+  "b_cost": 68997500.0,
+  "province": "Quezon",
+  "muni": "Catanauan",
+  "place": "catanauanriver",
+  "a_desc": "Construction of Flood Control Structure along Catanauan River, Sta. 4 + 100 - Sta. 4 + 525, Right Side, Catanauan, Quezon",
+  "b_desc": "Construction of Flood Control Structures along Catanauan River (Sta. 4+202 - Sta. 4+577) Catanauan, Quezon",
+  "a_contractor": "R.A. MENDIOLA CONSTRUCTION & DEVELOPER",
+  "b_contractor": "RAPID FOREMOST CONST. CO. / JAICA CONST. CORP"
+ },
+ {
+  "a": "23AG0027",
+  "b": "24AG0023",
+  "overlap_m": 320,
+  "a_range": [
+   27420.0,
+   28200.0
+  ],
+  "b_range": [
+   27880.0,
+   28203.0
+  ],
+  "a_year": 2023,
+  "b_year": 2024,
+  "a_cost": 53075000.0,
+  "b_cost": 72687660.0,
+  "province": "Pangasinan",
+  "muni": "Mabini",
+  "place": "poblacion",
+  "a_desc": "Construction of Flood Mitigation Structure along Balingcaguing River (Poblacion Section), Sta. 027 + 420 - Sta. 028 + 200, Barangay Poblacion, Mabini, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Structure along Balingcaguing River (Poblacion Section), Sta. 027+880 - Sta. 028+203, Barangay Poblacion, Mabini, Pangasinan",
+  "a_contractor": "CHIARA2300 INCORPORATED / EJR BUILDERS & CONSTRUCTION SUPPLY",
+  "b_contractor": "BERSON'S CONSTRUCTION & TRADING"
+ },
+ {
+  "a": "23KH0031",
+  "b": "23KH0032",
+  "overlap_m": 310,
+  "a_range": [
+   0.0,
+   310.0
+  ],
+  "b_range": [
+   0.0,
+   310.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 96500000.0,
+  "b_cost": 96499465.0,
+  "province": "Misamis Oriental",
+  "muni": "Cagayan De Oro City",
+  "place": "iponanriver",
+  "a_desc": "Construction of Flood Mitigation Structure along Iponan River (Canitoan Section), Cagayan de Oro City - Sta. 0 + 000 - Sta. 0 + 310",
+  "b_desc": "Construction of Flood Mitigation Structure along Iponan River, Cagayan de Oro City - Sta. 0 + 000 - Sta. 0 + 310",
+  "a_contractor": "RITCHE-NATHALIE BUILDERS & GENERAL MERCHANDISE",
+  "b_contractor": "RITCHE-NATHALIE BUILDERS & GENERAL MERCHANDISE"
+ },
+ {
+  "a": "22HF0050",
+  "b": "22HF0040",
+  "overlap_m": 309,
+  "a_range": [
+   362.0,
+   2520.0
+  ],
+  "b_range": [
+   607.0,
+   916.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48945957.56,
+  "b_cost": 48049193.6,
+  "province": "Cebu",
+  "muni": "Tuburan",
+  "place": "mangga",
+  "a_desc": "Construction of Flood Mitigation Structure at Langoyon River, Section 1: Sta. 0+362 - Sta. 0+602, Section 2: Sta. 2+320 - Sta. 2+520, Brgy. Mangga, Tuburan, Cebu",
+  "b_desc": "Construction of Flood Mitigation Structure at Langoyon River, Barangay Mangga, Sta. 0+607 - Sta. 0+916, Tuburan, Cebu",
+  "a_contractor": "VEN RAY CONSTRUCTION CORPORATION",
+  "b_contractor": "VEN RAY CONSTRUCTION CORPORATION"
+ },
+ {
+  "a": "23EB0032",
+  "b": "22E00071",
+  "overlap_m": 307,
+  "a_range": [
+   0.0,
+   310.0
+  ],
+  "b_range": [
+   0.0,
+   307.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 43768024.75,
+  "b_cost": 48249983.48,
+  "province": "Occidental Mindoro",
+  "muni": "Sablayan",
+  "place": "amnayriver",
+  "a_desc": "Construction of Flood Control Structure along Amnay River, Claudio Salgado Section, Sta. 0 + 000 - Sta. 0 + 310, Sablayan, Occidental Mindoro",
+  "b_desc": "Construction of Flood Control Structure, Amnay River, Claudio Salgado Section, Sta. 0+000 - Sta. 0+307, Sablayan, Occidental Mindoro",
+  "a_contractor": "F.A. TORRES CONSTRUCTION",
+  "b_contractor": "ANORE CONSTRUCTION"
+ },
+ {
+  "a": "22E00071",
+  "b": "23EB0034",
+  "overlap_m": 307,
+  "a_range": [
+   0.0,
+   307.0
+  ],
+  "b_range": [
+   0.0,
+   314.0
+  ],
+  "a_year": 2022,
+  "b_year": 2023,
+  "a_cost": 43424892.57,
+  "b_cost": 45079792.51,
+  "province": "Occidental Mindoro",
+  "muni": "Sablayan",
+  "place": "amnayriver",
+  "a_desc": "Construction of Flood Control Structure, Amnay River, Sta. 0+000 - Sta. 0+307, Ilvita Section, Sablayan, Occidental Mindoro",
+  "b_desc": "Construction of Flood Control Structure along Amnay River, Ilvita Section, Sta. 0 + 000 - Sta. 0 + 314, Sablayan, Occidental Mindoro",
+  "a_contractor": "ANORE CONSTRUCTION",
+  "b_contractor": "SIXTEEN ENTERPRISES-CALAPAN BRANCH"
+ },
+ {
+  "a": "24BF0053",
+  "b": "24BF0054",
+  "overlap_m": 300,
+  "a_range": [
+   600.0,
+   1400.0
+  ],
+  "b_range": [
+   1100.0,
+   1900.0
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 96474480.71,
+  "b_cost": 96470259.43,
+  "province": "Isabela",
+  "muni": "Quirino",
+  "place": "sanjuanphaseii",
+  "a_desc": "Construction of Siffu River Flood Control Project, Barangay San Juan Phase II, Sta. 0+600 - Sta. 1+400, Quirino, Isabela",
+  "b_desc": "Construction of Mallig River Flood Control Project, Barangay San Juan Phase II, Sta. 1+100 - Sta. 1+900, Quirino, Isabela",
+  "a_contractor": "JWU CONSTRUCTION AND SUPPLY",
+  "b_contractor": "JWU CONSTRUCTION AND SUPPLY / ALGO CONSTRUCTION AND POWER DEVELOPMENT, INC."
+ },
+ {
+  "a": "22ID0051",
+  "b": "22ID0044",
+  "overlap_m": 300,
+  "a_range": [
+   0.0,
+   300.0
+  ],
+  "b_range": [
+   0.0,
+   300.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48998557.03,
+  "b_cost": 48999538.87,
+  "province": "Leyte",
+  "muni": "Burauen",
+  "place": "marabongriver",
+  "a_desc": "Construction of Marabong Flood Control Structure and Drainage System, Marabong River Basin, Sta. 0+000 - Sta. 0+300 (Upstream), Burauen, Leyte",
+  "b_desc": "Construction of Marabong Flood Control Structure and Drainage System, Marabong River Basin, Sta. 0+000 - Sta. 0+300 (Downstream), Burauen, Leyte",
+  "a_contractor": "FAIRCHILD BUILDERS & DEVELOPERS, INC.",
+  "b_contractor": "FAIRCHILD BUILDERS & DEVELOPERS, INC."
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0040",
+  "overlap_m": 299,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3141.0,
+   3473.0
+  ],
+  "a_year": 2020,
+  "b_year": 2020,
+  "a_cost": 28950000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0040",
+  "overlap_m": 299,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3141.0,
+   3473.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 28950000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0040",
+  "overlap_m": 299,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3141.0,
+   3473.0
+  ],
+  "a_year": 2021,
+  "b_year": 2020,
+  "a_cost": 28950000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0040",
+  "overlap_m": 299,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3141.0,
+   3473.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 28950000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "22AI0075",
+  "b": "23AI0011",
+  "overlap_m": 296,
+  "a_range": [
+   0.0,
+   715.0
+  ],
+  "b_range": [
+   0.0,
+   296.0
+  ],
+  "a_year": 2022,
+  "b_year": 2023,
+  "a_cost": 43924227.04,
+  "b_cost": 48895892.15,
+  "province": "Pangasinan",
+  "muni": "Urdaneta",
+  "place": "alliedriver",
+  "a_desc": "Construction of Flood Control Structure along Mitura and Allied River, Sta. 0+000 - Sta. 0+715, Urdaneta City, Pangasinan",
+  "b_desc": "Construction of Flood Control Structure along Tagamusing and Allied River, Sta. 0+000 - Sta. 0+296, Binalonan, Pangasinan (Package 13)",
+  "a_contractor": "R.A. MATIAS CONSTRUCTION AND DEVELOPERS INC. (FORMERLY : R.A. MATIAS CONSTRUCTION AND DEVELOPERS)",
+  "b_contractor": "W.J.P. CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2020,
+  "a_cost": 28950000.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 28950000.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2021,
+  "b_year": 2020,
+  "a_cost": 28950000.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0291",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3065.0,
+   3440.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 28950000.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "MITZ CONSTRUCTION AND SUPPLY",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0040",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3141.0,
+   3473.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2020,
+  "a_cost": 86136865.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0040",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3141.0,
+   3473.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 86136865.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0040",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3141.0,
+   3473.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2021,
+  "b_year": 2020,
+  "a_cost": 86136865.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0040",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3141.0,
+   3473.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 86136865.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+141 to Sta. 3+473, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "RAKKI CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0292",
+  "b": "20LB0292",
+  "overlap_m": 269,
+  "a_range": [
+   3171.0,
+   3440.0
+  ],
+  "b_range": [
+   3171.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 28950000.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+171 to Sta. 3+440, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "24OH0008",
+  "b": "24OH0007",
+  "overlap_m": 267,
+  "a_range": [
+   833.0,
+   1100.0
+  ],
+  "b_range": [
+   833.0,
+   1100.0
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 48216273.41,
+  "b_cost": 48220023.12,
+  "province": "City Of Manila",
+  "muni": "Manila",
+  "place": "concordiacreek",
+  "a_desc": "Construction of Slope Protection Structure along Concordia Creek (Sta. 0+833 to Sta. 1+100), Right Bank, Manila City",
+  "b_desc": "Construction of Slope Protection Structure along Concordia Creek (Sta. 0+833 to Sta. 1+100), Left Bank, Manila City",
+  "a_contractor": "AL-AMEN BUILDERS",
+  "b_contractor": "JELSIE CONSTRUCTION & SUPPLY"
+ },
+ {
+  "a": "23CC0250",
+  "b": "23CC0252",
+  "overlap_m": 259,
+  "a_range": [
+   3120.0,
+   3420.0
+  ],
+  "b_range": [
+   3161.0,
+   3461.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 72374463.63,
+  "b_cost": 71915112.64,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "pagala",
+  "a_desc": "Construction of Flood Control Structure at Barangay Pagala, Baliuag, Bulacan (K003+120 to K003+420)",
+  "b_desc": "Construction of Flood Control Structure at Barangay Pagala, Baliuag, Bulacan (K003+161 to K003+461)",
+  "a_contractor": "GREAT PACIFIC BUILDERS AND GEN. CONTRACTOR INC.",
+  "b_contractor": "L.R. TIQUI BUILDERS, INC."
+ },
+ {
+  "a": "20LB0253",
+  "b": "20LB0253",
+  "overlap_m": 255,
+  "a_range": [
+   3365.0,
+   3620.0
+  ],
+  "b_range": [
+   3365.0,
+   3620.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 38600000.0,
+  "b_cost": 38600000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 3+365 to Sta. 3+620, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+365 to Sta. 3+620, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "23LH0012",
+  "b": "22LH0010",
+  "overlap_m": 250,
+  "a_range": [
+   0.0,
+   250.0
+  ],
+  "b_range": [
+   0.0,
+   1450.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 24301419.01,
+  "b_cost": 50632025.64,
+  "province": "Davao Del Sur",
+  "muni": "Davao City",
+  "place": "calinanpoblacion",
+  "a_desc": "Construction of Cut-Off Wall at Calinan Creek, Sta. 0 + 000 - Sta. 0 + 250, Barangay Calinan Poblacion, Calinan District, Davao City",
+  "b_desc": "Construction of Cut-Off Wall at Calinan Creek, Sta. 0+000 - Sta. 1+450, Brgy. Calinan Poblacion, Calinan District, Davao City",
+  "a_contractor": "RITCHE-NATHALIE BUILDERS & GENERAL MERCHANDISE",
+  "b_contractor": "O. G. SANTOS CONSTRUCTION"
+ },
+ {
+  "a": "23CC0279",
+  "b": "23CC0278",
+  "overlap_m": 249,
+  "a_range": [
+   3770.0,
+   4070.0
+  ],
+  "b_range": [
+   3821.0,
+   4121.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 72374149.96,
+  "b_cost": 72373564.32,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "sulivan",
+  "a_desc": "Construction of Flood Control Structure at Barangay Sulivan, Baliuag, Bulacan (K003+770 to K004+070)",
+  "b_desc": "Construction of Flood Control Structure at Barangay Sulivan, Baliuag, Bulacan (K003+821 to K004+121)",
+  "a_contractor": "ST. MATTHEW GEN. CONTRACTOR & DEVELOPMENT CORP.",
+  "b_contractor": "M3 KONSTRACT CORPORATION (FORMERLY:MARGARITA CONSTRUCTION)"
+ },
+ {
+  "a": "23AG0024",
+  "b": "24AG0017",
+  "overlap_m": 244,
+  "a_range": [
+   2019.5,
+   2536.1
+  ],
+  "b_range": [
+   2059.0,
+   2303.0
+  ],
+  "a_year": 2023,
+  "b_year": 2024,
+  "a_cost": 77200000.0,
+  "b_cost": 49000000.0,
+  "province": "Pangasinan",
+  "muni": "Agno",
+  "place": "aloleng",
+  "a_desc": "Construction of Flood Mitigation Structure along Balingcaguing River (Aloleng Section), Sta. 002+019.5 - Sta. 002+536.1, Barangay Aloleng, Agno, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Facilities along Balingcaguing River (Aloleng Section), Sta. 002+059 - Sta. 002+303, Barangay Aloleng, Agno, Pangasinan",
+  "a_contractor": "SAMANTHA ENTERPRISES / ALCEL CONSTRUCTION",
+  "b_contractor": "JONIK TRADING & CONSTRUCTION"
+ },
+ {
+  "a": "22MC0061",
+  "b": "23M00018",
+  "overlap_m": 227,
+  "a_range": [
+   51575.0,
+   51802.27
+  ],
+  "b_range": [
+   51575.0,
+   51938.64
+  ],
+  "a_year": 2022,
+  "b_year": 2023,
+  "a_cost": 49000000.0,
+  "b_cost": 77173242.35,
+  "province": "Cotabato (North Cotabato)",
+  "muni": "Magpet (Cotabato (North Cotabato))",
+  "place": "doles",
+  "a_desc": "Construction of Kabacan River Flood Control, Barangay Doles, Magpet, Cotabato, Sta. 51 + 575 to Sta. 51 + 802.27",
+  "b_desc": "Construction of Flood Control Dike along Kabacan River L/S, Sta. 51 + 575 - Sta. 51 + 938.64, Barangay Doles, Magpet, North Cotabato",
+  "a_contractor": "MARCUS CONSTRUCTION & SUPPLY",
+  "b_contractor": "MARCUS CONSTRUCTION & SUPPLY"
+ },
+ {
+  "a": "21LB0248",
+  "b": "21LB0247",
+  "overlap_m": 225,
+  "a_range": [
+   0.0,
+   460.0
+  ],
+  "b_range": [
+   180.0,
+   405.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 96500000.0,
+  "b_cost": 96500000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "talomoriver",
+  "a_desc": "Construction of Revetment along Talomo River, Sta. 0+000 - Sta. 0+213, Sta. 0+405 - Sta. 0+460,Left Bank, Davao City",
+  "b_desc": "Construction of Revetment along Talomo River, NHA Bangkal Section, Sta. 0+180 - Sta. 0+405, Left Bank, Davao City",
+  "a_contractor": "MONOLITHIC CONSTRUCTION & CONCRETE PRODUCTS, INC.",
+  "b_contractor": "KODUS PEERS CONSTRUCTION CORPORATION / RELY CONSTRUCTION & SUPPLY INC.(FORMERLY: RELY CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "23OD0214",
+  "b": "23OD0215",
+  "overlap_m": 223,
+  "a_range": [
+   0.0,
+   223.0
+  ],
+  "b_range": [
+   0.0,
+   223.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 47813558.33,
+  "b_cost": 47842662.41,
+  "province": "Caloocan City",
+  "muni": "Caloocan City",
+  "place": "camarincreek",
+  "a_desc": "Construction of Flood Control Wall along Camarin Creek (Left Side) Brgy. 178 and 180, Sta. 0+000 to Sta. 0+223, Caloocan City",
+  "b_desc": "Construction of Flood Control Wall along Camarin Creek (Right Side) Brgy. 178 and 180, Sta. 0+000 to Sta. 0+223, Caloocan City",
+  "a_contractor": "JAGONBUILD CONSTRUCTION CORP. (FOR. JAGON BUILDERS",
+  "b_contractor": "IM CONSTRUCTION CORPORATION"
+ },
+ {
+  "a": "23KF0122",
+  "b": "22K00091",
+  "overlap_m": 215,
+  "a_range": [
+   0.0,
+   215.0
+  ],
+  "b_range": [
+   0.0,
+   304.486
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 48448879.15,
+  "b_cost": 99395118.03,
+  "province": "Lanao Del Norte",
+  "muni": "Lala",
+  "place": "maranding",
+  "a_desc": "Construction of Protection work/Revetment along Maranding River Downstream, Sta.0+000 - Sta.0+215, Barangay Maranding, Lala, Lanao del Norte",
+  "b_desc": "Construction of Flood Control Structure along Maranding River, Brgy. Maranding, Package 2, Sta. 0+000.00 - Sta. 0+304.486, Lala, Lanao del Norte",
+  "a_contractor": "LANAO BUILDER AND ENTERPRISES",
+  "b_contractor": "KOUZBARY BUILDERS / AL-NOORWAY CORPORATION"
+ },
+ {
+  "a": "22IC0067",
+  "b": "22IC0068",
+  "overlap_m": 213,
+  "a_range": [
+   27037.0,
+   27350.0
+  ],
+  "b_range": [
+   27137.0,
+   27450.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 29350002.32,
+  "b_cost": 24444842.56,
+  "province": "Leyte",
+  "muni": "Alangalang",
+  "place": "dapdap",
+  "a_desc": "Construction of Flood Control along Dapdap River (Sta. 27+037 - Sta. 27+350, Right Side), Brgy. Dapdap, Alangalang, Leyte",
+  "b_desc": "Construction of Flood Control along Dapdap River (Sta. 27+137 - Sta. 27+450, Left Side), Brgy. Dapdap, Alangalang, Leyte",
+  "a_contractor": "VHITS D. G. BUILDERS & ENTERPRISES",
+  "b_contractor": "A2C ENTERPRISES INC. (FORMERLY: M.G. CORPIN CONSTRUCTION)"
+ },
+ {
+  "a": "21LB0251",
+  "b": "21LB0296",
+  "overlap_m": 205,
+  "a_range": [
+   3542.0,
+   3747.0
+  ],
+  "b_range": [
+   3542.0,
+   3817.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 65369100.0,
+  "b_cost": 88780000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "talomoriver",
+  "a_desc": "Construction of Revetment along Talomo River, Sta. 3+542 to Sta. 3+747, Left Bank, Davao City",
+  "b_desc": "Construction of Revetment along Talomo River, Sta. 3 + 542 to Sta. 3 + 817, Right Bank, Davao City",
+  "a_contractor": "GENESIS88 CONSTRUCTION INC.",
+  "b_contractor": "GENESIS88 CONSTRUCTION INC."
+ },
+ {
+  "a": "22CM0057",
+  "b": "22CM0066",
+  "overlap_m": 200,
+  "a_range": [
+   2670.0,
+   2920.0
+  ],
+  "b_range": [
+   2720.0,
+   3045.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48249970.41,
+  "b_cost": 77199586.11,
+  "province": "Zambales",
+  "muni": "Olongapo City",
+  "place": "kalaklanriver",
+  "a_desc": "Construction of Flood Mitigation Structure and Drainage Structure along Kalaklan River, Sta. 2 + 670 - Sta. 2 + 920, Olongapo City, Zambales",
+  "b_desc": "Rehabilitation of Kalaklan River, Sta. 2+720 - Sta. 3+045 (Right Side), Olongapo City",
+  "a_contractor": "GCLT CONSTRUCTION INCORPORATED (FORMERLY: GCLT CONSTRUCTION)",
+  "b_contractor": "STO. CRISTO CONSTRUCTION & TRADING INC. (FOR: STO. CRISTO CONSTRUCTION & TRADING)"
+ },
+ {
+  "a": "22PB0004",
+  "b": "22PB0005",
+  "overlap_m": 200,
+  "a_range": [
+   39693.0,
+   39893.0
+  ],
+  "b_range": [
+   39693.0,
+   39993.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 15680000.0,
+  "b_cost": 22928490.31,
+  "province": "Apayao",
+  "muni": "Conner",
+  "place": "ili",
+  "a_desc": "Construction of Barren River (Upstream) Flood Control Structure, Sta. 39 + 693 - Sta. 39 + 893 (R/S), Brgy. Ili, Conner, Apayao",
+  "b_desc": "Construction of Barren River (Upstream) Flood Control Structure, Sta. 39 + 693 - Sta. 39 + 993 (L/S), Brgy. Ili, Conner, Apayao",
+  "a_contractor": "BAHRAMLEY CONSTRUCTION",
+  "b_contractor": "PRIME MASTER CONST. AND DEV'T. CORP."
+ },
+ {
+  "a": "22BE0012",
+  "b": "22BE0004",
+  "overlap_m": 197,
+  "a_range": [
+   257.0,
+   477.0
+  ],
+  "b_range": [
+   280.0,
+   498.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48969896.0,
+  "b_cost": 48970580.36,
+  "province": "Isabela",
+  "muni": "Santo Tomas",
+  "place": "cagayanriver",
+  "a_desc": "Construction of Flood Mitigation Structure along Cagayan River - Phase II (Sta. 0+257 - Sta. 0+477), Malapagay, Sto. Tomas, Isabela",
+  "b_desc": "Construction of Flood Mitigation Structure along Cagayan River - Phase II (Sta. 0+280 - Sta. 0+498), Uauang Tuliao, Sto. Tomas, Isabela",
+  "a_contractor": "DRAGON TWELVE BUILDERS & CONSTRUCTION SUPPLY",
+  "b_contractor": "DRAGON TWELVE BUILDERS & CONSTRUCTION SUPPLY"
+ },
+ {
+  "a": "22ID0030",
+  "b": "22ID0038",
+  "overlap_m": 190,
+  "a_range": [
+   0.0,
+   350.0
+  ],
+  "b_range": [
+   160.0,
+   460.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48991679.56,
+  "b_cost": 48991275.51,
+  "province": "Leyte",
+  "muni": "Dagami",
+  "place": "balilit",
+  "a_desc": "Construction of Binahaan Flood Control Structure and Drainage System, Binahaan River Basin, Sta. 0+000 - Sta. 0+350 (Downstream), Brgy. Balilit, Dagami, Leyte",
+  "b_desc": "Construction of Binahaan Flood Control Structure and Drainage System, Binahaan River Basin, Sta. 0+160 - Sta. 0+460 (Upstream), Brgy. Balilit, Dagami, Leyte",
+  "a_contractor": "LANOY CONSTRUCTION",
+  "b_contractor": "LANOY CONSTRUCTION"
+ },
+ {
+  "a": "20LB0170",
+  "b": "20LB0170",
+  "overlap_m": 190,
+  "a_range": [
+   2983.0,
+   3173.0
+  ],
+  "b_range": [
+   2983.0,
+   3173.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 26055000.0,
+  "b_cost": 26055000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 2+983 to Sta. 3+173, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 2+983 to Sta. 3+173, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "23HO0232",
+  "b": "23HO0239",
+  "overlap_m": 182,
+  "a_range": [
+   0.0,
+   182.0
+  ],
+  "b_range": [
+   0.0,
+   207.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 71744573.2,
+  "b_cost": 81431510.0,
+  "province": "Cebu",
+  "muni": "Badian",
+  "place": "damagedmatutinaoriver",
+  "a_desc": "Repair/ Rehabilitation/ Reconstruction of Damaged Matutinao River Flood Control System (Upstream Section 1), Badian, Cebu, Sta. 0+000.00 to Sta. 0+182.00",
+  "b_desc": "Repair/ Rehabilitation/ Reconstruction of Damaged Matutinao River Flood Control System (Upstream-Section 2), Badian, Cebu, Sta. 0+000.00 to sta. 0+207.00",
+  "a_contractor": "WTG CONSTRUCTION & DEVELOPMENT CORPORATION",
+  "b_contractor": "WTG CONSTRUCTION & DEVELOPMENT CORPORATION"
+ },
+ {
+  "a": "23PD0055",
+  "b": "24PD0027",
+  "overlap_m": 173,
+  "a_range": [
+   0.0,
+   1400.0
+  ],
+  "b_range": [
+   620.0,
+   793.0
+  ],
+  "a_year": 2023,
+  "b_year": 2024,
+  "a_cost": 82025000.0,
+  "b_cost": 49000000.0,
+  "province": "Benguet",
+  "muni": "Baguio City",
+  "place": "baliliriver",
+  "a_desc": "Construction of Flood Mitigation Facilities/Drainage System along Balili River (Main) Sta. 0 + 000 - Sta. 1 + 400, Baguio City",
+  "b_desc": "Construction of Flood Mitigation Structure along Balili River (Tributaries) (Sta 0+620 - Sta 0+793), Baguio City",
+  "a_contractor": "GOLDRICH CONSTRUCTION & TRADING",
+  "b_contractor": "GOLDRICH CONSTRUCTION & TRADING"
+ },
+ {
+  "a": "24CK0027",
+  "b": "22CK0081",
+  "overlap_m": 170,
+  "a_range": [
+   1637.0,
+   2376.0
+  ],
+  "b_range": [
+   2206.0,
+   2688.0
+  ],
+  "a_year": 2024,
+  "b_year": 2022,
+  "a_cost": 46749922.54,
+  "b_cost": 60202410.54,
+  "province": "Tarlac",
+  "muni": "Concepcion",
+  "place": "lucungriver",
+  "a_desc": "Rehabilitation of Existing Dike along Lucung River (Malupa Section, Left Bank), Sta. 1+637 to Sta. 1+674 and Sta. 2+196 to Sta. 2+376, Concepcion, Tarlac",
+  "b_desc": "Rehabilitation of Dike along Lucung River, (Malupa Section, Right Bank), Concepcion, Tarlac (Sta. 2+206 to Sta. 2+688)",
+  "a_contractor": "RAIK CONSTRUCTION AND DEVELOPMENT CORPORATION (FORMERLY: RAIK CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "HIGH STRENGTH DEV. CORPORATION / T2B3 BUILDERS AND SUPPLIES CORP."
+ },
+ {
+  "a": "23AG0022",
+  "b": "24AG0010",
+  "overlap_m": 167,
+  "a_range": [
+   9912.0,
+   10692.0
+  ],
+  "b_range": [
+   10525.0,
+   10925.0
+  ],
+  "a_year": 2023,
+  "b_year": 2024,
+  "a_cost": 72375000.0,
+  "b_cost": 96500000.0,
+  "province": "Pangasinan",
+  "muni": "Alaminos",
+  "place": "pogo",
+  "a_desc": "Construction of Flood Mitigation Structure along Alaminos River (Pogo Section), Sta. 009 + 912 - Sta. 010 + 692, Barangay Pogo, Alaminos City, Pangasinan",
+  "b_desc": "Construction of Flood Mitigation Structure along Alaminos River (Pogo Section), Sta. 010+525 - Sta. 010+925, Barangay Pogo, Alaminos City, Pangasinan",
+  "a_contractor": "CDC CONSTRUCTION & SUPPLIES",
+  "b_contractor": "CHIARA2300 INCORPORATED / EJR BUILDERS & CONSTRUCTION SUPPLY"
+ },
+ {
+  "a": "20LB0027",
+  "b": "20LB0253",
+  "overlap_m": 155,
+  "a_range": [
+   3060.0,
+   3520.0
+  ],
+  "b_range": [
+   3365.0,
+   3620.0
+  ],
+  "a_year": 2020,
+  "b_year": 2020,
+  "a_cost": 86136865.0,
+  "b_cost": 38600000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+365 to Sta. 3+620, Davao City",
+  "a_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0027",
+  "b": "20LB0253",
+  "overlap_m": 155,
+  "a_range": [
+   3060.0,
+   3520.0
+  ],
+  "b_range": [
+   3365.0,
+   3620.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 86136865.0,
+  "b_cost": 38600000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+365 to Sta. 3+620, Davao City",
+  "a_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0027",
+  "b": "20LB0253",
+  "overlap_m": 155,
+  "a_range": [
+   3060.0,
+   3520.0
+  ],
+  "b_range": [
+   3365.0,
+   3620.0
+  ],
+  "a_year": 2021,
+  "b_year": 2020,
+  "a_cost": 86136865.0,
+  "b_cost": 38600000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+365 to Sta. 3+620, Davao City",
+  "a_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0027",
+  "b": "20LB0253",
+  "overlap_m": 155,
+  "a_range": [
+   3060.0,
+   3520.0
+  ],
+  "b_range": [
+   3365.0,
+   3620.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 86136865.0,
+  "b_cost": 38600000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+365 to Sta. 3+620, Davao City",
+  "a_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION",
+  "b_contractor": "ABU CONSTRUCTION"
+ },
+ {
+  "a": "23CC0142",
+  "b": "23CC0085",
+  "overlap_m": 150,
+  "a_range": [
+   2850.0,
+   3210.0
+  ],
+  "b_range": [
+   3060.0,
+   3420.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 48249480.18,
+  "b_cost": 96499860.92,
+  "province": "Bulacan",
+  "muni": "Guiguinto",
+  "place": "guiguintoriver",
+  "a_desc": "Construction of Concrete Slope Protection along Guiguinto River Tabang (Tributary) Section, K002 + 850 - K003 + 210, Guiguinto, Bulacan",
+  "b_desc": "Construction of Riverwall along Guiguinto River, Daungan Section, Sta. 03+060 to Sta. 03+420, Guiguinto, Bulacan",
+  "a_contractor": "GREAT PACIFIC BUILDERS AND GEN. CONTRACTOR INC.",
+  "b_contractor": "WAWAO BUILDERS"
+ },
+ {
+  "a": "23CC0129",
+  "b": "22CC0234",
+  "overlap_m": 150,
+  "a_range": [
+   1000.0,
+   1400.0
+  ],
+  "b_range": [
+   1120.0,
+   1270.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 96499420.64,
+  "b_cost": 25479994.08,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "piel",
+  "a_desc": "Construction of River Control Project at Barangay Piel, Sta. 01+000 to Sta. 01+400, Baliuag, Bulacan",
+  "b_desc": "Construction of Flood Control Structure, Sta. 01 + 120 - Sta. 01 + 270, Brgy. Piel, Baliuag, Bulacan",
+  "a_contractor": "L.R. TIQUI BUILDERS, INC.",
+  "b_contractor": "TOPNOTCH CATALYST BUILDERS INC."
+ },
+ {
+  "a": "24CD0097",
+  "b": "24CD0096",
+  "overlap_m": 150,
+  "a_range": [
+   2200.0,
+   2350.0
+  ],
+  "b_range": [
+   2200.0,
+   2350.0
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 96499969.85,
+  "b_cost": 96499989.7,
+  "province": "Bulacan",
+  "muni": "Meycauayan",
+  "place": "ubihan",
+  "a_desc": "Construction of Flood Control Structure along Bocaue - Santa Maria River, Sta. 02 + 200 - Sta. 02 + 350 (Phase 2), Barangay Ubihan, Meycauayan, Bulacan",
+  "b_desc": "Construction of Flood Control Structure along Bocaue -Santa Maria River, Sta 02 + 200 - Sta 02 + 350 (Phase 1), Barangay Ubihan, Meycauayan, Bulacan",
+  "a_contractor": "M3 KONSTRACT CORPORATION (FORMERLY:MARGARITA CONSTRUCTION)",
+  "b_contractor": "M3 KONSTRACT CORPORATION (FORMERLY:MARGARITA CONSTRUCTION)"
+ },
+ {
+  "a": "22BE0008",
+  "b": "22BE0007",
+  "overlap_m": 150,
+  "a_range": [
+   0.0,
+   215.0
+  ],
+  "b_range": [
+   0.0,
+   150.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48970329.5,
+  "b_cost": 44072412.5,
+  "province": "Isabela",
+  "muni": "Santo Tomas",
+  "place": "cagayanriver",
+  "a_desc": "Construction of Flood Mitigation Structure along Cagayan River - Phase II (Sta. 0+000 - Sta. 0+215), Uauang Galicia, Sto. Tomas, Isabela",
+  "b_desc": "Construction of Flood Mitigation Structure along Cagayan River (Sta. 0+000 - Sta. 0+150), Bagutari, Sto. Tomas, Isabela",
+  "a_contractor": "DRAGON TWELVE BUILDERS & CONSTRUCTION SUPPLY",
+  "b_contractor": "DRAGON TWELVE BUILDERS & CONSTRUCTION SUPPLY"
+ },
+ {
+  "a": "23CC0224",
+  "b": "23CC0078",
+  "overlap_m": 140,
+  "a_range": [
+   14770.0,
+   14920.0
+  ],
+  "b_range": [
+   14780.0,
+   14985.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 72374635.68,
+  "b_cost": 57899547.58,
+  "province": "Bulacan",
+  "muni": "Balagtas",
+  "place": "balagtasriver",
+  "a_desc": "Construction of Flood Control Structure along Balagtas River, Panginay (LS), Balagtas, Bulacan (K014+770 to K014+920)",
+  "b_desc": "Construction of Concrete Revetment along Balagtas River Sta. 14 + 780 - Sta. 14 + 985, Panginay Section, Balagtas, Bulacan",
+  "a_contractor": "M.S. RAMOS CONSTRUCTION INC. (FORMERLY: M.S. RAMOS",
+  "b_contractor": "RDBT CONSTRUCTION CORP. / C.B. GARAY PHILWIDE BUILDERS"
+ },
+ {
+  "a": "21LB0252",
+  "b": "21LB0253",
+  "overlap_m": 135,
+  "a_range": [
+   3747.0,
+   3952.0
+  ],
+  "b_range": [
+   3817.0,
+   4022.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 65427000.0,
+  "b_cost": 64848000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "talomoriver",
+  "a_desc": "Construction of Revetment along Talomo River, Sta. 3+747 to Sta. 3+952, Left Bank, Davao City",
+  "b_desc": "Construction of Revetment along Talomo River, Sta. 3+817 to Sta. 4+022, Right Bank, Davao City",
+  "a_contractor": "GENESIS88 CONSTRUCTION INC.",
+  "b_contractor": "GENESIS88 CONSTRUCTION INC."
+ },
+ {
+  "a": "23HO0229",
+  "b": "22HO0048",
+  "overlap_m": 131,
+  "a_range": [
+   0.0,
+   131.0
+  ],
+  "b_range": [
+   0.0,
+   700.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 94220452.01,
+  "b_cost": 96499958.77,
+  "province": "Cebu",
+  "muni": "Malabuyoc",
+  "place": "paraleriver",
+  "a_desc": "Repair/ Rehabilitation/ Reconstruction of Parale River Flood Control System (Downstream), Malabuyoc, Cebu, Sta. 0+000 to Sta. 0+131",
+  "b_desc": "Improvement of Riverbank along Parale River, Sta. 0 + 000 - Sta. 0 + 700, Malabuyoc, Cebu",
+  "a_contractor": "QM BUILDERS",
+  "b_contractor": "QM BUILDERS"
+ },
+ {
+  "a": "22CC0289",
+  "b": "23CC0122",
+  "overlap_m": 123,
+  "a_range": [
+   413.0,
+   738.0
+  ],
+  "b_range": [
+   615.0,
+   845.0
+  ],
+  "a_year": 2022,
+  "b_year": 2023,
+  "a_cost": 48999749.14,
+  "b_cost": 48992852.15,
+  "province": "Bulacan",
+  "muni": "Bustos",
+  "place": "angatriver",
+  "a_desc": "Construction of Flood Control Structure along Angat River, Sta. 0 + 413 - Sta. 0 + 738, Tibagan Section, Bustos, Bulacan",
+  "b_desc": "Construction of River Control Project along Angat River, Tibagan Section, Sta. 00+615 - Sta. 00+845, Bustos, Bulacan",
+  "a_contractor": "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)",
+  "b_contractor": "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)"
+ },
+ {
+  "a": "21BC0070",
+  "b": "21BC0061",
+  "overlap_m": 120,
+  "a_range": [
+   12700.0,
+   13300.0
+  ],
+  "b_range": [
+   12860.0,
+   12980.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 96500000.0,
+  "b_cost": 49000000.0,
+  "province": "Cagayan",
+  "muni": "",
+  "place": "controlalongabulugriver",
+  "a_desc": "Reconstruction of Canayun-Sirit-Dana-ili Flood Control Along Abulug River , Abulug, Cagayan Sta. 12+700 - Sta. 12+860, Sta. 13+220 - Sta. 13+300 (L/S)",
+  "b_desc": "Reconstruction of Canayun-Sirit-Dana-ili Flood Control Along Abulug River , Abulug,Cagayan Sta. 12+860 - Sta.12+980(L/S)",
+  "a_contractor": "EGB CONSTRUCTION CORPORATION (FORMERLY: EGB CONSTRUCTION)",
+  "b_contractor": "EGB CONSTRUCTION CORPORATION (FORMERLY: EGB CONSTRUCTION)"
+ },
+ {
+  "a": "22CK0086",
+  "b": "24CK0074",
+  "overlap_m": 116,
+  "a_range": [
+   640.0,
+   971.0
+  ],
+  "b_range": [
+   855.0,
+   1325.47
+  ],
+  "a_year": 2022,
+  "b_year": 2024,
+  "a_cost": 40068405.31,
+  "b_cost": 96497898.96,
+  "province": "Tarlac",
+  "muni": "Concepcion",
+  "place": "lucungriver",
+  "a_desc": "Rehabilitation of Dike along Lucung River, (San Jose Section, Right Bank), Concepcion, Tarlac (Sta. 0+640 to Sta. 0+971)",
+  "b_desc": "Rehabilitation of Existing Dike along Lucung River (San Jose Section, Right Bank), Package B, Sta. 0+855.00 to Sta. 1+325.47, Concepcion, Tarlac",
+  "a_contractor": "HIGH STRENGTH DEV. CORPORATION / T2B3 BUILDERS AND SUPPLIES CORP.",
+  "b_contractor": "FLORDES CONSTRUCTION & TRADING CORP. (FORMERLY FLO"
+ },
+ {
+  "a": "20LB0170",
+  "b": "20LB0027",
+  "overlap_m": 113,
+  "a_range": [
+   2983.0,
+   3173.0
+  ],
+  "b_range": [
+   3060.0,
+   3520.0
+  ],
+  "a_year": 2020,
+  "b_year": 2020,
+  "a_cost": 26055000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 2+983 to Sta. 3+173, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0170",
+  "b": "20LB0027",
+  "overlap_m": 113,
+  "a_range": [
+   2983.0,
+   3173.0
+  ],
+  "b_range": [
+   3060.0,
+   3520.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 26055000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 2+983 to Sta. 3+173, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0170",
+  "b": "20LB0027",
+  "overlap_m": 113,
+  "a_range": [
+   2983.0,
+   3173.0
+  ],
+  "b_range": [
+   3060.0,
+   3520.0
+  ],
+  "a_year": 2021,
+  "b_year": 2020,
+  "a_cost": 26055000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 2+983 to Sta. 3+173, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION"
+ },
+ {
+  "a": "20LB0170",
+  "b": "20LB0027",
+  "overlap_m": 113,
+  "a_range": [
+   2983.0,
+   3173.0
+  ],
+  "b_range": [
+   3060.0,
+   3520.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 26055000.0,
+  "b_cost": 86136865.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "matinariver",
+  "a_desc": "Construction of Revetment along Matina River, Sta. 2+983 to Sta. 3+173, Davao City",
+  "b_desc": "Construction of Revetment along Matina River, Sta. 3+060 to Sta. 3+520, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "A.Y.U. ENGINEERING & CONSTRUCTION / ABU CONSTRUCTION"
+ },
+ {
+  "a": "24CD0004",
+  "b": "22CD0086",
+  "overlap_m": 100,
+  "a_range": [
+   3900.0,
+   4100.0
+  ],
+  "b_range": [
+   4000.0,
+   4400.0
+  ],
+  "a_year": 2024,
+  "b_year": 2022,
+  "a_cost": 67549945.46,
+  "b_cost": 96498187.66,
+  "province": "Bulacan",
+  "muni": "Meycauayan",
+  "place": "meycauayanriver",
+  "a_desc": "Construction of Flood Control Structure along Meycauayan River and Its Tributaries, Sta. 03+900 - Sta. 04+100 (Liputan - Constantino Section, Right Side), Meycauayan, Bulacan",
+  "b_desc": "Construction of Flood Mitigation Structure along Meycauayan River (Liputan - Nagbalon), Sta. 04+000 - Sta. 04+400, Meycauayan, Bulacan",
+  "a_contractor": "JB CONSTRUCTION AND SUPPLY INC. (FORMERLY:JB CONSTRUCTION AND SUPPLY)",
+  "b_contractor": "L.R. TIQUI BUILDERS, INC."
+ },
+ {
+  "a": "22NB0009",
+  "b": "22NB0011",
+  "overlap_m": 100,
+  "a_range": [
+   0.0,
+   100.0
+  ],
+  "b_range": [
+   0.0,
+   400.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 26459992.51,
+  "b_cost": 96499842.72,
+  "province": "Agusan Del Sur",
+  "muni": "Esperanza",
+  "place": "agusanriver",
+  "a_desc": "Construction of Flood Control Project (Boat landing) along Agusan River, Sta. 0+000.00 - Sta. 0+100.00, Esperanza, Agusan del Sur",
+  "b_desc": "Construction of Revetment along Agusan River Basin, Esperanza Bridge Approaches, Sta. 0+000.00 - Sta. 0+400.00, Esperanza, Agusan del Sur",
+  "a_contractor": "LM CONSTRUCTION AND GENERAL MARKETING",
+  "b_contractor": "ADFIL CORPORATION"
+ },
+ {
+  "a": "20LB0037",
+  "b": "20LB0291",
+  "overlap_m": 76,
+  "a_range": [
+   2790.0,
+   3141.0
+  ],
+  "b_range": [
+   3065.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2020,
+  "a_cost": 60296095.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 2+790 to Sta. 3+141, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "MITZ CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "20LB0037",
+  "b": "20LB0291",
+  "overlap_m": 76,
+  "a_range": [
+   2790.0,
+   3141.0
+  ],
+  "b_range": [
+   3065.0,
+   3440.0
+  ],
+  "a_year": 2020,
+  "b_year": 2021,
+  "a_cost": 60296095.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 2+790 to Sta. 3+141, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "MITZ CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "20LB0037",
+  "b": "20LB0291",
+  "overlap_m": 76,
+  "a_range": [
+   2790.0,
+   3141.0
+  ],
+  "b_range": [
+   3065.0,
+   3440.0
+  ],
+  "a_year": 2021,
+  "b_year": 2020,
+  "a_cost": 60296095.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 2+790 to Sta. 3+141, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "MITZ CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "20LB0037",
+  "b": "20LB0291",
+  "overlap_m": 76,
+  "a_range": [
+   2790.0,
+   3141.0
+  ],
+  "b_range": [
+   3065.0,
+   3440.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 60296095.0,
+  "b_cost": 28950000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "davaoriver",
+  "a_desc": "Construction of Revetment along Davao River, Sta. 2+790 to Sta. 3+141, Davao City",
+  "b_desc": "Construction of Revetment along Davao River, Sta. 3+065 to Sta. 3+440, Davao City",
+  "a_contractor": "ABU CONSTRUCTION",
+  "b_contractor": "MITZ CONSTRUCTION AND SUPPLY"
+ },
+ {
+  "a": "23CC0209",
+  "b": "23CC0092",
+  "overlap_m": 74,
+  "a_range": [
+   13060.0,
+   13164.0
+  ],
+  "b_range": [
+   13090.0,
+   13295.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 48998428.1,
+  "b_cost": 96499913.18,
+  "province": "Bulacan",
+  "muni": "Balagtas",
+  "place": "balagtasriver",
+  "a_desc": "Construction of River Protection along Balagtas River, K013 + 060 to K013 + 164, San Juan Section, Balagtas, Bulacan",
+  "b_desc": "Construction of River Control Project along Balagtas River, Panginay (LS), Sta. 13+090 - Sta. 13+295, Balagtas, Bulacan",
+  "a_contractor": "11-16 CONSTRUCTION",
+  "b_contractor": "AZUL BUILDERS / JB CONSTRUCTION AND SUPPLY INC. (FORMERLY:JB CONSTRUCTION AND SUPPLY)"
+ },
+ {
+  "a": "21LB0296",
+  "b": "21LB0252",
+  "overlap_m": 70,
+  "a_range": [
+   3542.0,
+   3817.0
+  ],
+  "b_range": [
+   3747.0,
+   3952.0
+  ],
+  "a_year": 2021,
+  "b_year": 2021,
+  "a_cost": 88780000.0,
+  "b_cost": 65427000.0,
+  "province": "Davao Del Sur",
+  "muni": "",
+  "place": "talomoriver",
+  "a_desc": "Construction of Revetment along Talomo River, Sta. 3 + 542 to Sta. 3 + 817, Right Bank, Davao City",
+  "b_desc": "Construction of Revetment along Talomo River, Sta. 3+747 to Sta. 3+952, Left Bank, Davao City",
+  "a_contractor": "GENESIS88 CONSTRUCTION INC.",
+  "b_contractor": "GENESIS88 CONSTRUCTION INC."
+ },
+ {
+  "a": "22NB0004",
+  "b": "22NB0005",
+  "overlap_m": 66,
+  "a_range": [
+   0.0,
+   124.0
+  ],
+  "b_range": [
+   0.0,
+   66.4
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 11759997.45,
+  "b_cost": 45079929.26,
+  "province": "Agusan Del Sur",
+  "muni": "Prosperidad",
+  "place": "sianibriver",
+  "a_desc": "Construction of Bank Protection of Sianib River along Daang Maharlika (Agusan-Davao Section), Sta. 0+000.00 - Sta. 0+124.00, Prosperidad, Agusan del Sur",
+  "b_desc": "Construction of Bank Protection of Sianib River along Daang Maharlika (Agusan-Davao Section), Sta. 0+000.00 - Sta. 0+350.00 Upstream, Sta. 0+000.00 - Sta. 0+066.40 Downstream, Prosperidad, Agusan del Sur",
+  "a_contractor": "DAVE CONSTRUCTION",
+  "b_contractor": "EQUI-PARCO CONSTRUCTION COMPANY"
+ },
+ {
+  "a": "23CC0254",
+  "b": "23CC0255",
+  "overlap_m": 62,
+  "a_range": [
+   1062.0,
+   1362.0
+  ],
+  "b_range": [
+   1300.0,
+   1600.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 72372354.56,
+  "b_cost": 72373859.53,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "sanroque",
+  "a_desc": "Construction of Flood Control Structure at Barangay San Roque, Baliuag, Bulacan (K001+062 to K001+362)",
+  "b_desc": "Construction of Flood Control Structure at Barangay San Roque, Baliuag, Bulacan (K001+300 to K001+600)",
+  "a_contractor": "WAWAO BUILDERS",
+  "b_contractor": "WAWAO BUILDERS / DRJY CONSTRUCTION"
+ },
+ {
+  "a": "23HO0231",
+  "b": "23HO0240",
+  "overlap_m": 57,
+  "a_range": [
+   45.0,
+   162.0
+  ],
+  "b_range": [
+   45.0,
+   102.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 87599384.57,
+  "b_cost": 44812058.15,
+  "province": "Cebu",
+  "muni": "Malabuyoc",
+  "place": "damagedsaliringriver",
+  "a_desc": "Repair/ Rehabilitation/ Reconstruction of Damaged Saliring River Flood Control System (Upstream), Malabuyoc, Cebu, Sta. 0+045 to Sta. 0+162",
+  "b_desc": "Repair/ Rehabilitation/ Reconstruction of Damaged Saliring River Flood Control System (Downstream), Malabuyoc, Cebu, Sta. 0+045 to Sta. 0+102",
+  "a_contractor": "QM BUILDERS",
+  "b_contractor": "QM BUILDERS"
+ },
+ {
+  "a": "22CC0037",
+  "b": "22CC0035",
+  "overlap_m": 53,
+  "a_range": [
+   475.0,
+   829.0
+  ],
+  "b_range": [
+   776.0,
+   1372.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 47039817.09,
+  "b_cost": 45079869.08,
+  "province": "Bulacan",
+  "muni": "Balagtas",
+  "place": "panginay",
+  "a_desc": "Construction of Flood Control Structures along Balagtas River, Sta. 0 + 475 - Sta. 0 + 829, Barangay Panginay, Balagtas, Bulacan",
+  "b_desc": "Construction of Flood Control Structure along Balagtas River (Sta. 0 + 776 to Sta. 1 + 372), Barangay Panginay, Balagtas, Bulacan",
+  "a_contractor": "M.C.J. VALENZUELA CONSTRUCTION ENTERPRISES",
+  "b_contractor": "TOPNOTCH CATALYST BUILDERS INC. / BLACK HARDHAT INC. (FORMERLY: JCHARDHAT INC.)"
+ },
+ {
+  "a": "23CC0269",
+  "b": "23CC0270",
+  "overlap_m": 50,
+  "a_range": [
+   3480.0,
+   3740.0
+  ],
+  "b_range": [
+   3690.0,
+   3990.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 77199243.03,
+  "b_cost": 72374362.28,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "piel",
+  "a_desc": "Construction of Flood Control System at Barangay Piel, Baliuag, Bulacan (Sta. 03+480 to Sta. 03+740)",
+  "b_desc": "Construction of Flood Control Structure at Barangay Piel, Baliuag, Bulacan (K003+690 to K003+990)",
+  "a_contractor": "MICHARIAN BUILDERS AND TRADING",
+  "b_contractor": "ST. MATTHEW GEN. CONTRACTOR & DEVELOPMENT CORP."
+ },
+ {
+  "a": "23CC0268",
+  "b": "23CC0279",
+  "overlap_m": 50,
+  "a_range": [
+   3560.0,
+   3820.0
+  ],
+  "b_range": [
+   3770.0,
+   4070.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 77198358.83,
+  "b_cost": 72374149.96,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "sulivan",
+  "a_desc": "Construction of Flood Control System at Barangay Sulivan, Baliuag, Bulacan (Sta. 03+560 to Sta. 03+820)",
+  "b_desc": "Construction of Flood Control Structure at Barangay Sulivan, Baliuag, Bulacan (K003+770 to K004+070)",
+  "a_contractor": "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)",
+  "b_contractor": "ST. MATTHEW GEN. CONTRACTOR & DEVELOPMENT CORP."
+ },
+ {
+  "a": "23CC0257",
+  "b": "23CC0256",
+  "overlap_m": 50,
+  "a_range": [
+   4320.0,
+   4580.0
+  ],
+  "b_range": [
+   4530.0,
+   4830.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 77198159.93,
+  "b_cost": 72374165.79,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "hinukay",
+  "a_desc": "Construction of Flood Control System at Barangay Hinukay, Baliuag, Bulacan (Sta. 04+320 to Sta. 04+580)",
+  "b_desc": "Construction of Flood Control Structure at Barangay Hinukay, Baliuag, Bulacan (K004+530 to K004+830)",
+  "a_contractor": "TRIPLE 8 CONSTRUCTION & SUPPLY, INC. (FORMERLY TRIPLE 8 CONST. & SUPPLY)",
+  "b_contractor": "YPR GEN. CONTRACTOR AND CONSTRUCTION SUPPLY INC."
+ },
+ {
+  "a": "23DM0044",
+  "b": "22DM0039",
+  "overlap_m": 50,
+  "a_range": [
+   3250.0,
+   3675.0
+  ],
+  "b_range": [
+   3625.0,
+   4000.0
+  ],
+  "a_year": 2023,
+  "b_year": 2022,
+  "a_cost": 77200000.0,
+  "b_cost": 68997500.0,
+  "province": "Quezon",
+  "muni": "Catanauan",
+  "place": "catanauanriver",
+  "a_desc": "Construction of Flood Control Structure along Catanauan River, Sta. 3 + 250 - Sta. 3 + 675, Right Side, Catanauan, Quezon",
+  "b_desc": "Construction of Flood Control Structure along Catanauan River (Sta. 3+625 - Sta. 4+000) Catanauan, Quezon",
+  "a_contractor": "R.A. MENDIOLA CONSTRUCTION & DEVELOPER",
+  "b_contractor": "RAPID FOREMOST CONST. CO. / JELCON-CONSTRUCTION AND TRADING CORPORATION"
+ },
+ {
+  "a": "23CC0267",
+  "b": "23CC0250",
+  "overlap_m": 40,
+  "a_range": [
+   2900.0,
+   3160.0
+  ],
+  "b_range": [
+   3120.0,
+   3420.0
+  ],
+  "a_year": 2023,
+  "b_year": 2023,
+  "a_cost": 77188797.98,
+  "b_cost": 72374463.63,
+  "province": "Bulacan",
+  "muni": "Baliuag",
+  "place": "pagala",
+  "a_desc": "Construction of Flood Control System at Barangay Pagala, Baliuag, Bulacan (Sta. 02+900 to Sta. 03+160)",
+  "b_desc": "Construction of Flood Control Structure at Barangay Pagala, Baliuag, Bulacan (K003+120 to K003+420)",
+  "a_contractor": "DARCY & ANNA BUILDERS & TRADING",
+  "b_contractor": "GREAT PACIFIC BUILDERS AND GEN. CONTRACTOR INC."
+ },
+ {
+  "a": "22HF0054",
+  "b": "22HF0037",
+  "overlap_m": 40,
+  "a_range": [
+   5587.0,
+   6240.0
+  ],
+  "b_range": [
+   6200.0,
+   6398.0
+  ],
+  "a_year": 2022,
+  "b_year": 2022,
+  "a_cost": 48696738.3,
+  "b_cost": 48998099.5,
+  "province": "Cebu",
+  "muni": "Tuburan",
+  "place": "alegria",
+  "a_desc": "Construction of Flood Mitigation Structure at Barangay Alegria, Sta. 5+587 - Sta. 6+240, Tuburan, Cebu",
+  "b_desc": "Construction of Flood Mitigation Structure at Barangay Alegria, Sta. 6+200 - Sta. 6+398, Tuburan, Cebu",
+  "a_contractor": "VEN RAY CONSTRUCTION CORPORATION",
+  "b_contractor": "HELM CONSTRUCTION & SUPPLIES"
+ },
+ {
+  "a": "24CK0035",
+  "b": "24CK0037",
+  "overlap_m": 37,
+  "a_range": [
+   991.76,
+   1489.18
+  ],
+  "b_range": [
+   1451.91,
+   1823.05
+  ],
+  "a_year": 2024,
+  "b_year": 2024,
+  "a_cost": 96492882.96,
+  "b_cost": 96497531.14,
+  "province": "Tarlac",
+  "muni": "Capas",
+  "place": "donnellriver",
+  "a_desc": "Rehabilitation of Dike along O'Donnell River, (Downstream of Palublub Bridge, Left Bank), Phase 3, Sta. 0 + 991.76 to Sta. 1 + 489.18, Capas, Tarlac",
+  "b_desc": "Rehabilitation of Dike along O'Donnell River, Downstream of Palublub Bridge, Right Bank, Lawy Section, Phase 2, Sta. 1+451.91 to Sta. 1+823.05, Capas, Tarlac",
+  "a_contractor": "ROYAL CROWN MONARCH CONSTRUCTION & SUPPLIES CORP.",
+  "b_contractor": "ROYAL CROWN MONARCH CONSTRUCTION & SUPPLIES CORP."
+ }
+]

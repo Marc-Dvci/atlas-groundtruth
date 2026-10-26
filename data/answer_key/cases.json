@@ -1,0 +1,129 @@
+{
+  "_about": "Official findings on named flood-control projects, matched to contract IDs. Built from research/R6_project_data.md (26 Oct 2026). 'match' says how sure the contract-ID match is: exact = cost to the centavo; strong = contractor + barangay + cost; candidate = plausible, other contracts could fit. 'expected' lists the Atlas outcomes consistent with the official finding. Atlas never sees this file while it audits; it is read only by the evaluation.",
+  "cases": [
+    {
+      "id": "25CC0252",
+      "match": "exact",
+      "finding": "ghost",
+      "expected": ["probable_ghost"],
+      "who": "President Marcos, on-site inspection",
+      "date": "2025-08-20",
+      "declared_complete": "2025-08-20",
+      "declared_basis": "Recorded as completed on the President's portal when inspected (SunStar, 20 Aug 2025)",
+      "quote": "Imagine, not even 220 meters, yet Public Works recorded P55 million as completed, but not a single thing was done.",
+      "sources": ["https://www.sunstar.com.ph/manila/marcos-inspects-confirms-ghost-flood-project-in-bulacan"]
+    },
+    {
+      "id": "24CC0045",
+      "match": "strong",
+      "finding": "existed_before_contract",
+      "expected": ["exists_before_contract", "relocated"],
+      "who": "Commission on Audit, fraud audit report to the ICI",
+      "date": "2025-10-24",
+      "quote": "an existing flood control structure at the approved site even before the contract began",
+      "sources": ["https://www.philstar.com/nation/2025/10/24/2482242/more-fraud-reports-bulacan-flood-control-projects-filed-ici"]
+    },
+    {
+      "id": "24CC0604",
+      "match": "exact",
+      "finding": "ghost",
+      "expected": ["probable_ghost"],
+      "who": "Commission on Audit, fraud audit report to the ICI",
+      "date": "2025-10-24",
+      "quote": "Ghost; no structure found",
+      "sources": ["https://www.philstar.com/nation/2025/10/24/2482242/more-fraud-reports-bulacan-flood-control-projects-filed-ici"]
+    },
+    {
+      "id": "25CC0241",
+      "match": "exact",
+      "finding": "not_built_at_site",
+      "expected": ["probable_ghost", "relocated"],
+      "who": "Commission on Audit, fraud audit report to the ICI",
+      "date": "2025-10-24",
+      "quote": "no real construction was found at the approved site",
+      "sources": ["https://www.philstar.com/nation/2025/10/24/2482242/more-fraud-reports-bulacan-flood-control-projects-filed-ici"]
+    },
+    {
+      "id": "25CC0148",
+      "match": "exact",
+      "finding": "relocated",
+      "expected": ["relocated", "probable_ghost"],
+      "who": "Independent Commission for Infrastructure",
+      "date": "2025-11-04",
+      "declared_complete": "2025-05-31",
+      "declared_basis": "Completion certificate dated May 2025 (ICI); P67.85 m paid Mar-Jun 2025",
+      "quote": "clearly establish that the Project was never constructed at the designated location in the Approved Bid Plans",
+      "sources": ["https://www.philstar.com/headlines/2025/11/04/2484794/ici-flags-dpwh-topnotch-over-unbuilt-p72-m-bulacan-flood-control-project"]
+    },
+    {
+      "id": "24CC0055",
+      "match": "strong",
+      "finding": "relocated",
+      "expected": ["relocated", "probable_ghost"],
+      "who": "Commission on Audit, fraud audit report to the ICI",
+      "date": "2025-12-19",
+      "quote": "was built on another portion of the river",
+      "sources": ["https://www.dzrh.com.ph/post/coa-flags-peso330m-flood-control-projects-in-bulacan-ghost-illegally-transferred"]
+    },
+    {
+      "id": "24CC0032",
+      "match": "candidate",
+      "finding": "ghost",
+      "expected": ["probable_ghost", "relocated"],
+      "who": "Commission on Audit, fraud audit report to the ICI",
+      "date": "2025-12-19",
+      "quote": "No infrastructures were sighted in either of the indicated locations of the projects.",
+      "sources": ["https://www.dzrh.com.ph/post/coa-flags-peso330m-flood-control-projects-in-bulacan-ghost-illegally-transferred"]
+    },
+    {
+      "id": "23CC0156",
+      "match": "candidate",
+      "finding": "ghost",
+      "expected": ["probable_ghost"],
+      "who": "Commission on Audit; DPWH Secretary",
+      "date": "2025-12-19",
+      "quote": "no evidence of the P77.19 million flood mitigation project was found",
+      "sources": ["https://www.dzrh.com.ph/post/coa-flags-peso330m-flood-control-projects-in-bulacan-ghost-illegally-transferred"]
+    },
+    {
+      "id": "24CC0144",
+      "match": "candidate",
+      "finding": "not_built_when_declared",
+      "expected": ["probable_ghost"],
+      "who": "DPWH Secretary; Commission on Audit",
+      "date": "2025-09-10",
+      "quote": "declared finished in 2024, but work only resumed in July 2025",
+      "sources": ["https://www.sunstar.com.ph/manila/ghost-projects-in-bulacan-tied-to-dpwh-contractors"]
+    },
+    {
+      "id": "24CC0468",
+      "match": "candidate",
+      "finding": "existed_before_contract",
+      "expected": ["exists_before_contract"],
+      "who": "Commission on Audit (Feb 2026 batch, secondary source)",
+      "date": "2026-02-01",
+      "quote": "found to already exist before the contract started, was reported completed in 65 days",
+      "sources": ["https://www.mexc.com/news/723334"]
+    },
+    {
+      "id": "24CC0195",
+      "match": "candidate",
+      "finding": "ghost",
+      "expected": ["probable_ghost", "relocated"],
+      "who": "Commission on Audit (Feb 2026 batch, low-reliability repost)",
+      "date": "2026-02-01",
+      "quote": "no such structure found at the designated site despite being declared 100% complete",
+      "sources": ["https://www.mexc.com/news/723334"]
+    },
+    {
+      "id": "24CC0011",
+      "match": "candidate",
+      "finding": "ghost",
+      "expected": ["probable_ghost", "relocated"],
+      "who": "Commission on Audit, fraud audit report to the ICI",
+      "date": "2025-10-24",
+      "quote": "no structure was built at the approved site",
+      "sources": ["https://www.philstar.com/nation/2025/10/24/2482242/more-fraud-reports-bulacan-flood-control-projects-filed-ici"]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+web/node_modules/
+web/dist/
+.env
+*.log
+data/cache/
+data/evidence/
+data/runs/
+data/raw/
+data/scratch/
+data/meter.json
+data/osm/*/raw/
+data/_src_flood_watch/
+data/meter_open.json
