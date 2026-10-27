@@ -143,6 +143,11 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
           {c.frames[active]?.reading && (
             <motion.div key={active} className="reading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <div className="eyebrow">{spark} reads {c.frames[active].captured}</div>
+              {c.frames[active].reading!.banks && (
+                <div className="mono dim banks">
+                  {c.frames[active].reading!.banks!.map((b) => `${b.side}: ${b.edge}${b.structure === "no" ? "" : `, structure ${b.structure}`}`).join("  ·  ")}
+                </div>
+              )}
               <p className="prose">{c.frames[active].reading!.what_i_see}</p>
               {c.frames[active].cross && (
                 <>

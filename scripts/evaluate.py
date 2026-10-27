@@ -37,13 +37,16 @@ def score(run: str) -> dict:
         v = c.get("verdict") or {}
         oc = v.get("outcome")
         agree = oc in k["expected"]
-        # Consistent but less specific: Atlas confirms a structure the officials say predates the contract without dating
-        # it, or finds the declared site bare when certified complete (then a later change) where officials found the
-        # works missing or built at another site.
-        # A structure that predates the contract where officials found no new construction is the same fact.
-        partial = (not agree) and ((oc == "exists" and k["finding"] == "existed_before_contract")
-                                   or (oc == "built_late" and k["finding"] in ("ghost", "not_built_at_site", "relocated"))
-                                   or (oc == "exists_before_contract" and k["finding"] == "not_built_at_site"))
+        # Consistent but less specific. Every official finding here says the contract's works are not what it declared.
+        # Atlas is consistent when it flags the contract another way: the structure at the declared reach predates the
+        # contract, the reach was bare when certified, or the works stand elsewhere; or, where officials found an older
+        # structure, when it sees a structure without dating it. Atlas contradicts them when it sees the works standing
+        # after completion where officials found none, or finds the reach bare where officials saw an older structure.
+        flags = {"probable_ghost", "relocated", "built_late", "exists_before_contract"}
+        if k["finding"] == "existed_before_contract":
+            partial = (not agree) and oc == "exists"
+        else:
+            partial = (not agree) and oc in flags
         rows.append({"id": k["id"], "match": k["match"], "official": k["finding"], "who": k["who"],
                      "atlas": oc, "reason": v.get("reason"), "agree": agree, "partial": partial, "abstain": oc == "cant_verify",
                      "contradict": (not agree) and (not partial) and oc != "cant_verify", "headline": v.get("headline"),

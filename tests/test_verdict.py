@@ -104,3 +104,16 @@ def test_every_finding_gets_a_decision_with_a_reason():
     v = run(fs)
     assert len(v.decisions) == len(fs)
     assert all(d.why for d in v.decisions)
+
+
+def test_readers_that_disagree_are_not_missing_imagery():
+    f = Finding("existence", "Wayback 2025-01-10", "optical_vhr", "maxar", "2025-01-10", "inconclusive", 0.0,
+                note="readers disagree")
+    v = run([f])
+    assert (v.outcome, v.reason) == ("cant_verify", "NO_DECISIVE_OBSERVATION")
+    assert "readers disagree" in v.explanation[0]
+
+
+def test_nothing_after_completion_is_missing_imagery():
+    v = run([vhr("2023-05-01", "absent")])
+    assert (v.outcome, v.reason) == ("cant_verify", "NO_POST_COMPLETION_IMAGERY")

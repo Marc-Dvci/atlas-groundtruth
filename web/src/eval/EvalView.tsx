@@ -52,13 +52,13 @@ export function EvalView({ run }: { run: string }) {
       </h1>
       <p className="lede">
         Atlas audited each one without seeing the ruling. It agreed {ev.agree} times
-        {ev.partial > 0 && <>, confirmed the structure without being able to date it {ev.partial} times</>}, declined to
-        decide {ev.abstain} times (the evidence did not reach its two-source standard), and contradicted the official
-        finding {ev.contradict} times.
+        {ev.partial > 0 && <>, flagged the contract on different grounds {ev.partial} times</>}, declined to decide
+        {" "}{ev.abstain} times (no evidence after completion reached its two-source standard), and contradicted the
+        official finding {ev.contradict} times.
       </p>
       <div className="evalstats">
         <div><span className="serif" style={{ color: "var(--exists)" }}>{ev.agree}</span><span className="eyebrow">agree</span></div>
-        <div><span className="serif" style={{ color: "var(--before)" }}>{ev.partial}</span><span className="eyebrow">consistent, undated</span></div>
+        <div><span className="serif" style={{ color: "var(--before)" }}>{ev.partial}</span><span className="eyebrow">consistent</span></div>
         <div><span className="serif" style={{ color: "var(--unverified)" }}>{ev.abstain}</span><span className="eyebrow">can't verify</span></div>
         <div><span className="serif" style={{ color: "var(--ghost)" }}>{ev.contradict}</span><span className="eyebrow">contradict</span></div>
       </div>

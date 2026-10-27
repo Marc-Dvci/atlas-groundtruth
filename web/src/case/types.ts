@@ -26,7 +26,8 @@ export type Frame = {
   masks: { prompt: string; object: number; confidence: number | null; geometry: GeoJSON.Geometry }[];
   coverage: number | null;
   sides?: { left: number; right: number };
-  reading?: { date: string; bank: string; structure_visible: string; extent_fraction: number; quality: string; what_i_see: string } | null;
+  reading?: { date: string; bank: string; structure_visible: string; extent_fraction: number; quality: string; what_i_see: string;
+    banks?: { side: string; edge: string; structure: string; extent_fraction: number }[] } | null;
   cross?: { structure: string; what_i_see: string; model: string } | null;
   entry: string;
 };

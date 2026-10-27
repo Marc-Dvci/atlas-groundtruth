@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -38,17 +39,28 @@ AGENT = "existence"
 WALL_PROMPTS = ["riverbank"]
 WATER_PROMPT = "river"
 COVER_PRESENT, COVER_ABSENT = 0.30, 0.10
+# The mission's as-of date: the Sentinel-2 series ends here, so a replay reads the same cached series.
+AS_OF = os.environ.get("ATLAS_AS_OF") or date.today().isoformat()
 Z = 18
 
 JUDGE = """You are an imagery analyst in a public-works audit. You get satellite images of one riverbank
 site, each with a cyan line marking the reach where a contract says a flood-control structure
 (a concrete wall, revetment or dike) was built. Captures from different dates can be misaligned by
-up to 30-50 m, so judge the bank near the line, not the exact pixels under it.
+up to 30-50 m, so judge the banks near the line, not the exact pixels under it.
 
-For each image, describe the bank along the line: natural or vegetated, bare earth, concrete or masonry
-(a hard, straight, light-grey edge, often with a road or fence on top), under construction (equipment,
-cleared strips, stockpiles), or not visible (cloud, shadow, blur). Then say whether a structure like the
-one described is visible along most of the line. Be literal. Do not assume the contract is true or false."""
+The contract does not say which bank, so read BOTH banks beside the line, one at a time, and name each
+by its compass side (for example west and east). For each bank say what its edge is: natural or
+vegetated, bare earth, concrete or masonry (a hard, smooth, light-grey edge, often with a road or fence
+on top), under construction (equipment, cleared strips, stockpiles), or not visible (cloud, shadow,
+blur); whether a structure like the one described runs along it; and along what share of the line.
+Compare each bank with the same bank in the other captures. At this resolution a new concrete wall is often
+thin: one continuous, smooth, light-grey line along the water's edge, frequently with a freshly cleared or
+backfilled strip of bare earth behind it where trees, shacks or debris stood in earlier captures. Count that as
+the structure. A road set back from the water, or houses built up to the water, is not one.
+
+Then summarise each image over both banks: structure_visible is "yes" if either bank has the structure
+along most of the line, "partly" if along part of it; "bank" is the edge type of the bank that has it
+(or of the more built-up bank). Be literal. Do not assume the contract is true or false."""
 
 JUDGE_SCHEMA = {
     "type": "object",
@@ -61,14 +73,23 @@ JUDGE_SCHEMA = {
                 "additionalProperties": False,
                 "properties": {
                     "date": {"type": "string"},
+                    "banks": {"type": "array", "minItems": 2, "maxItems": 2, "items": {
+                        "type": "object", "additionalProperties": False,
+                        "properties": {"side": {"type": "string"},
+                                       "edge": {"type": "string", "enum": ["natural or vegetated", "bare earth",
+                                                                          "concrete or masonry", "under construction",
+                                                                          "not visible"]},
+                                       "structure": {"type": "string", "enum": ["yes", "partly", "no", "cannot tell"]},
+                                       "extent_fraction": {"type": "number"}},
+                        "required": ["side", "edge", "structure", "extent_fraction"]}},
                     "bank": {"type": "string", "enum": ["natural or vegetated", "bare earth", "concrete or masonry",
                                                         "under construction", "not visible"]},
                     "structure_visible": {"type": "string", "enum": ["yes", "partly", "no", "cannot tell"]},
-                    "extent_fraction": {"type": "number", "description": "share of the line with a structure, 0 to 1"},
+                    "extent_fraction": {"type": "number", "description": "share of the line with a structure on either bank, 0 to 1"},
                     "quality": {"type": "string", "enum": ["good", "fair", "poor"]},
                     "what_i_see": {"type": "string"},
                 },
-                "required": ["date", "bank", "structure_visible", "extent_fraction", "quality", "what_i_see"],
+                "required": ["date", "banks", "bank", "structure_visible", "extent_fraction", "quality", "what_i_see"],
             },
         },
         "change": {"type": "string", "enum": ["structure built between captures", "no change", "structure removed",
@@ -82,8 +103,11 @@ JUDGE_SCHEMA = {
 # when both readers agree on it.
 CROSS = """You are checking one satellite image for a public-works audit. A cyan line marks a river reach where a
 contract says a flood-control structure (a concrete wall, revetment or dike along the bank) was built. Images can be
-misaligned by 30-50 m, so look at the banks beside the line. Is such a structure present along most of the line?
-Answer literally; say "cannot tell" when cloud, haze or blur hides the bank."""
+misaligned by 30-50 m, and the contract does not say which bank, so look at both banks beside the line. At this
+resolution a concrete wall is often thin: one continuous, smooth, light-grey line along the water's edge, often with a
+road, path or cleared strip behind it. A road set back from the water, or houses built up to the water, is not one.
+Is such a structure present along most of the line, on either bank? Answer literally; say "cannot tell" when cloud,
+haze or blur hides the banks."""
 
 CROSS_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -348,7 +372,7 @@ def run_s2(case: Case, award: str, completion: str) -> dict:
     start = max("2019-01-01", (date.fromisoformat(award) - timedelta(days=int(years * 365))).isoformat())
     # screening reads the clearest scene of each month, full depth the two clearest
     full = case.facts.get("depth") == "full"
-    rows = s2series.series(mapping(reach), start, date.today().isoformat(), DATA / "cache/s2", workers=12 if full else 24,
+    rows = s2series.series(mapping(reach), start, AS_OF, DATA / "cache/s2", workers=12 if full else 24,
                            per_month=2 if full else 1)
     rows = [r for r in rows if r.get("ndvi") is not None]
     before = s2series.window_stats(rows, None, award)

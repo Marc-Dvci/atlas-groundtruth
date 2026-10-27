@@ -303,6 +303,20 @@ def decide(
         )
 
     mark_rest()
+    # Observations after completion that were refused (readers disagree, a dip in the bank, 10 m pixels alone) are
+    # not missing imagery: say why each one could not decide.
+    refused = [d for d in decisions if not d.counted and d.finding.site == "declared"
+               and window_of(d.finding.observed, award, completion) == "after_completion"]
+    if refused:
+        return Verdict(
+            "cant_verify",
+            "NO_DECISIVE_OBSERVATION",
+            "Can't verify: no observation after the completion date could decide.",
+            [f"{d.finding.source}: {d.why}." for d in refused[:4]]
+            + ["Next: a street-level photo or a new tasking over the site."],
+            [],
+            decisions,
+        )
     return Verdict(
         "cant_verify",
         "NO_POST_COMPLETION_IMAGERY",
