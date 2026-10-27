@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
 import threading
 import time
 from pathlib import Path
@@ -251,8 +252,8 @@ async def mission_voice(request: Request):
     if client is None:
         raise HTTPException(503, "no model access")
     tr = transcribe(client, wav)
-    return {"transcript": tr.get("transcript", ""), "audio_ms": tr.get("audioDurationMs"),
-            "mission": parse(client, tr.get("transcript", ""))}
+    text = re.sub(r"\.{2,}$", ".", (tr.get("transcript") or "").strip())
+    return {"transcript": text, "audio_ms": tr.get("audioDurationMs"), "mission": parse(client, text)}
 
 
 @app.post("/api/mission/text")

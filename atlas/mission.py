@@ -32,7 +32,7 @@ def transcribe(client: MetaClient, wav: bytes) -> dict:
     if cache.exists():
         return json.loads(cache.read_text(encoding="utf-8"))
     req = {"model": VOICE, "audioEncoding": "WAV", "mode": "PUSH_TO_TALK", "languageBias": ["English", "Tagalog"],
-           "keywords": ["Bulacan", "flood-control", "Senate", "Blue Ribbon", "DPWH", "barangay", "Wawao", "SYMS", "Topnotch",
+           "keywords": ["Audit", "Bulacan", "flood-control", "Senate", "Blue Ribbon", "DPWH", "barangay", "Wawao", "SYMS", "Topnotch",
                         "Malolos", "Baliwag", "Hagonoy", "Calumpit", "Plaridel", "Angat River"]}
     client.meter.check(0.01)
     r = client._http.post("/asr/transcribe", headers={"Authorization": f"Bearer {client.api_key}", "Accept": "application/json"},

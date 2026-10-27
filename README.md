@@ -92,20 +92,20 @@ candidates. They sit in [`data/answer_key/cases.json`](data/answer_key/cases.jso
 | On the 12 contracts | Muse Spark 1.3 | Muse Spark Open |
 |---|---|---|
 | Agree (same finding) | 1 | 1 |
-| Consistent (flags the contract on other grounds) | 3 | 5 |
-| Can't verify | 6 | 4 |
+| Consistent (flags the contract on other grounds) | 4 | 5 |
+| Can't verify | 5 | 4 |
 | Contradict | 2 | 2 |
 
 - *Consistent* means Atlas flags the contract another way: officials found phase III of a Malis riverbank wall (24CC0055)
   "built on another portion of the river", and Atlas finds the wall at the located reach standing since January 2020,
   four years before the award.
-- On the six exact or strong matches, neither host contradicts the official finding. Muse Spark 1.3 abstains on four:
-  two have no sub-metre capture after completion, one has only a 10 m change after it, and on one the two readers
-  disagree.
+- On the six exact or strong matches, neither host contradicts the official finding. Muse Spark 1.3 abstains on three:
+  one has no sub-metre capture after completion, one has a single source showing nothing (the standard needs two), and
+  one has only a 10 m change after completion.
 - Both contradictions are candidate matches, where Atlas sees a structure after completion and the report quoted
   found a ghost. On 24CC0011 the April 2025 capture shows a new wall along the west bank of the located reach that the
   2020 capture does not.
-- The two hosts reached the same verdict on 10 of 12 contracts, located the same site on 10, and agreed on 33 of 34
+- The two hosts reached the same verdict on 11 of 12 contracts, located the same site on 10, and agreed on 33 of 34
   capture readings where they looked at the same site.
 
 Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them).
