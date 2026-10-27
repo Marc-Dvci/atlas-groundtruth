@@ -9,6 +9,8 @@ type Row = {
   abstain: boolean; partial: boolean; contradict: boolean; headline: string; quote: string; date: string; sources: string[];
   desc: string; cost: number; muni: string;
 };
+const times = (n: number) => (n === 1 ? "once" : `${n} times`);
+
 type Tally = { cases: number; agree: number; partial: number; abstain: number; contradict: number };
 type Ev = { run: string; cases: number; agree: number; partial: number; abstain: number; contradict: number; rows: Row[];
   by_match?: { exact_or_strong: Tally; candidate: Tally } };
@@ -51,10 +53,10 @@ export function EvalView({ run }: { run: string }) {
         {ev.cases} contracts that auditors, the ICI or the President already ruled on.
       </h1>
       <p className="lede">
-        Atlas audited each one without seeing the ruling. It agreed {ev.agree} times
-        {ev.partial > 0 && <>, flagged the contract on different grounds {ev.partial} times</>}, declined to decide
-        {" "}{ev.abstain} times (no evidence after completion reached its two-source standard), and contradicted the
-        official finding {ev.contradict} times.
+        Atlas audited each one without seeing the ruling. It agreed {times(ev.agree)}
+        {ev.partial > 0 && <>, flagged the contract on different grounds {times(ev.partial)}</>}, declined to decide
+        {" "}{times(ev.abstain)} (no evidence after completion reached its two-source standard), and contradicted the
+        official finding {times(ev.contradict)}.
       </p>
       <div className="evalstats">
         <div><span className="serif" style={{ color: "var(--exists)" }}>{ev.agree}</span><span className="eyebrow">agree</span></div>
@@ -64,9 +66,14 @@ export function EvalView({ run }: { run: string }) {
       </div>
       {ev.by_match && (
         <p className="lede" style={{ marginTop: 18 }}>
-          On the {ev.by_match.exact_or_strong.cases} contracts matched to an official finding exactly or strongly, Atlas
-          {" "}agreed {ev.by_match.exact_or_strong.agree} times, was consistent {ev.by_match.exact_or_strong.partial} times, declined
-          {" "}{ev.by_match.exact_or_strong.abstain} times and contradicted the finding {ev.by_match.exact_or_strong.contradict} times.
+          On the {ev.by_match.exact_or_strong.cases} contracts matched to an official finding exactly or strongly, Atlas{" "}
+          {[ev.by_match.exact_or_strong.agree > 0 && `agreed ${times(ev.by_match.exact_or_strong.agree)}`,
+            ev.by_match.exact_or_strong.partial > 0 && `was consistent ${times(ev.by_match.exact_or_strong.partial)}`,
+            ev.by_match.exact_or_strong.abstain > 0 && `declined ${times(ev.by_match.exact_or_strong.abstain)}`]
+            .filter(Boolean).join(", ")}
+          {ev.by_match.exact_or_strong.contradict === 0
+            ? " and never contradicted the finding."
+            : ` and contradicted the finding ${times(ev.by_match.exact_or_strong.contradict)}.`}
         </p>
       )}
       {cmp && (
