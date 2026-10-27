@@ -13,3 +13,4 @@ data/meter.json
 data/osm/*/raw/
 data/_src_flood_watch/
 data/meter_open.json
+web/public/film/

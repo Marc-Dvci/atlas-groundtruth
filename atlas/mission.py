@@ -27,13 +27,13 @@ SCHEMA = {
 
 
 def transcribe(client: MetaClient, wav: bytes) -> dict:
-    key = hashlib.sha256(wav).hexdigest()
-    cache = DATA / "cache/voice" / f"{key}.json"
-    if cache.exists():
-        return json.loads(cache.read_text(encoding="utf-8"))
     req = {"model": VOICE, "audioEncoding": "WAV", "mode": "PUSH_TO_TALK", "languageBias": ["English", "Tagalog"],
            "keywords": ["Audit", "Bulacan", "flood-control", "Senate", "Blue Ribbon", "DPWH", "barangay", "Wawao", "SYMS", "Topnotch",
                         "Malolos", "Baliwag", "Hagonoy", "Calumpit", "Plaridel", "Angat River"]}
+    key = hashlib.sha256(wav + json.dumps(req, sort_keys=True).encode()).hexdigest()  # new keywords, new transcript
+    cache = DATA / "cache/voice" / f"{key}.json"
+    if cache.exists():
+        return json.loads(cache.read_text(encoding="utf-8"))
     client.meter.check(0.01)
     r = client._http.post("/asr/transcribe", headers={"Authorization": f"Bearer {client.api_key}", "Accept": "application/json"},
                           files={"request": (None, json.dumps(req), "application/json"), "audio": ("mission.wav", wav, "audio/wav")})
