@@ -7,6 +7,7 @@ Resumable: contracts already sealed in the run are counted, not audited again.
 from __future__ import annotations
 
 import argparse
+import faulthandler
 import json
 import sys
 from pathlib import Path
@@ -33,6 +34,9 @@ def main(argv: list[str]) -> None:
                  key=lambda i: -(recs[i].get("priority") or 0))
     if a.limit:
         ids = ids[: a.limit]
+    # every thread's stack every 5 minutes, so a stalled mission says where it is waiting
+    stacks = open(ROOT / "data" / f"fleet_{a.run}_stacks.log", "w", encoding="utf-8")
+    faulthandler.dump_traceback_later(300, repeat=True, file=stacks)
     fl = Fleet(a.run, workers=a.workers)
     p = fl.launch(ids, mission=f"Every flood-control contract in {a.province}, before the deadline",
                   budget_usd=a.budget, deadline=a.deadline, lm=a.lm, full_top=a.full_top)

@@ -24,6 +24,11 @@ os.environ.setdefault("GDAL_HTTP_MULTIRANGE", "YES")
 os.environ.setdefault("GDAL_HTTP_MERGE_CONSECUTIVE_RANGES", "YES")
 # neighbouring sites share the same 10 km tiles and dates: keep downloaded ranges in memory for the whole run
 os.environ.setdefault("CPL_VSIL_CURL_CACHE_SIZE", str(3 * 1024 ** 3))
+# a read with no HTTP timeout can wait forever on a dead connection, and every other GDAL read then waits behind it
+os.environ.setdefault("GDAL_HTTP_TIMEOUT", "45")
+os.environ.setdefault("GDAL_HTTP_CONNECTTIMEOUT", "15")
+os.environ.setdefault("GDAL_HTTP_MAX_RETRY", "3")
+os.environ.setdefault("GDAL_HTTP_RETRY_DELAY", "2")
 
 import rasterio  # noqa: E402
 from rasterio.warp import transform_bounds  # noqa: E402

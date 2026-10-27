@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -30,8 +31,12 @@ CORRIDOR_M = 80
 NARROW_M = 15  # bank strip either side of a channel too narrow for the water mask
 
 
+# One cap for the whole process: a fleet runs a dozen sites at once, each sampling scenes on its own threads.
+_READS = threading.BoundedSemaphore(32)
+
+
 def _read(href: str, bbox, out_shape=None):
-    with rasterio.open(href) as ds:
+    with _READS, rasterio.open(href) as ds:
         b = transform_bounds("EPSG:4326", ds.crs, *bbox)
         win = from_bounds(*b, transform=ds.transform)
         kw = {"window": win, "boundless": True, "fill_value": 0}
