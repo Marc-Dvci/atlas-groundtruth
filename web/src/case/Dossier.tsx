@@ -152,7 +152,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
               {c.frames[active].cross && (
                 <>
                   <div className="eyebrow" style={{ marginTop: 10 }}>
-                    Second reader · {c.frames[active].cross!.model} · structure: {c.frames[active].cross!.structure}
+                    Second reader · {c.frames[active].cross!.model}{c.frames[active].cross!.reference && <> · beside {c.frames[active].cross!.reference}</>} · structure: {c.frames[active].cross!.structure}
                   </div>
                   <p className="prose">{c.frames[active].cross!.what_i_see}</p>
                 </>

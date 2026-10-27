@@ -99,15 +99,19 @@ JUDGE_SCHEMA = {
     "required": ["images", "change", "summary"],
 }
 
-# The second reader: a different model, one image at a time, a narrower question. A decisive reading counts only
-# when both readers agree on it.
-CROSS = """You are checking one satellite image for a public-works audit. A cyan line marks a river reach where a
+# The second reader: a different model, one decisive capture at a time beside a reference from before the award,
+# a narrower question. A decisive reading counts only when both readers agree on it.
+CROSS = """You are checking a satellite image for a public-works audit. A cyan line marks a river reach where a
 contract says a flood-control structure (a concrete wall, revetment or dike along the bank) was built. Images can be
-misaligned by 30-50 m, and the contract does not say which bank, so look at both banks beside the line. At this
-resolution a concrete wall is often thin: one continuous, smooth, light-grey line along the water's edge, often with a
-road, path or cleared strip behind it. A road set back from the water, or houses built up to the water, is not one.
-Is such a structure present along most of the line, on either bank? Answer literally; say "cannot tell" when cloud,
-haze or blur hides the banks."""
+misaligned by 30-50 m, and the contract does not say which bank, so look at both banks beside the line{ref_look}. At
+this resolution a concrete wall is often thin: one continuous, smooth, light-grey line along the water's edge, often
+with a road, path or cleared strip behind it. A road set back from the water, or houses built up to the water, is not
+one. In the capture to judge{last}, is such a structure present along most of the line, on either bank{whether}? Answer
+literally; say "cannot tell" when cloud, haze or blur hides the banks."""
+# With a reference (an earlier capture from before the award) the second reader can compare, as the first one does.
+CROSS_REF = {"ref_look": ", and compare each bank with the same bank in the reference", "last": " (the last image)",
+             "whether": ", whether or not it was already in the reference"}
+CROSS_ALONE = {"ref_look": "", "last": "", "whether": ""}
 
 CROSS_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -290,19 +294,24 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
     cross: dict[str, dict] = {}
     if second and frames:
         last_before = [f for f in frames if f["window"] == "before_award"][-1:]
+        b64 = lambda fr: "data:image/jpeg;base64," + __import__("base64").b64encode(fr["chip"].with_line(reach)).decode()  # noqa: E731
         for f in last_before + [f for f in frames if f["window"] == "after_completion"]:
+            ref = [r for r in frames if r["window"] == "before_award" and r["captured"] < f["captured"]][-1:]
+            content = [{"type": "input_text", "text": f"Contract: {case.record['desc']}."}]
+            for r in ref:
+                content += [{"type": "input_text", "text": f"Reference: capture of {r['captured']}, before the contract."},
+                            {"type": "input_image", "image_url": b64(r)}]
+            content += [{"type": "input_text", "text": f"The capture to judge: {f['captured']}."},
+                        {"type": "input_image", "image_url": b64(f)}]
             try:
-                res = case.meta.structured(second, CROSS, [
-                    {"type": "input_text", "text": f"Contract: {case.record['desc']}. Capture of {f['captured']}."},
-                    {"type": "input_image", "image_url": "data:image/jpeg;base64," + __import__("base64").b64encode(
-                        f["chip"].with_line(reach)).decode()}], CROSS_SCHEMA, schema_name="cross_reading", effort="low",
-                    est_usd=0.01)
+                res = case.meta.structured(second, CROSS.format(**(CROSS_REF if ref else CROSS_ALONE)), content,
+                                           CROSS_SCHEMA, schema_name="cross_reading", effort="low", est_usd=0.01)
             except Exception as e:  # a missing second reading leaves the first one standing, and says so
                 case.record_entry(AGENT, "cross_reading_failed", {"capture": f["captured"], "error": str(e)[:200]})
                 continue
             x = res["data"] or {}
             if x.get("structure") in ("yes", "partly", "no", "cannot tell"):
-                cross[f["captured"]] = {**x, "model": label(second)}
+                cross[f["captured"]] = {**x, "model": label(second), "reference": ref[0]["captured"] if ref else None}
                 case.record_entry(AGENT, "cross_reading", {"model": second, "capture": f["captured"], "answer": x})
     # One finding per capture. The reading (Muse Spark) says WHAT is on the bank; the SAM 3.1 masks say
     # WHERE, and their agreement is recorded. SAM's "riverbank" also fires on some natural banks, so a mask
