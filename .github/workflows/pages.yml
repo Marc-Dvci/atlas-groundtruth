@@ -1,0 +1,32 @@
+# Publish the static demo (recorded runs, no server, no keys) to GitHub Pages.
+# The site is built locally by scripts/build_static.sh and attached to the release "site" as site.zip, because its
+# evidence images are too large to keep in the repository.
+name: pages
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download the built site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download site --repo "$GITHUB_REPOSITORY" --pattern site.zip
+          mkdir site && unzip -q site.zip -d site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4
