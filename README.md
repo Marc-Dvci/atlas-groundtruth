@@ -110,6 +110,28 @@ candidates. They sit in [`data/answer_key/cases.json`](data/answer_key/cases.jso
 
 Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them).
 
+## The first mission: Bulacan
+
+All 1,096 flood-control contracts in Bulacan (₱72.5 billion), most money and most red flags first, within a $45 model
+budget. The 40 highest-priority contracts ran at full depth; the rest at screening depth (the last sub-metre capture
+before the award and every one after it) on Muse Spark's contributor tier, which costs a twelfth as much because
+Meta may train on what it is sent: it carries only public contract records and public imagery.
+
+| Outcome | Contracts | ₱ billion |
+|---|---|---|
+| Existed before the contract | 177 | 12.02 |
+| Probable ghost | 36 | 2.08 |
+| Built elsewhere | 6 | 0.46 |
+| Declared before built | 5 | 0.27 |
+| Exists | 266 | 18.23 |
+| Can't verify | 606 | 39.42 |
+
+224 contracts worth ₱14.83 billion go to the investigator's worklist. Of the 606 Atlas cannot verify,
+242 have a single source showing nothing, 205 have no decisive observation after completion,
+118 have no capture after completion, 25 could not be located and 16 have sources that disagree. These
+are leads, not findings of fact: each case names its sources and the reason for its outcome, and a human signs it
+before it leaves the system.
+
 ## The evidence ledger
 
 [`atlas/ledger.py`](atlas/ledger.py) appends one entry per tool call, capture, mask, reading, finding, verdict, case
