@@ -24,7 +24,8 @@ reading, mask and verdict is sealed in a hash-chained ledger, and a human invest
    that name the same barangay, and SAM 3.1 tracing a channel the map lacks) until it can cut the reach the text
    describes.
 3. **History.** Every distinct sub-metre capture of the site since 2010 (Esri World Imagery Wayback). SAM 3.1 segments
-   the hard banks and the water in each one; Muse Spark reads every capture along the reach, oldest first.
+   the hard banks and the water in each one; Muse Spark reads every capture along the reach, oldest first; Muse Spark
+   Open re-reads the captures that decide the case, and a reading counts only when both models agree.
 4. **Elsewhere.** When the declared reach is bare after completion, Atlas walks the same waterway 1.5 km each way,
    compares SAM 3.1 hard-bank masks before the award and after completion window by window, and asks Muse Spark to
    confirm the strongest candidate.
@@ -58,14 +59,16 @@ investigator or a court can read them, and [`tests/test_verdict.py`](tests/test_
   cannot testify about a structure shorter than about 150 m.
 - A Sentinel-2 bank that dips and then regrows (cleared ground, equipment, fresh concrete) makes that source
   inconclusive; it never counts as absence.
-- A reading below the quality floor (haze, cloud, blur) is refused.
+- A reading below the quality floor (haze, cloud, blur) is refused, and so is a decisive reading the second model
+  contradicts.
+- A 10 m change is dated to its season; it predates the award only if the whole season ended before it.
 
 ## Meta models in Atlas
 
 | Model | Role |
 |---|---|
 | **Muse Spark 1.3** | Locator (function calling over six spatial tools), multi-image reading of every capture along the reach, street-photo reading, relocation confirmation, mission parsing |
-| **Muse Spark Open** | The same audit end to end on open weights (served by Baseten here), for audit institutions that must keep national data on their own hardware |
+| **Muse Spark Open** | The independent second reader of every decisive capture; and the whole audit end to end on open weights (served by Baseten here), for audit institutions that must keep national data on their own hardware |
 | **SAM 3.1** | Concept segmentation of hard banks ("riverbank") and water ("river") in every capture; channel tracing where the map has no waterway; before/after change detection along the river |
 | **Muse Wonder** | The case file: four to six cited paragraphs, limits, open questions, documents to request |
 | **Muse Image** | The declared structure drawn onto the real capture, as a labelled illustration |

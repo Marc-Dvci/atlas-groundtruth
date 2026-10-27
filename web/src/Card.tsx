@@ -20,7 +20,7 @@ export function Card({ id }: { id: string }) {
       <div style={{ position: "relative" }}>
         {c.eyebrow && (
           <motion.div className="eyebrow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2, ease }}
-            style={{ letterSpacing: "0.32em", marginBottom: 22 }}>
+            style={{ letterSpacing: "0.42em", marginBottom: 26, fontSize: 15, color: "var(--declared)" }}>
             {c.eyebrow}
           </motion.div>
         )}
