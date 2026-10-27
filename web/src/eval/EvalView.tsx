@@ -9,7 +9,12 @@ type Row = {
   abstain: boolean; partial: boolean; contradict: boolean; headline: string; quote: string; date: string; sources: string[];
   desc: string; cost: number; muni: string;
 };
-const times = (n: number) => (n === 1 ? "once" : `${n} times`);
+const times = (n: number) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
+const looseNote = (n: number, loose: number) =>
+  n === 0 ? "never against a ruling"
+    : loose === n ? (n === 1 ? "on a contract only loosely tied to a ruling"
+      : `${n === 2 ? "both" : "all"} on contracts only loosely tied to a ruling`)
+    : `${loose} of ${n} on contracts only loosely tied to a ruling`;
 
 type Tally = { cases: number; agree: number; partial: number; abstain: number; contradict: number };
 type Ev = { run: string; cases: number; agree: number; partial: number; abstain: number; contradict: number; rows: Row[];
@@ -26,6 +31,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 export function EvalView({ run }: { run: string }) {
   const [ev, setEv] = useState<Ev | null>(null);
   const [cmp, setCmp] = useState<Cmp | null>(null);
+  const [focus, setFocus] = useState<number | null>(null);
   const other = new URLSearchParams(window.location.search).get("open") ?? `${run}-open`;
   useEffect(() => {
     fetch(url.evaluation(run)).then((r) => r.json()).then(setEv);
@@ -38,9 +44,24 @@ export function EvalView({ run }: { run: string }) {
         const page = document.querySelector(".evalpage") as HTMLElement | null;
         if (el && page) smoothScroll(page, el.offsetTop - 40, ms);
       },
+      top: (ms = 1400) => {
+        const page = document.querySelector(".evalpage") as HTMLElement | null;
+        if (page) smoothScroll(page, 0, ms);
+      },
+      // the film points at one tally at a time; null shows them all again
+      focus: (i: number | null) => setFocus(i),
     };
   }, []);
   if (!ev) return null;
+  // three plain outcomes: what Atlas found fits the ruling (the same finding, or another flag compatible with it),
+  // the imagery could not settle the case, or Atlas disagrees with the ruling
+  const loose = ev.by_match?.candidate.contradict ?? 0;
+  const tally = [
+    { n: ev.agree + ev.partial, label: "fit the ruling", color: "var(--exists)",
+      note: `${ev.agree} same finding · ${ev.partial} compatible finding${ev.partial === 1 ? "" : "s"}` },
+    { n: ev.abstain, label: "can't verify", color: "var(--unverified)", note: "the imagery could not settle the case" },
+    { n: ev.contradict, label: "disagree", color: "var(--ghost)", note: looseNote(ev.contradict, loose) },
+  ];
   return (
     <div className="evalpage">
       <header className="case-head" style={{ position: "relative", top: 0, left: 0 }}>
@@ -53,27 +74,30 @@ export function EvalView({ run }: { run: string }) {
         {ev.cases} contracts that auditors, the ICI or the President already ruled on.
       </h1>
       <p className="lede">
-        Atlas audited each one without seeing the ruling. It agreed {times(ev.agree)}
-        {ev.partial > 0 && <>, flagged the contract on different grounds {times(ev.partial)}</>}, declined to decide
-        {" "}{times(ev.abstain)} (no evidence after completion reached its two-source standard), and contradicted the
-        official finding {times(ev.contradict)}.
+        Atlas audited each one without seeing the ruling. Where no evidence after completion reached its two-source
+        standard, it said it could not verify instead of guessing.
       </p>
-      <div className="evalstats">
-        <div><span className="serif" style={{ color: "var(--exists)" }}>{ev.agree}</span><span className="eyebrow">agree</span></div>
-        <div><span className="serif" style={{ color: "var(--before)" }}>{ev.partial}</span><span className="eyebrow">consistent</span></div>
-        <div><span className="serif" style={{ color: "var(--unverified)" }}>{ev.abstain}</span><span className="eyebrow">can't verify</span></div>
-        <div><span className="serif" style={{ color: "var(--ghost)" }}>{ev.contradict}</span><span className="eyebrow">contradict</span></div>
+      <div className="evaltally">
+        {tally.map((t, i) => (
+          <motion.div key={t.label} animate={{ opacity: focus === null || focus === i ? 1 : 0.22 }}
+            transition={{ duration: 0.5, ease }}>
+            <span className="serif" style={{ color: t.color }}>{t.n}</span>
+            <span className="tally-label">{t.label}</span>
+            <span className="dim tally-note">{t.note}</span>
+          </motion.div>
+        ))}
       </div>
       {ev.by_match && (
         <p className="lede" style={{ marginTop: 18 }}>
-          On the {ev.by_match.exact_or_strong.cases} contracts matched to an official finding exactly or strongly, Atlas{" "}
-          {[ev.by_match.exact_or_strong.agree > 0 && `agreed ${times(ev.by_match.exact_or_strong.agree)}`,
-            ev.by_match.exact_or_strong.partial > 0 && `was consistent ${times(ev.by_match.exact_or_strong.partial)}`,
-            ev.by_match.exact_or_strong.abstain > 0 && `declined ${times(ev.by_match.exact_or_strong.abstain)}`]
-            .filter(Boolean).join(", ")}
+          On the {ev.by_match.exact_or_strong.cases} contracts tied firmly to a ruling (an exact or strong match), what
+          Atlas found{" "}
+          {[ev.by_match.exact_or_strong.agree + ev.by_match.exact_or_strong.partial > 0 &&
+              `fit the ruling ${times(ev.by_match.exact_or_strong.agree + ev.by_match.exact_or_strong.partial)}`,
+            ev.by_match.exact_or_strong.abstain > 0 && `could not be verified ${times(ev.by_match.exact_or_strong.abstain)}`]
+            .filter(Boolean).join(" and ")}
           {ev.by_match.exact_or_strong.contradict === 0
-            ? " and never contradicted the finding."
-            : ` and contradicted the finding ${times(ev.by_match.exact_or_strong.contradict)}.`}
+            ? "; it never disagreed with one."
+            : `; it disagreed ${times(ev.by_match.exact_or_strong.contradict)}.`}
         </p>
       )}
       {cmp && (
@@ -108,7 +132,7 @@ export function EvalView({ run }: { run: string }) {
               <div className="dim">{r.headline}</div>
             </div>
             <div className={`er-mark mono ${r.agree ? "agree" : r.partial ? "partial" : r.abstain ? "abstain" : "contra"}`}>
-              {r.agree ? "agree" : r.partial ? "consistent" : r.abstain ? "can't verify" : "contradict"}
+              {r.agree ? "same finding" : r.partial ? "fits" : r.abstain ? "can't verify" : "disagrees"}
             </div>
           </motion.a>
         ))}
