@@ -76,7 +76,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
   useEffect(() => {
     const el = document.getElementById(`sec-${beat}`);
     if (el && scroller.current) {
-      smoothScroll(scroller.current, el.offsetTop - 40, 1000);
+      smoothScroll(scroller.current, el.offsetTop - 90, 1000); // where the first section starts, clear of the top fade
     }
   }, [beat]);
   const v = c.verdict;

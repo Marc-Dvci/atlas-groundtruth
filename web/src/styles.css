@@ -157,6 +157,8 @@ button {
   mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 120px), transparent);
 }
 .dossier::-webkit-scrollbar { display: none; }
+/* room below the last section, so any section can scroll to the top instead of stopping half under the fade */
+.dossier::after { content: ""; display: block; height: 70vh; }
 .dossier .facts { display: flex; flex-wrap: wrap; gap: 6px 18px; color: var(--text-2); font-size: 13px; }
 .dossier .note { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; }
 .dossier .prose { color: var(--text-2); font-size: 15px; line-height: 1.6; margin: 0 0 10px; }
@@ -168,6 +170,7 @@ mark.hl-declared {
 .tooltrace { list-style: none; padding: 0; margin: 14px 0 0; font-size: 12px; }
 .tooltrace li { display: flex; gap: 10px; padding: 4px 0; border-left: 1px solid var(--hair-2); padding-left: 12px; }
 .tooltrace li .mono:first-child { color: var(--declared); }
+.tooltrace li .mono.dim { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tooltrace li.refused .mono:first-child { color: var(--ghost); text-decoration: line-through; }
 .refused-tag { color: var(--ghost); }
 .filmstrip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
