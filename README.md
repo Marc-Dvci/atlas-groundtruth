@@ -25,7 +25,8 @@ reading, mask and verdict is sealed in a hash-chained ledger, and a human invest
    describes.
 3. **History.** Every distinct sub-metre capture of the site since 2010 (Esri World Imagery Wayback). SAM 3.1 segments
    the hard banks and the water in each one; Muse Spark reads every capture along the reach, oldest first; Muse Spark
-   Open re-reads the captures that decide the case, and a reading counts only when both models agree.
+   Open re-reads each capture that decides the case beside the last capture before the award, and a reading counts
+   only when both models agree. Wayback can list one image under several dates; identical pixels count once.
 4. **Elsewhere.** When the declared reach is bare after completion, Atlas walks the same waterway 1.5 km each way,
    compares SAM 3.1 hard-bank masks before the award and after completion window by window, and asks Muse Spark to
    confirm the strongest candidate.
@@ -83,7 +84,31 @@ compact one-bit format; [`atlas/sam_codec.py`](atlas/sam_codec.py) decodes it (b
 
 ## Evaluation against the official record
 
-<!-- EVAL -->
+Twelve Bulacan contracts carry an official finding (Commission on Audit, the Independent Commission for
+Infrastructure, the President's own inspection) that can be tied to a contract ID: six exactly or strongly, six only as
+candidates. They sit in [`data/answer_key/cases.json`](data/answer_key/cases.json). No audit reads that file;
+[`scripts/evaluate.py`](scripts/evaluate.py) compares only after every verdict is sealed.
+
+| On the 12 contracts | Muse Spark 1.3 | Muse Spark Open |
+|---|---|---|
+| Agree (same finding) | 1 | 1 |
+| Consistent (flags the contract on other grounds) | 3 | 5 |
+| Can't verify | 6 | 4 |
+| Contradict | 2 | 2 |
+
+- *Consistent* means Atlas flags the contract another way: officials found phase III of a Malis riverbank wall (24CC0055)
+  "built on another portion of the river", and Atlas finds the wall at the located reach standing since January 2020,
+  four years before the award.
+- On the six exact or strong matches, neither host contradicts the official finding. Muse Spark 1.3 abstains on four:
+  two have no sub-metre capture after completion, one has only a 10 m change after it, and on one the two readers
+  disagree.
+- Both contradictions are candidate matches, where Atlas sees a structure after completion and the report quoted
+  found a ghost. On 24CC0011 the April 2025 capture shows a new wall along the west bank of the located reach that the
+  2020 capture does not.
+- The two hosts reached the same verdict on 10 of 12 contracts, located the same site on 10, and agreed on 33 of 34
+  capture readings where they looked at the same site.
+
+Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them).
 
 ## The evidence ledger
 

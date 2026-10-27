@@ -56,6 +56,17 @@ class Fleet:
     def say(self, kind: str, **data) -> None:
         self.emit(Event(time.time(), kind, "*", "fleet", data))
 
+    def _spent_so_far(self) -> float:
+        """A resumed mission carries over what it already spent, so its budget and its meter cover the whole mission."""
+        spent, log = 0.0, self.rdir / "events.jsonl"
+        if log.exists():
+            for line in log.open(encoding="utf-8"):
+                if '"progress"' in line:
+                    e = json.loads(line)
+                    if e.get("kind") == "progress":
+                        spent = max(spent, e["data"].get("spent_usd") or 0.0)
+        return spent
+
     def launch(self, ids: list[str], *, mission: str, budget_usd: float, deadline: str | None = None,
                lm: str = "meta", full_top: int = 0, skip_done: bool = True) -> dict:
         recs, decl = portfolio(), declarations()
@@ -69,7 +80,7 @@ class Fleet:
             "order": [o["id"] for o in p["order"]]})
         self.say("plan", **{k: v for k, v in p.items() if k != "order"}, order=[o["id"] for o in p["order"]])
         meter = (meta.open_meter if lm == "open" else meta.meter) if meta else None
-        start = meter.spent_usd if meter else 0.0
+        start = (meter.spent_usd if meter else 0.0) - (self._spent_so_far() if skip_done else 0.0)
         done = {"n": 0, "php": 0.0, "outcomes": {}}
 
         def tally(r: dict, oc: str) -> dict:
