@@ -150,10 +150,15 @@ def site_bbox(reach: LineString, margin_m: float = 90) -> tuple[float, float, fl
     return bbox_around((c.x, c.y), half)
 
 
+# A new wall can be one pixel wide at z18 (0.58 m), so a chip keeps native pixels for a reach up to about 1 km;
+# a 1,024 px cap halved them on long reaches and hid thin walls.
+MAX_CHIP_PX = 2048
+
+
 def chip_for(release: int, bbox) -> Chip:
     img = wayback().mosaic(release, bbox, Z)
-    if max(img.size) > 1024:
-        s = 1024 / max(img.size)
+    if max(img.size) > MAX_CHIP_PX:
+        s = MAX_CHIP_PX / max(img.size)
         img = img.resize((round(img.width * s), round(img.height * s)), Image.LANCZOS)
     return Chip(img, bbox)
 
