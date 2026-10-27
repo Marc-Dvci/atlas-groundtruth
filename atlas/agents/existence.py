@@ -245,26 +245,38 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
     c = reach.interpolate(0.5, normalized=True)
     caps = [k for k in captures(c.x, c.y) if k["captured"]]
     if case.facts.get("depth") == "full":
-        caps = caps[-7:]  # the whole history the film shows (sub-metre captures since ~2010)
+        caps = caps[-12:]  # the whole history the film shows (sub-metre captures since ~2010), seven distinct at most
     else:  # screening: the last capture before the award and everything after it
         before = [k for k in caps if k["captured"] < award]
         caps = before[-1:] + [k for k in caps if k["captured"] >= award]
-    case.say(AGENT, "captures", captures=caps)
     bbox = site_bbox(reach)
-    frames = []
+    # Wayback can list one area under several capture dates while serving the same pixels. Identical pixels are one
+    # capture: keep it under its earliest date and record the other dates, so no frame carries a date its pixels lack.
+    chips, same = [], {}
     for cap in caps:
         if not cap["captured"]:
             continue
         chip = chip_for(cap["release"], bbox)
-        win = window_of(cap["captured"], award, completion)
         blob = case.blob(chip.jpeg(), "jpg")
+        if blob in same:
+            same[blob].append(cap["captured"])
+            continue
+        same[blob] = []
+        chips.append((cap, chip, blob))
+    if case.facts.get("depth") == "full":
+        chips = chips[-7:]
+    case.say(AGENT, "captures", captures=[c for c, _, _ in chips])
+    frames = []
+    for cap, chip, blob in chips:
+        win = window_of(cap["captured"], award, completion)
         sam = wall_masks(case, chip, reach) if case.meta else {"polys": [], "raw": [], "coverage": None}
         masks = [{"prompt": p["prompt"], "object": p["object"], "confidence": p["confidence"],
                   "geometry": mapping(p["geom"])} for p in sam["polys"] + sam.get("water", [])]
         h = case.record_entry(AGENT, "capture", {"capture": cap, "window": win, "bbox": bbox, "blob": blob,
+                                                 "same_pixels_listed_as": same[blob],
                                                  "sam": sam["raw"], "coverage": sam["coverage"], "sides": sam.get("sides")})
         fr = {**cap, "window": win, "bbox": bbox, "blob": blob, "masks": masks, "coverage": sam["coverage"],
-              "sides": sam.get("sides"),
+              "sides": sam.get("sides"), "same_pixels_listed_as": same[blob],
               "entry": h, "chip": chip, "mpp": metres_per_px(c.y, Z)}
         frames.append(fr)
         case.say(AGENT, "frame", **{k: v for k, v in fr.items() if k != "chip"})
