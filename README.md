@@ -12,7 +12,10 @@ flags first. Each agent tests one audit assertion against independent evidence: 
 Sentinel-2 archive, street-level photos and the public record. Fixed rules, not a model, decide each outcome. Every
 reading, mask and verdict is sealed in a hash-chained ledger, and a human investigator signs every case.
 
-<!-- screenshot: docs/case.png -->
+**Demo, no install:** https://marc-dvci.github.io/atlas-groundtruth/ (recorded runs; the browser re-verifies every
+ledger hash itself). The case below: [24CC0055](https://marc-dvci.github.io/atlas-groundtruth/#/case/eval/24CC0055).
+
+![Case 24CC0055: the wall at the located reach was already standing in January 2020, four years before the contract](docs/case.jpg)
 
 ## What a case looks like
 
