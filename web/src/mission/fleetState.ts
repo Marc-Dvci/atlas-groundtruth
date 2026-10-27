@@ -29,11 +29,13 @@ export type FleetState = {
   log: { t: number; agent: string; case: string; text: string }[];
   costById: Record<string, number>;
   headline: Record<string, string>;
+  verdictById: Record<string, Outcome>;
   finished: boolean;
 };
 
 export const empty = (): FleetState => ({
   status: {}, lanes: {}, done: 0, total: 0, php: 0, outcomes: {}, spent: 0, plan: null, log: [], costById: {}, headline: {},
+  verdictById: {},
   finished: false,
 });
 
@@ -96,8 +98,15 @@ export function reduce(s: FleetState, e: Ev): FleetState {
   if (e.kind === "verdict") {
     status[e.case] = d.outcome;
     s = { ...s, headline: { ...s.headline, [e.case]: d.headline } };
-    done += 1;
-    php += costById[e.case] ?? 0;
+    // a resumed mission re-audits a contract whose run was cut short: its new verdict replaces the old one
+    const before = s.verdictById[e.case];
+    if (before) {
+      outcomes = { ...outcomes, [before]: (outcomes[before] ?? 1) - 1 };
+    } else {
+      done += 1;
+      php += costById[e.case] ?? 0;
+    }
+    s = { ...s, verdictById: { ...s.verdictById, [e.case]: d.outcome } };
     outcomes = { ...outcomes, [d.outcome]: (outcomes[d.outcome as Outcome] ?? 0) + 1 };
     total = Math.max(total, done);
   }
