@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BaseMap } from "../map/BaseMap";
 import { fmt, loadProjects, OUTCOME_COLOR, OUTCOME_LABEL, toGeoJSON, type Columns, type Outcome } from "../data";
-import { AGENTS, empty, laneModel, reduce, type Ev, type FleetState } from "./fleetState";
+import { AGENTS, empty, laneModel, reduce, type Ev, type FleetState, type Lane } from "./fleetState";
 import { VoiceMission, type MissionSpec } from "./VoiceMission";
 import { STATIC, streamEvents, url } from "../api";
 
@@ -294,28 +294,50 @@ function Lanes({ fleet }: { fleet: FleetState }) {
   const now = Math.max(0, ...Object.values(fleet.lanes).map((l) => l.t));
   return (
     <div className="lanes">
-      {AGENTS.map((a) => {
-        const l = fleet.lanes[a.key];
-        const live = l && now - l.t < 20;
-        return (
-          <div key={a.key} className={`lane ${live ? "live" : ""}`}>
-            <div className="lane-head">
-              <span className="lane-dot" />
-              <span className="lane-name">{a.label}</span>
-              <span className="mono lane-model">{laneModel(a.model, fleet.plan?.lm)}</span>
-              {l && <span className="mono lane-case">{l.case}</span>}
-            </div>
-            <AnimatePresence mode="popLayout">
-              {l && (
-                <motion.div key={l.n} className="mono lane-text" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.35 }}>
-                  {l.text}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        );
-      })}
+      {AGENTS.map((a) => (
+        <LaneRow key={a.key} label={a.label} model={laneModel(a.model, fleet.plan?.lm)} lane={fleet.lanes[a.key]} now={now} />
+      ))}
+    </div>
+  );
+}
+
+/** A value that changes at most once per `holdMs`, always to the latest value. */
+function useHeld<T>(value: T, holdMs: number): T {
+  const [shown, setShown] = useState(value);
+  const since = useRef(performance.now());
+  const latest = useRef(value);
+  latest.current = value;
+  useEffect(() => {
+    if (value === shown) return;
+    const id = setTimeout(() => {
+      since.current = performance.now();
+      setShown(latest.current);
+    }, Math.max(0, since.current + holdMs - performance.now()));
+    return () => clearTimeout(id);
+  }, [value, shown, holdMs]);
+  return shown;
+}
+
+function LaneRow({ label, model, lane, now }: { label: string; model: string; lane?: Lane; now: number }) {
+  // a fast replay changes a lane several times per frame: hold each line long enough to read
+  const l = useHeld(lane, 450);
+  const live = lane && now - lane.t < 20;
+  return (
+    <div className={`lane ${live ? "live" : ""}`}>
+      <div className="lane-head">
+        <span className="lane-dot" />
+        <span className="lane-name">{label}</span>
+        <span className="mono lane-model">{model}</span>
+        {l && <span className="mono lane-case">{l.case}</span>}
+      </div>
+      <AnimatePresence mode="popLayout">
+        {l && (
+          <motion.div key={l.n} className="mono lane-text" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.3 }}>
+            {l.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

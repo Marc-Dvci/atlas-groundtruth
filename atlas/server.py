@@ -24,6 +24,7 @@ from .ledger import Ledger
 app = FastAPI(title="Atlas")
 _fleets: dict[str, Fleet] = {}
 _tiles = httpx.Client(timeout=30, headers={"User-Agent": "Atlas-Groundtruth/0.1"})
+REPLAY_GAP_S = 4.0  # a replay cuts longer idle stretches (a stopped and resumed mission) to this many recorded seconds
 
 
 def _run_dir(run: str) -> Path:
@@ -95,17 +96,17 @@ async def events(run: str, request: Request, since: int = 0, speed: float = 0.0,
     path = _run_dir(run) / "events.jsonl"
     if duration > 0 and path.exists():
         with path.open(encoding="utf-8") as f:
-            first = json.loads(f.readline()).get("t", 0)
-        with path.open("rb") as f:
-            f.seek(max(0, path.stat().st_size - 200_000))
-            last = json.loads(f.read().decode("utf-8", "ignore").strip().splitlines()[-1]).get("t", first)
-        speed = max(1.0, (last - first) / duration)
+            ts = [json.loads(line).get("t", 0) for line in f if line.strip()]
+        span = sum(min(REPLAY_GAP_S, max(0.0, b - a)) for a, b in zip(ts, ts[1:]))
+        speed = max(1.0, span / duration)
 
     async def gen():
         n = 0
         last_t = None
+        replay = 0.0  # recorded seconds so far, idle stretches cut to REPLAY_GAP_S
         while not path.exists():
             await asyncio.sleep(0.5)
+        start = time.monotonic()
         with path.open(encoding="utf-8") as f:
             while True:
                 if await request.is_disconnected():
@@ -121,10 +122,14 @@ async def events(run: str, request: Request, since: int = 0, speed: float = 0.0,
                 if n <= since:
                     continue
                 if speed > 0:
+                    # an absolute schedule: thousands of sub-millisecond gaps must not each cost a timer tick
                     t = json.loads(line).get("t", 0)
                     if last_t is not None:
-                        await asyncio.sleep(min(4.0, max(0.0, (t - last_t) / speed)))
+                        replay += min(REPLAY_GAP_S, max(0.0, t - last_t))
                     last_t = t
+                    ahead = start + replay / speed - time.monotonic()
+                    if ahead > 0.004:
+                        await asyncio.sleep(ahead)
                 yield f"id: {n}\ndata: {line.strip()}\n\n"
 
     return StreamingResponse(gen(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})

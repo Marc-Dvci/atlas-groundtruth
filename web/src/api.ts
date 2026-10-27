@@ -38,17 +38,19 @@ export function streamEvents(run: string, duration: number, onEvent: (e: RawEven
   (async () => {
     const text = await (await fetch(`${S}/runs/${run}/events.jsonl`)).text();
     const evs = text.split(/\r?\n/).filter((l) => l.trim()).map((l) => JSON.parse(l) as RawEvent);
-    const span = evs.length ? evs[evs.length - 1].t - evs[0].t : 0;
+    // recorded seconds at each event, idle stretches (a stopped and resumed mission) cut to GAP_S
+    const GAP_S = 4;
+    const at: number[] = [];
+    evs.forEach((e, i) => at.push(i ? at[i - 1] + Math.min(GAP_S, Math.max(0, e.t - evs[i - 1].t)) : 0));
+    const span = at.length ? at[at.length - 1] : 0;
     const speed = duration > 0 ? Math.max(1, span / duration) : 1;
-    let last: number | null = null;
-    for (const e of evs) {
+    // an absolute schedule: skipping each sub-millisecond wait must not lose the time they add up to
+    const start = performance.now();
+    for (let i = 0; i < evs.length; i++) {
       if (stop) return;
-      if (last != null) {
-        const wait = Math.min(4, Math.max(0, (e.t - last) / speed)) * 1000;
-        if (wait > 4) await new Promise((r) => setTimeout(r, wait));
-      }
-      last = e.t;
-      onEvent(e);
+      const wait = start + (at[i] / speed) * 1000 - performance.now();
+      if (wait > 4) await new Promise((r) => setTimeout(r, wait));
+      onEvent(evs[i]);
     }
     onEnd?.();
   })();
