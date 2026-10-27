@@ -28,10 +28,13 @@ export type FleetState = {
     lm?: string; screening_depth?: number } | null;
   log: { t: number; agent: string; case: string; text: string }[];
   costById: Record<string, number>;
+  headline: Record<string, string>;
+  finished: boolean;
 };
 
 export const empty = (): FleetState => ({
-  status: {}, lanes: {}, done: 0, total: 0, php: 0, outcomes: {}, spent: 0, plan: null, log: [], costById: {},
+  status: {}, lanes: {}, done: 0, total: 0, php: 0, outcomes: {}, spent: 0, plan: null, log: [], costById: {}, headline: {},
+  finished: false,
 });
 
 const short = (s: unknown, n = 64) => {
@@ -78,6 +81,9 @@ export function reduce(s: FleetState, e: Ev): FleetState {
   if (e.kind === "plan") {
     return { ...s, plan: d as FleetState["plan"], total: d.projects };
   }
+  if (e.kind === "finished") {
+    return { ...s, finished: true };
+  }
   if (e.kind === "progress") {
     return { ...s, spent: d.spent_usd ?? s.spent, total: d.total ?? s.total };
   }
@@ -89,6 +95,7 @@ export function reduce(s: FleetState, e: Ev): FleetState {
   }
   if (e.kind === "verdict") {
     status[e.case] = d.outcome;
+    s = { ...s, headline: { ...s.headline, [e.case]: d.headline } };
     done += 1;
     php += costById[e.case] ?? 0;
     outcomes = { ...outcomes, [d.outcome]: (outcomes[d.outcome as Outcome] ?? 0) + 1 };

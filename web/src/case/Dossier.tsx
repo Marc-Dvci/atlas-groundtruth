@@ -4,6 +4,7 @@ import { OUTCOME_COLOR, OUTCOME_LABEL, fmt } from "../data";
 import type { CaseFile } from "./types";
 import { STATIC, url } from "../api";
 import { readLines, sealLocal } from "../ledger/verify";
+import { smoothScroll } from "../scroll";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const php = (v: number | null | undefined) =>
@@ -75,7 +76,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
   useEffect(() => {
     const el = document.getElementById(`sec-${beat}`);
     if (el && scroller.current) {
-      scroller.current.scrollTo({ top: el.offsetTop - 40, behavior: "smooth" });
+      smoothScroll(scroller.current, el.offsetTop - 40, 1000);
     }
   }, [beat]);
   const v = c.verdict;
@@ -391,6 +392,21 @@ function Sign({ c, run }: { c: CaseFile; run: string }) {
 /** Declared vs observed: Muse Image's drawing of what the contract describes, against the real capture. */
 function Compare({ observed, declared, when }: { observed: string; declared: string; when: string }) {
   const [x, setX] = useState(50);
+  // the film sweeps the divider from the observed capture to the declared illustration and back
+  useEffect(() => {
+    (window as unknown as { __compare: object }).__compare = {
+      sweep: (ms = 3200) => {
+        const t0 = performance.now();
+        const step = () => {
+          const k = Math.min(1, (performance.now() - t0) / ms);
+          const e = 0.5 - 0.5 * Math.cos(Math.PI * 2 * k); // 0 -> 1 -> 0
+          setX(100 - 100 * e * 0.92);
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      },
+    };
+  }, []);
   return (
     <figure className="compare">
       <div className="compare-box" onMouseMove={(e) => {

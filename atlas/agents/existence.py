@@ -369,10 +369,15 @@ def run_s2(case: Case, award: str, completion: str) -> dict:
     # either bank, so the barer bank sets how much an unchanged series can say.
     floor = min(banks.values()) if banks else before["ndvi"]
     detect = min(1.0, max(0.0, (floor - 0.15) / 0.3))
-    if change and change["date"] < (date.fromisoformat(award) - timedelta(days=60)).isoformat():
-        claim, note = "present", f"hard bank appears {change['date']} on the {change['bank']}, before the award"
+    # a change is dated to a season (first to last clear scene of it); it is "before the award" only if the whole
+    # season ended before it, and a season that straddles the award is dated to the contract window
+    clear_before = (date.fromisoformat(award) - timedelta(days=60)).isoformat()
+    straddles = bool(change) and change["date"] < award and change["last"] >= clear_before
+    if change and change["last"] < clear_before:
+        claim, note = "present", (f"bank changed between {change['date']} and {change['last']} on the {change['bank']}, "
+                                  f"before the award")
     elif change:
-        claim, note = "present", (f"hard bank appears {change['date']} on the {change['bank']} "
+        claim, note = "present", (f"bank changed between {change['date']} and {change['last']} on the {change['bank']} "
                                   f"(NDVI {change['ndvi_before']} to {change['ndvi_after']})")
     elif stir:
         claim, note = "inconclusive", (f"work-like disturbance on the {stir['bank']} from {stir['date']} (NDVI {stir['ndvi_before']} "
@@ -381,7 +386,7 @@ def run_s2(case: Case, award: str, completion: str) -> dict:
         claim, note = "absent", (f"no lasting change on either bank: NDVI {before['ndvi']} before the award, "
                                  f"{after['ndvi']} after completion ({after['n']} clear scenes)")
     # a change is dated by its first scene; an unchanged bank testifies as of the last scene
-    when = change["date"] if change else stir["date"] if stir else after["to"]
+    when = ((date.fromisoformat(award) + timedelta(days=1)).isoformat() if straddles else change["date"]) if change else         stir["date"] if stir else after["to"]
     q = round(0.5 + 0.4 * detect, 2) if claim == "absent" else 0.8 if claim == "present" else 0.0
     case.file(Finding(AGENT, f"Sentinel-2 (ESA) {when[:7]}, 10 m", "optical_hr", "s2", when, claim, q, note, h))
     return out

@@ -61,8 +61,23 @@ export function VoiceMission({ onMission }: Props) {
     const wav = await rec.current!.stop();
     await send(wav);
   };
-  // the film plays a recorded mission through the same path
-  (window as any).__voice = { sendUrl: async (url: string) => send(await (await fetch(url)).blob()) };
+  // the film plays a recorded mission through the same path: listen() while it is heard, then sendUrl(wav)
+  (window as any).__voice = {
+    listen: () => {
+      setState("listening");
+      const t0 = performance.now();
+      const tick = () => {
+        const k = (performance.now() - t0) / 1000;
+        setLevel(0.25 + 0.2 * Math.abs(Math.sin(k * 7.3)) * Math.abs(Math.sin(k * 2.1 + 1)));
+        raf.current = requestAnimationFrame(tick);
+      };
+      tick();
+    },
+    sendUrl: async (url: string) => {
+      cancelAnimationFrame(raf.current);
+      return send(await (await fetch(url)).blob());
+    },
+  };
 
   return (
     <div className="voice">

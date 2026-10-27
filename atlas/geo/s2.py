@@ -22,6 +22,8 @@ os.environ.setdefault("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
 os.environ.setdefault("CPL_VSIL_CURL_ALLOWED_EXTENSIONS", ".tif,.TIF")
 os.environ.setdefault("GDAL_HTTP_MULTIRANGE", "YES")
 os.environ.setdefault("GDAL_HTTP_MERGE_CONSECUTIVE_RANGES", "YES")
+# neighbouring sites share the same 10 km tiles and dates: keep downloaded ranges in memory for the whole run
+os.environ.setdefault("CPL_VSIL_CURL_CACHE_SIZE", str(3 * 1024 ** 3))
 
 import rasterio  # noqa: E402
 from rasterio.warp import transform_bounds  # noqa: E402
@@ -30,6 +32,7 @@ from rasterio.windows import from_bounds  # noqa: E402
 STAC = "https://earth-search.aws.element84.com/v1/search"
 # SCL classes: 3 cloud shadow, 8/9 cloud medium/high, 10 cirrus, 1 saturated
 CLOUDY = {1, 3, 8, 9, 10}
+WATER = 6
 
 
 @dataclass

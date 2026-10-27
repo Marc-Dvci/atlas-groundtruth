@@ -279,7 +279,7 @@ export function Mission() {
                 ${fleet.plan.budget_usd} budget{fleet.plan.deadline ? ` · by ${fleet.plan.deadline}` : ""}
               </p>
             )}
-            {stage === "fleet" && <Lanes fleet={fleet} />}
+            {stage === "fleet" && (fleet.finished ? <Worklist fleet={fleet} prov={prov} /> : <Lanes fleet={fleet} />)}
           </motion.aside>
         )}
       </AnimatePresence>
@@ -384,5 +384,35 @@ function Callouts({ map, spots }: { map: MLMap; spots: { name: string; muni: str
         );
       })}
     </motion.svg>
+  );
+}
+
+const FLAGGED: Outcome[] = ["probable_ghost", "built_late", "relocated", "exists_before_contract"];
+
+/** When the mission ends: the contracts that need an investigator, most money first. */
+function Worklist({ fleet, prov }: { fleet: FleetState; prov: Proj[] }) {
+  const run = params.get("run") ?? DEFAULT_RUN;
+  const rows = prov
+    .filter((p) => FLAGGED.includes(fleet.status[p.id] as Outcome))
+    .sort((a, b) => FLAGGED.indexOf(fleet.status[a.id] as Outcome) - FLAGGED.indexOf(fleet.status[b.id] as Outcome) || b.cost - a.cost);
+  const php = rows.reduce((a, p) => a + p.cost, 0);
+  return (
+    <motion.div className="worklist" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease }}>
+      <div className="eyebrow" style={{ marginTop: 18 }}>
+        Worklist · {rows.length} contracts · ₱{(php / 1e9).toFixed(2)} billion for an investigator
+      </div>
+      <ol>
+        {rows.slice(0, 9).map((p) => (
+          <li key={p.id}>
+            <a href={`#/case/${run}/${p.id}`}>
+              <i style={{ background: OUTCOME_COLOR[fleet.status[p.id] as Outcome] }} />
+              <span className="mono wl-id">{p.id}</span>
+              <span className="wl-what">{OUTCOME_LABEL[fleet.status[p.id] as Outcome]} · {p.muni}</span>
+              <span className="mono wl-php">₱{(p.cost / 1e6).toFixed(1)}M</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </motion.div>
   );
 }

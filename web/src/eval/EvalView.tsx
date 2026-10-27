@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { OUTCOME_COLOR, OUTCOME_LABEL, type Outcome } from "../data";
 import { url } from "../api";
+import { smoothScroll } from "../scroll";
 
 type Row = {
   id: string; match: string; official: string; who: string; atlas: Outcome; reason: string; agree: boolean;
@@ -28,6 +29,15 @@ export function EvalView({ run }: { run: string }) {
     fetch(url.evaluation(run)).then((r) => r.json()).then(setEv);
     fetch(url.compare(run, other)).then((r) => (r.ok ? r.json() : null)).then((d) => d?.cases && setCmp(d)).catch(() => {});
   }, [run, other]);
+  useEffect(() => {
+    (window as unknown as { __eval: object }).__eval = {
+      scrollTo: (sel: string, ms = 1400) => {
+        const el = document.querySelector(sel) as HTMLElement | null;
+        const page = document.querySelector(".evalpage") as HTMLElement | null;
+        if (el && page) smoothScroll(page, el.offsetTop - 40, ms);
+      },
+    };
+  }, []);
   if (!ev) return null;
   return (
     <div className="evalpage">

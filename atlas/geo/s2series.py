@@ -2,8 +2,8 @@
 
 A concrete wall replaces a vegetated bank with bright, dry, impervious material:
 NDVI falls and brightness rises on the strip of land beside the water. The
-reach line runs down the river, so we first find the water itself (MNDWI, median
-over all clear scenes), then sample only the 20 m of land along its edge, inside
+reach line runs down the river, so we first find the water itself (classified as
+water in most clear scenes), then sample only the 20 m of land along its edge, inside
 an 80 m corridor of the reach. Clouds are masked per scene with SCL.
 Detectability is scored from the bank before the award: a bank that was
 already bare cannot testify about a new wall.
@@ -45,25 +45,26 @@ def _read(href: str, bbox, out_shape=None):
 
 
 def sample(scene: S2.Scene, bbox) -> dict | None:
-    """Raw per-scene arrays on the 10 m grid (small: the corridor is a few dozen pixels)."""
+    """Raw per-scene arrays on the 10 m grid (small: the corridor is a few dozen pixels).
+
+    Three bands only: each read of a public COG pulls whole 1024-pixel tiles (about 1.4 MB a band), so every band
+    dropped matters. Red and near-infrared give NDVI; the scene classification (SCL) gives clouds and water."""
     try:
         red, tr, crs = _read(scene.href("red"), bbox)
         shp = red.shape
         nir, _, _ = _read(scene.href("nir"), bbox)
-        green, _, _ = _read(scene.href("green"), bbox)
-        swir, _, _ = _read(scene.href("swir16"), bbox, out_shape=shp)
         scl, _, _ = _read(scene.href("scl"), bbox, out_shape=shp)
     except Exception:
         return None
     if red.size == 0:
         return None
-    r, n, g, s = (x.astype(np.float32) for x in (red, nir, green, swir))
+    r, n = red.astype(np.float32), nir.astype(np.float32)
     clear = (scl > 0) & ~np.isin(scl, list(S2.CLOUDY))
     return {
         "date": scene.date, "tr": tr, "crs": crs, "clear": clear,
         "ndvi": (n - r) / np.maximum(n + r, 1),
-        "mndwi": (g - s) / np.maximum(g + s, 1),
-        "bright": (r + g) / 2 / 10000,
+        "wet": np.where(scl == S2.WATER, 1.0, -1.0).astype(np.float32),
+        "bright": r / 10000,
     }
 
 
@@ -72,12 +73,12 @@ def _raw(reach_geo: dict, start: str, end: str, cache: Path, workers: int, per_m
     from rasterio.crs import CRS
     from rasterio.transform import Affine
     h = hashlib.sha1(json.dumps(reach_geo, sort_keys=True).encode()).hexdigest()[:16]
-    npz = cache / (f"raw_{h}_{start}_{end}.npz" if per_month == 2 else f"raw_{h}_{start}_{end}_m{per_month}.npz")
+    npz = cache / f"raw3_{h}_{start}_{end}_m{per_month}.npz"
     if npz.exists():
         z = np.load(npz, allow_pickle=False)
         meta = json.loads(str(z["meta"]))
         tr, crs = Affine(*meta["tr"]), CRS.from_string(meta["crs"])
-        return [{"date": d, "tr": tr, "crs": crs, "clear": z["clear"][i], "ndvi": z["ndvi"][i], "mndwi": z["mndwi"][i],
+        return [{"date": d, "tr": tr, "crs": crs, "clear": z["clear"][i], "ndvi": z["ndvi"][i], "wet": z["wet"][i],
                  "bright": z["bright"][i]} for i, d in enumerate(meta["dates"])]
     corridor = buffer_m(shape(reach_geo), CORRIDOR_M)
     bbox = corridor.bounds
@@ -94,7 +95,7 @@ def _raw(reach_geo: dict, start: str, end: str, cache: Path, workers: int, per_m
     raw = sorted((x for x in raw if x["ndvi"].shape == shp), key=lambda x: x["date"])
     npz.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(npz, clear=np.stack([x["clear"] for x in raw]), ndvi=np.stack([x["ndvi"] for x in raw]).astype(np.float32),
-                        mndwi=np.stack([x["mndwi"] for x in raw]).astype(np.float32),
+                        wet=np.stack([x["wet"] for x in raw]).astype(np.float32),
                         bright=np.stack([x["bright"] for x in raw]).astype(np.float32),
                         meta=json.dumps({"dates": [x["date"] for x in raw], "tr": list(raw[0]["tr"])[:6],
                                          "crs": raw[0]["crs"].to_string()}))
@@ -106,7 +107,7 @@ def series(reach_geo: dict, start: str, end: str, cache: Path, workers: int = 12
     A wall is usually built on one bank; on a median over both, a vegetated far bank can hide it."""
     from .geom import to_deg, to_m
     h = hashlib.sha1(json.dumps(reach_geo, sort_keys=True).encode()).hexdigest()[:16]
-    key = cache / (f"banks3_{h}_{start}_{end}.json" if per_month == 2 else f"banks3_{h}_{start}_{end}_m{per_month}.json")
+    key = cache / f"banks5_{h}_{start}_{end}_m{per_month}.json"
     if key.exists():
         return json.loads(key.read_text())
     raw = _raw(reach_geo, start, end, cache, workers, per_month)
@@ -124,11 +125,13 @@ def series(reach_geo: dict, start: str, end: str, cache: Path, workers: int = 12
     inside = mask(corridor)
     rm = to_m(reach)
     left, right = mask(to_deg(rm.buffer(CORRIDOR_M, single_sided=True))), mask(to_deg(rm.buffer(-CORRIDOR_M, single_sided=True)))
-    # stable water mask: median MNDWI over clear observations
-    stack = np.where(np.stack([x["clear"] for x in raw]), np.stack([x["mndwi"] for x in raw]), np.nan)
+    # stable water mask: classified as water (SCL, 20 m) in at least 30% of clear scenes, or with the spectrum of
+    # water over the series (median NDVI below -0.05): SCL alone misses a river's edges at 10 m
+    clear = np.stack([x["clear"] for x in raw])
     with np.errstate(all="ignore"):
-        med = np.nanmedian(stack, axis=0)
-    water = np.nan_to_num(med, nan=-1) > 0.05
+        wet = np.nanmean(np.where(clear, np.stack([x["wet"] for x in raw]) > 0, np.nan), axis=0)
+        ndvi_med = np.nanmedian(np.where(clear, np.stack([x["ndvi"] for x in raw]), np.nan), axis=0)
+    water = (np.nan_to_num(wet, nan=0) >= 0.3) | (np.nan_to_num(ndvi_med, nan=0) < -0.05)
     bank = binary_dilation(water, iterations=2) & ~water & inside
     if bank.sum() < 6:  # no water resolved (a creek narrower than a pixel): the strip along the channel itself
         bank = mask(buffer_m(reach, NARROW_M)) & ~water
@@ -141,8 +144,7 @@ def series(reach_geo: dict, start: str, end: str, cache: Path, workers: int = 12
             continue
         row = {"date": x["date"], "px": int(ok.sum()),
                "ndvi": round(float(np.median(x["ndvi"][ok])), 4),
-               "bright": round(float(np.median(x["bright"][ok])), 4),
-               "mndwi": round(float(np.median(x["mndwi"][ok])), 4)}
+               "bright": round(float(np.median(x["bright"][ok])), 4)}
         for k, m in sides.items():
             okk = m & x["clear"]
             if m.sum() >= 3 and okk.sum() >= 0.8 * m.sum():
@@ -178,7 +180,7 @@ def seasons(rows: list[dict], field: str = "ndvi") -> list[dict]:
         rs = by[k]
         if len(rs) < 2:
             continue
-        out.append({"key": k, "kind": k.split("-")[1][1:], "first": rs[0]["date"], "n": len(rs),
+        out.append({"key": k, "kind": k.split("-")[1][1:], "first": rs[0]["date"], "last": rs[-1]["date"], "n": len(rs),
                     "ndvi": float(np.median([r[field] for r in rs])), "bright": float(np.median([r["bright"] for r in rs]))})
     return out
 
@@ -204,8 +206,9 @@ def first_change(rows: list[dict], *, min_shift: float = 0.15, field: str = "ndv
         o_after = [x["ndvi"] for x in other if x["key"] > s["key"]][:2]
         if o_before and o_after and np.median(o_after) > np.median(o_before) - min_shift / 2:
             continue
-        return {"date": s["first"], "season": s["key"], "ndvi_before": round(base, 3), "ndvi_after": round(s["ndvi"], 3),
-                "shift": round(base - s["ndvi"], 3), "method": "same-season comparison (wet vs wet, dry vs dry)"}
+        return {"date": s["first"], "last": s["last"], "season": s["key"], "ndvi_before": round(base, 3),
+                "ndvi_after": round(s["ndvi"], 3), "shift": round(base - s["ndvi"], 3),
+                "method": "same-season comparison (wet vs wet, dry vs dry)"}
     return None
 
 
@@ -252,7 +255,7 @@ def disturbance(rows: list[dict], *, min_shift: float = 0.15, field: str = "ndvi
             continue
         prior = [x["ndvi"] for x in ss[:i] if x["kind"] == s["kind"]][-2:]
         if prior and s["ndvi"] <= float(np.median(prior)) - min_shift:
-            return {"date": s["first"], "season": s["key"], "ndvi_before": round(float(np.median(prior)), 3),
+            return {"date": s["first"], "last": s["last"], "season": s["key"], "ndvi_before": round(float(np.median(prior)), 3),
                     "ndvi_after": round(s["ndvi"], 3)}
     return None
 
