@@ -102,6 +102,12 @@ class Meter:
 
     def add(self, usd: float, model: str) -> None:
         with self._lock:
+            if self.path.exists():  # another process (a fleet beside an evaluation) may have spent since we last looked
+                try:
+                    d = json.loads(self.path.read_text())
+                    self.spent_usd, self.calls = max(self.spent_usd, d.get("spent_usd", 0.0)), max(self.calls, d.get("calls", 0))
+                except (json.JSONDecodeError, OSError):
+                    pass
             self.spent_usd += usd
             self.calls += 1
             self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -180,10 +186,16 @@ class MetaClient:
         self.meter.check(est_usd)
         headers = {"Authorization": f"Bearer {self.api_key}"}
         for attempt in range(5):
-            if files:
-                r = self._http.post(path, data=body, files=files, headers=headers)
-            else:
-                r = self._http.post(path, json=body, headers=headers)
+            try:
+                if files:
+                    r = self._http.post(path, data=body, files=files, headers=headers)
+                else:
+                    r = self._http.post(path, json=body, headers=headers)
+            except httpx.TransportError:  # a dropped connection is retried like a 503
+                if attempt == 4:
+                    raise
+                time.sleep(2 ** attempt + 0.5)
+                continue
             if r.status_code in (429, 500, 502, 503, 504) and attempt < 4:
                 time.sleep(2 ** attempt + 0.5)
                 continue
@@ -258,7 +270,12 @@ class MetaClient:
         self.open_meter.check(est_usd)
         last = ""
         for attempt in range(4):
-            r = self._open_http.post("/chat/completions", json=body, headers={"Authorization": f"Bearer {self.open_key}"})
+            try:
+                r = self._open_http.post("/chat/completions", json=body, headers={"Authorization": f"Bearer {self.open_key}"})
+            except httpx.TransportError as e:
+                last = f"{type(e).__name__}"
+                time.sleep(2 ** attempt + 0.5)
+                continue
             if r.status_code in (429, 500, 502, 503, 504):
                 last = f"HTTP {r.status_code}: {r.text[:300]}"
                 time.sleep(2 ** attempt + 0.5)

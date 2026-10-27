@@ -34,7 +34,7 @@ def main(argv: list[str]) -> None:
     if a.limit:
         ids = ids[: a.limit]
     fl = Fleet(a.run, workers=a.workers)
-    p = fl.launch(ids, mission=f"Every flood-control contract in {a.province}, before the Senate hearing",
+    p = fl.launch(ids, mission=f"Every flood-control contract in {a.province}, before the deadline",
                   budget_usd=a.budget, deadline=a.deadline, lm=a.lm, full_top=a.full_top)
     print(json.dumps({k: v for k, v in p.items() if k != "order"}, indent=1))
 

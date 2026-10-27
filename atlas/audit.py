@@ -65,7 +65,7 @@ def audit(record: dict, ledger: Ledger, meta: MetaClient | None, emit: Callable[
         case.facts["spark"] = case.facts["writer"] = OPEN
     else:
         case.facts["spark"] = SPARK if depth == "full" else BULK
-        case.facts["writer"] = WONDER
+        case.facts["writer"] = WONDER if depth == "full" else BULK  # Muse Wonder writes the full-depth case files
     case.facts["lm"] = lm
     t0 = time.time()
     case.say("fleet", "case_start", record={k: record.get(k) for k in (

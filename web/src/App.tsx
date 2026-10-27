@@ -3,6 +3,7 @@ import { CaseView } from "./case/CaseView";
 import { Mission } from "./mission/Mission";
 import { EvalView } from "./eval/EvalView";
 import { LedgerView } from "./ledger/LedgerView";
+import { Card } from "./Card";
 
 function useHash() {
   const [h, setH] = useState(window.location.hash);
@@ -20,6 +21,8 @@ export default function App() {
   if (m) return <CaseView key={hash} run={m[1]} id={m[2]} onBack={() => (window.location.hash = "")} />;
   const lg = hash.match(/^#\/ledger\/([\w-]+)\/([\w-]+)/);
   if (lg) return <LedgerView run={lg[1]} id={lg[2]} />;
+  const card = hash.match(/^#\/card\/([^/]+)/);
+  if (card) return <Card id={card[1]} />;
   const ev = hash.match(/^#\/eval\/([\w-]+)/);
   if (ev) return <EvalView run={ev[1]} />;
   return <Mission />;

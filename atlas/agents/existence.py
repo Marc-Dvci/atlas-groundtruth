@@ -78,6 +78,20 @@ JUDGE_SCHEMA = {
     "required": ["images", "change", "summary"],
 }
 
+# The second reader: a different model, one image at a time, a narrower question. A decisive reading counts only
+# when both readers agree on it.
+CROSS = """You are checking one satellite image for a public-works audit. A cyan line marks a river reach where a
+contract says a flood-control structure (a concrete wall, revetment or dike along the bank) was built. Images can be
+misaligned by 30-50 m, so look at the banks beside the line. Is such a structure present along most of the line?
+Answer literally; say "cannot tell" when cloud, haze or blur hides the bank."""
+
+CROSS_SCHEMA = {
+    "type": "object", "additionalProperties": False,
+    "properties": {"structure": {"type": "string", "enum": ["yes", "partly", "no", "cannot tell"]},
+                   "what_i_see": {"type": "string"}},
+    "required": ["structure", "what_i_see"],
+}
+
 _wb: Wayback | None = None
 
 
@@ -245,6 +259,27 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
         case.say(AGENT, "reading", **ans)
         for im in ans.get("images", []):
             verdicts[im["date"][:10]] = im
+    # Decisive captures (every one after completion, and the last before the award) get a second reader.
+    from ..meta import OPEN, label
+    primary = case.facts.get("spark", SPARK)
+    second = OPEN if case.meta is not None and case.meta.open_key else None
+    cross: dict[str, dict] = {}
+    if second and frames:
+        last_before = [f for f in frames if f["window"] == "before_award"][-1:]
+        for f in last_before + [f for f in frames if f["window"] == "after_completion"]:
+            try:
+                res = case.meta.structured(second, CROSS, [
+                    {"type": "input_text", "text": f"Contract: {case.record['desc']}. Capture of {f['captured']}."},
+                    {"type": "input_image", "image_url": "data:image/jpeg;base64," + __import__("base64").b64encode(
+                        f["chip"].with_line(reach)).decode()}], CROSS_SCHEMA, schema_name="cross_reading", effort="low",
+                    est_usd=0.01)
+            except Exception as e:  # a missing second reading leaves the first one standing, and says so
+                case.record_entry(AGENT, "cross_reading_failed", {"capture": f["captured"], "error": str(e)[:200]})
+                continue
+            x = res["data"] or {}
+            if x.get("structure") in ("yes", "partly", "no", "cannot tell"):
+                cross[f["captured"]] = {**x, "model": label(second)}
+                case.record_entry(AGENT, "cross_reading", {"model": second, "capture": f["captured"], "answer": x})
     # One finding per capture. The reading (Muse Spark) says WHAT is on the bank; the SAM 3.1 masks say
     # WHERE, and their agreement is recorded. SAM's "riverbank" also fires on some natural banks, so a mask
     # alone never makes a claim.
@@ -270,7 +305,19 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
                 why += " (masks disagree)"
         else:
             claim, why, q = "inconclusive", f"reading: structure {v['structure_visible']} on {v['extent_fraction']:.0%}", 0.4
+        x = cross.get(f["captured"])
+        if x and claim in ("present", "absent"):
+            other_yes, other_no = x["structure"] in ("yes", "partly"), x["structure"] == "no"
+            if (claim == "present" and other_no) or (claim == "absent" and other_yes):
+                why = (f"readers disagree: {label(primary)} reads {claim}, {x['model']} reads "
+                       f"'{x['structure']}' ({x['what_i_see'][:120]})")
+                claim, q = "inconclusive", 0.0
+            elif other_yes or other_no:
+                why += f"; {x['model']} agrees"
+            else:
+                why += f"; {x['model']} cannot tell"
         f["reading"] = v
+        f["cross"] = x
         case.file(Finding(
             agent=AGENT,
             source=f"{f['provider'] or 'Wayback'} {f['captured']} ({f['sensor'] or 'optical'}, {f['resolution_m'] or '?'} m)",
@@ -299,7 +346,10 @@ def run_s2(case: Case, award: str, completion: str) -> dict:
     # full depth: four years before the award; screening: two and a half, still two seasons of each kind for the baseline
     years = 4 if case.facts.get("depth") == "full" else 2.5
     start = max("2019-01-01", (date.fromisoformat(award) - timedelta(days=int(years * 365))).isoformat())
-    rows = s2series.series(mapping(reach), start, date.today().isoformat(), DATA / "cache/s2")
+    # screening reads the clearest scene of each month, full depth the two clearest
+    full = case.facts.get("depth") == "full"
+    rows = s2series.series(mapping(reach), start, date.today().isoformat(), DATA / "cache/s2", workers=12 if full else 24,
+                           per_month=2 if full else 1)
     rows = [r for r in rows if r.get("ndvi") is not None]
     before = s2series.window_stats(rows, None, award)
     after = s2series.window_stats(rows, (date.fromisoformat(completion) + timedelta(days=30)).isoformat(), None)

@@ -143,6 +143,14 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
             <motion.div key={active} className="reading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
               <div className="eyebrow">{spark} reads {c.frames[active].captured}</div>
               <p className="prose">{c.frames[active].reading!.what_i_see}</p>
+              {c.frames[active].cross && (
+                <>
+                  <div className="eyebrow" style={{ marginTop: 10 }}>
+                    Second reader · {c.frames[active].cross!.model} · structure: {c.frames[active].cross!.structure}
+                  </div>
+                  <p className="prose">{c.frames[active].cross!.what_i_see}</p>
+                </>
+              )}
             </motion.div>
           )}
           <p className="note">

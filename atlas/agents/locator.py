@@ -34,14 +34,18 @@ Read the description the way a Philippine public-works engineer would:
   so stations give the LENGTH of the works (here 300 m), not an absolute position.
 - Several barangays ("Sta. Elena - San Pedro") mean the works run between them.
 
-When the text names no river, call contracts_in_barangay: other contracts for the same barangay usually
-name the river or creek the works sit on (several phases of one programme often share a river).
-
-Use the tools to check what exists on the map. Prefer, in order: a named river inside the named barangay;
-an unnamed waterway inside the named barangay; the named river near the barangay; a river traced from
-satellite imagery when the map has no waterway there. If the pin is inside the named barangay and on a
-waterway, it may be right: say so. Never invent places. If the text cannot be matched, say the site is not
-locatable and why.
+Choose the waterway by this order of evidence, and say in the reasoning which step you used:
+1. A river or creek the contract names, inside or along the named barangay.
+2. If the contract names none, call contracts_in_barangay: the river or creek that other contracts for the same
+   barangay name (several phases of one programme usually share a river), inside or along the barangay.
+3. If neither names one, the waterway at the published pin, when the pin is inside the named barangay and within
+   about 150 m of it.
+4. Otherwise the longest mapped waterway inside the named barangay, or a channel traced from satellite imagery when
+   the map has none where the text puts the works.
+Within the chosen waterway, centre the reach near the pin only if the pin is within about 300 m of it; otherwise
+centre it inside the barangay. Confidence: high for step 1 with stations, medium for steps 1-2, low for steps 3-4.
+Never invent places. Say the site is not locatable only when no waterway in or near the named barangay could hold
+the works, and say why.
 
 Finish by calling propose_reach for your chosen site, then answer with the JSON object requested."""
 
@@ -261,6 +265,13 @@ def screen(case: Case, tools: LocatorTools, h: dict) -> dict:
 
 def finish(case: Case, gi: GeoIndex, tools: LocatorTools, ans: dict, out: dict | None) -> dict:
     r = case.record
+    # the open model sometimes returns a field as an object: keep the answer's types what the schema says
+    for k in ("structure", "reasoning", "river", "purok_or_sitio", "section"):
+        if ans.get(k) is not None and not isinstance(ans[k], str):
+            ans[k] = json.dumps(ans[k], ensure_ascii=False) if not isinstance(ans[k], (int, float)) else str(ans[k])
+    for k in ("barangays", "stations"):
+        if not isinstance(ans.get(k), list):
+            ans[k] = [str(ans[k])] if ans.get(k) else []
     case.say(AGENT, "answer", **ans)
     rid = ans.get("reach_id")
     if not rid or rid not in tools.reaches:

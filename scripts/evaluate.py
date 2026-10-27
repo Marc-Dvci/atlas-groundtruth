@@ -116,7 +116,7 @@ def main(argv: list[str]) -> None:
         c = compare(*a.compare)
         print(json.dumps({k: v for k, v in c.items() if k != "rows"}, indent=1))
         for r in c["rows"]:
-            print(f"  {r['id']} {r[a.compare[0]]:<22} {r[a.compare[1]]:<22} site gap {r['site_gap_m']} m, "
+            print(f"  {r['id']} {str(r[a.compare[0]]):<22} {str(r[a.compare[1]]):<22} site gap {r['site_gap_m']} m, "
                   f"readings {r['readings_agree']}/{r['readings_compared']}")
         return
     if not a.score_only:
@@ -139,7 +139,7 @@ def main(argv: list[str]) -> None:
     s = score(a.run)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}, indent=1))
     for r in s["rows"]:
-        print(f"  {r['id']} [{r['match']:>9}] official={r['official']:<24} atlas={r['atlas']:<22} "
+        print(f"  {r['id']} [{r['match']:>9}] official={r['official']:<24} atlas={str(r['atlas']):<22} "
               f"{'AGREE' if r['agree'] else 'partial' if r['partial'] else 'abstain' if r['abstain'] else 'CONTRADICT'}")
 
 

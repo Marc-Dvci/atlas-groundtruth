@@ -39,6 +39,12 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
   const [active, setActive] = useState(0);
   const [tools, setTools] = useState<{ tool: string; args: Record<string, unknown>; refused?: string | null }[]>([]);
   const [w, setW] = useState(window.innerWidth);
+  // the same contract audited on the other model host, when that run exists
+  const twin = run.endsWith("-open") ? run.slice(0, -5) : `${run}-open`;
+  const [hasTwin, setHasTwin] = useState(false);
+  useEffect(() => {
+    fetch(url.case(twin, id)).then((r) => setHasTwin(r.ok)).catch(() => setHasTwin(false));
+  }, [twin, id]);
   const beats = useMemo(() => beatsFor(c), [c]);
   const key = beats[Math.min(beat, beats.length - 1)].key;
   const at = useCallback((k: string) => beats.findIndex((b) => b.key === k), [beats]);
@@ -137,6 +143,11 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
         <span className="mono" style={{ letterSpacing: "0.32em", fontWeight: 600 }}>ATLAS</span>
         {c && <span className="mono dim">{c.id}</span>}
         {c?.models?.lm === "open" && <span className="mono pill-open">open weights · {c.models.spark}</span>}
+        {hasTwin && (
+          <a className="mono twin" href={`#/case/${twin}/${id}`}>
+            {run.endsWith("-open") ? "see it on Muse Spark 1.3" : "see it on Muse Spark Open"} →
+          </a>
+        )}
         {v && reached("verdict") && (
           <span className="pill-outcome" style={{ color: OUTCOME_COLOR[v.outcome], borderColor: OUTCOME_COLOR[v.outcome] }}>
             {OUTCOME_LABEL[v.outcome]}

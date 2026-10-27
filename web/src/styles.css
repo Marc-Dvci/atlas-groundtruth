@@ -353,3 +353,7 @@ mark.hl-declared {
 .chain-name { font-size: 13.5px; }
 .chain-n { font-size: 11px; color: var(--muted); }
 .planline { font-size: 11px; color: var(--muted); margin: 16px 0 0; letter-spacing: 0.02em; }
+.case-head .twin { font-size: 11px; color: var(--muted); text-decoration: none; }
+.case-head .twin:hover { color: var(--declared); }
+.card-page { position: absolute; inset: 0; display: grid; place-items: center; text-align: center;
+  background: radial-gradient(80% 70% at 50% 45%, #0b1522, var(--ink) 70%); }

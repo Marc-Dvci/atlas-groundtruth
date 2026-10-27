@@ -67,12 +67,12 @@ def sample(scene: S2.Scene, bbox) -> dict | None:
     }
 
 
-def _raw(reach_geo: dict, start: str, end: str, cache: Path, workers: int) -> list[dict]:
+def _raw(reach_geo: dict, start: str, end: str, cache: Path, workers: int, per_month: int = 2) -> list[dict]:
     """Per-scene arrays over the corridor, read once and cached (the reads are the slow part)."""
     from rasterio.crs import CRS
     from rasterio.transform import Affine
     h = hashlib.sha1(json.dumps(reach_geo, sort_keys=True).encode()).hexdigest()[:16]
-    npz = cache / f"raw_{h}_{start}_{end}.npz"
+    npz = cache / (f"raw_{h}_{start}_{end}.npz" if per_month == 2 else f"raw_{h}_{start}_{end}_m{per_month}.npz")
     if npz.exists():
         z = np.load(npz, allow_pickle=False)
         meta = json.loads(str(z["meta"]))
@@ -85,7 +85,7 @@ def _raw(reach_geo: dict, start: str, end: str, cache: Path, workers: int) -> li
     by_month: dict[str, list] = {}
     for sc in scenes:
         by_month.setdefault(sc.date[:7], []).append(sc)
-    scenes = [x for m in sorted(by_month) for x in sorted(by_month[m], key=lambda s: s.cloud)[:2]]
+    scenes = [x for m in sorted(by_month) for x in sorted(by_month[m], key=lambda s: s.cloud)[:per_month]]
     with ThreadPoolExecutor(workers) as ex:
         raw = [x for x in ex.map(lambda s: sample(s, bbox), scenes) if x]
     if not raw:
@@ -101,15 +101,15 @@ def _raw(reach_geo: dict, start: str, end: str, cache: Path, workers: int) -> li
     return raw
 
 
-def series(reach_geo: dict, start: str, end: str, cache: Path, workers: int = 12) -> list[dict]:
+def series(reach_geo: dict, start: str, end: str, cache: Path, workers: int = 12, per_month: int = 2) -> list[dict]:
     """Bank NDVI per scene: both banks together, and each bank alone ("l" and "r" of the reach line).
     A wall is usually built on one bank; on a median over both, a vegetated far bank can hide it."""
     from .geom import to_deg, to_m
     h = hashlib.sha1(json.dumps(reach_geo, sort_keys=True).encode()).hexdigest()[:16]
-    key = cache / f"banks3_{h}_{start}_{end}.json"
+    key = cache / (f"banks3_{h}_{start}_{end}.json" if per_month == 2 else f"banks3_{h}_{start}_{end}_m{per_month}.json")
     if key.exists():
         return json.loads(key.read_text())
-    raw = _raw(reach_geo, start, end, cache, workers)
+    raw = _raw(reach_geo, start, end, cache, workers, per_month)
     if not raw:
         return []
     shp = raw[0]["ndvi"].shape

@@ -87,10 +87,18 @@ def cases(run: str):
 
 
 @app.get("/api/runs/{run}/events")
-async def events(run: str, request: Request, since: int = 0, speed: float = 0.0):
+async def events(run: str, request: Request, since: int = 0, speed: float = 0.0, duration: float = 0.0):
     """Server-sent events from the run log. speed=0 streams live (tail); speed>0 replays
-    the recorded log with its original pacing divided by `speed`."""
+    the recorded log with its original pacing divided by `speed`; duration>0 replays the whole
+    recording in about that many seconds."""
     path = _run_dir(run) / "events.jsonl"
+    if duration > 0 and path.exists():
+        with path.open(encoding="utf-8") as f:
+            first = json.loads(f.readline()).get("t", 0)
+        with path.open("rb") as f:
+            f.seek(max(0, path.stat().st_size - 200_000))
+            last = json.loads(f.read().decode("utf-8", "ignore").strip().splitlines()[-1]).get("t", first)
+        speed = max(1.0, (last - first) / duration)
 
     async def gen():
         n = 0

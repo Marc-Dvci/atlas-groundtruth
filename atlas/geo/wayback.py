@@ -59,11 +59,25 @@ class Wayback:
         self.by_num = {r.num: r for r in self.releases}
 
     # ---------- low level ----------
+    def _get(self, url: str) -> httpx.Response:
+        """GET with retries: a fleet makes thousands of tile requests, and some connections drop."""
+        import time
+        for attempt in range(4):
+            try:
+                r = self.http.get(url)
+                if r.status_code < 500 or attempt == 3:
+                    return r
+            except httpx.TransportError:
+                if attempt == 3:
+                    raise
+            time.sleep(1.5 * (attempt + 1))
+        return r
+
     def _json(self, url: str, key: str) -> dict:
         p = self.cache / "json" / f"{hashlib.sha1(key.encode()).hexdigest()}.json"
         if p.exists():
             return json.loads(p.read_text())
-        r = self.http.get(url)
+        r = self._get(url)
         r.raise_for_status()
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(r.text)
@@ -73,7 +87,7 @@ class Wayback:
         p = self.cache / "tiles" / str(release) / f"{z}_{x}_{y}.jpg"
         if p.exists():
             return p.read_bytes()
-        r = self.http.get(f"{BASE}/tile/{release}/{z}/{y}/{x}")
+        r = self._get(f"{BASE}/tile/{release}/{z}/{y}/{x}")
         r.raise_for_status()
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(r.content)

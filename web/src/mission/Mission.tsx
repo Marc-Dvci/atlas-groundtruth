@@ -16,6 +16,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const STATUS_CODE: Record<string, number> = { running: 1, exists: 2, exists_before_contract: 3, relocated: 4, probable_ghost: 5, cant_verify: 6, built_late: 7 };
 
 const params = new URLSearchParams(window.location.search);
+const DEFAULT_RUN = "bulacan"; // the province mission; ?run=eval replays the evaluation instead
 
 export function Mission() {
   const [map, setMap] = useState<MLMap | null>(null);
@@ -96,7 +97,7 @@ export function Mission() {
       "circle-color": "rgba(0,0,0,0)", "circle-stroke-color": "#ffffff", "circle-stroke-width": 1.4, "circle-radius": 10, "circle-stroke-opacity": 0.8 } });
     map.on("click", "bul-core", (e) => {
       const id = e.features?.[0]?.properties?.id;
-      const run = params.get("run") ?? "eval";
+      const run = params.get("run") ?? DEFAULT_RUN;
       if (id && fleetRef.current.status[id] && fleetRef.current.status[id] !== "running") window.location.hash = `#/case/${run}/${id}`;
     });
     map.on("mouseenter", "bul-core", () => (map.getCanvas().style.cursor = "pointer"));
@@ -171,11 +172,11 @@ export function Mission() {
     setStage("fleet");
 
     map?.setPaintProperty("bul-hot", "fill-opacity", ["interpolate", ["linear"], ["coalesce", ["get", "php"], 0], 0, 0, 1e9, 0.08, 2.2e9, 0.16]);
-    const run = params.get("run") ?? "eval";
-    const speed = params.get("speed") ?? "8";
+    const run = params.get("run") ?? DEFAULT_RUN;
+    const duration = Number(params.get("dur") ?? "80");
     let s = empty();
     let raf = 0;
-    streamEvents(run, Number(speed), (e) => {
+    streamEvents(run, duration, (e) => {
       s = reduce(s, e as Ev);
       if (!raf) raf = requestAnimationFrame(() => { raf = 0; setFleet(s); });
     });
@@ -196,6 +197,8 @@ export function Mission() {
       repeated: c("REPEATED_AMOUNT"), shared: c("SHARED_PIN"), copied: c("PIN_COPIED_DECIMALS") };
   }, [prov]);
   const overlaps = summary?.overlaps?.filter((o: any) => o.province === "Bulacan").length ?? 0;
+  const deadline = spec?.deadline ?? fleet.plan?.deadline ?? params.get("deadline") ?? "2026-11-06";
+  const deadlineLabel = new Date(deadline + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
 
   return (
     <div style={{ position: "absolute", inset: 0 }}>
@@ -240,7 +243,7 @@ export function Mission() {
           <motion.aside key="mission" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, delay: stage === "province" ? 2.6 : 0, ease }} className="mission">
             <div className="eyebrow">Mission</div>
-            <h2 className="serif">Every flood-control contract in Bulacan, before the Senate hearing.</h2>
+            <h2 className="serif">Every flood-control contract in Bulacan, before the deadline.</h2>
             {spec && (
               <div className="chips" style={{ marginBottom: 14 }}>
                 {spec.deadline && <span className="chip">by <b>{spec.deadline}</b></span>}
@@ -251,7 +254,7 @@ export function Mission() {
             <div className="mission-facts">
               <div><span className="serif big">{fmt.format(prov.length)}</span><span className="eyebrow">contracts</span></div>
               <div><span className="serif big">₱{(bulTotal / 1e9).toFixed(1)}B</span><span className="eyebrow">paid</span></div>
-              <div><span className="serif big">6 Nov</span><span className="eyebrow">hearing</span></div>
+              <div><span className="serif big">{deadlineLabel}</span><span className="eyebrow">{spec?.deadline_label ?? "deadline"}</span></div>
             </div>
             {flags && (
               <ul className="redflags">

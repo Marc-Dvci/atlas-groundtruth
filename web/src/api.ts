@@ -22,10 +22,11 @@ export const url = {
 
 export type RawEvent = { t: number; kind: string; case: string; agent: string; data: Record<string, unknown> };
 
-/** Stream a run's events: live from the server (or its recording at `speed`), or replayed from the exported log. */
-export function streamEvents(run: string, speed: number, onEvent: (e: RawEvent) => void, onEnd?: () => void): () => void {
+/** Stream a run's events: live from the server (or its recording, replayed in about `duration` seconds),
+ * or replayed from the exported log in the static build. */
+export function streamEvents(run: string, duration: number, onEvent: (e: RawEvent) => void, onEnd?: () => void): () => void {
   if (!STATIC) {
-    const es = new EventSource(`/api/runs/${run}/events?speed=${speed}`);
+    const es = new EventSource(`/api/runs/${run}/events?duration=${duration}`);
     es.onmessage = (m) => onEvent(JSON.parse(m.data));
     es.addEventListener("end", () => {
       es.close();
@@ -36,11 +37,13 @@ export function streamEvents(run: string, speed: number, onEvent: (e: RawEvent) 
   let stop = false;
   (async () => {
     const text = await (await fetch(`${S}/runs/${run}/events.jsonl`)).text();
-    const evs = text.split("\n").filter((l) => l.trim()).map((l) => JSON.parse(l) as RawEvent);
+    const evs = text.split(/\r?\n/).filter((l) => l.trim()).map((l) => JSON.parse(l) as RawEvent);
+    const span = evs.length ? evs[evs.length - 1].t - evs[0].t : 0;
+    const speed = duration > 0 ? Math.max(1, span / duration) : 1;
     let last: number | null = null;
     for (const e of evs) {
       if (stop) return;
-      if (last != null && speed > 0) {
+      if (last != null) {
         const wait = Math.min(4, Math.max(0, (e.t - last) / speed)) * 1000;
         if (wait > 4) await new Promise((r) => setTimeout(r, wait));
       }
