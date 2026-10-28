@@ -13,7 +13,8 @@ Sentinel-2 archive, street-level photos and the public record. Fixed rules, not 
 reading, mask and verdict is sealed in a hash-chained ledger, and a human investigator signs every case.
 
 **Demo, no install:** https://marc-dvci.github.io/atlas-groundtruth/ (recorded runs; the browser re-verifies every
-ledger hash itself). The case below: [24CC0055](https://marc-dvci.github.io/atlas-groundtruth/#/case/eval/24CC0055).
+ledger hash itself). **Live audit:** https://rgt48790--atlas-live-web.us-east.modal.run (pick a Bulacan contract, or a random one, and watch Atlas audit it from
+scratch). The case below: [24CC0055](https://marc-dvci.github.io/atlas-groundtruth/#/case/eval/24CC0055).
 
 ![Case 24CC0055: the wall at the located reach was already standing in January 2020, four years before the contract](docs/case.jpg)
 
@@ -228,7 +229,7 @@ costs about $0.15; screening depth about $0.03.
 
 ## Live audit
 
-[`deploy/modal_app.py`](deploy/modal_app.py) serves the API and the web app on Modal, opening on a live page: pick a
+https://rgt48790--atlas-live-web.us-east.modal.run: [`deploy/modal_app.py`](deploy/modal_app.py) serves the API and the web app on Modal, opening on a live page: pick a
 Bulacan contract, or let Atlas pick one at random, and it audits it at full depth from scratch. The run starts with an
 empty model cache, so every model answer is a call made then, and the page streams each agent's steps as the ledger
 seals them, through to the verdict, the case and its verifiable ledger. A live audit costs about $0.06 of model calls

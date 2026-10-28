@@ -21,7 +21,8 @@ image = (
         "pyproj==3.7.1", "pillow==12.2.0", "scipy==1.15.3", "mercantile==1.2.1", "cryptography==46.0.3", "certifi",
         "requests",
     )
-    .env({"ATLAS_DATA": "/data", "ATLAS_LIVE": "1", "ATLAS_LIVE_BUDGET_USD": "15", "ATLAS_LIVE_PER_DAY": "30",
+    .env({"ATLAS_DATA": "/data", "ATLAS_LIVE": "1", "ATLAS_LIVE_OPEN": "1",  # open to anyone, within the caps below
+          "ATLAS_LIVE_BUDGET_USD": "15", "ATLAS_LIVE_PER_DAY": "30",
           "ATLAS_SELF_ENROL": "1", "GDAL_HTTP_TIMEOUT": "60",
           # caps for the meters a hosted server could reach: Meta outside live audits, and Baseten (the second reader)
           "ATLAS_BUDGET_USD": "15", "ATLAS_OPEN_BUDGET_USD": "5"})
