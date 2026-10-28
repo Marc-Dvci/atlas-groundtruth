@@ -86,7 +86,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
 
   return (
     <div ref={scroller} className="dossier">
-      <Section id="head" eyebrow={`Contract ${r.id} · ${r.muni}, ${r.province}`}>
+      <Section id="head" eyebrow={`Contract ${r.id} · ${[r.muni, r.province].filter(Boolean).join(", ")}`}>
         <h1 className="serif" style={{ fontSize: 34, lineHeight: 1.08, margin: "0 0 18px", fontWeight: 400 }}>
           <Declared c={c} />
         </h1>
@@ -313,7 +313,7 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
           <Sign c={c} run={run} />
         </Section>
       )}
-      <div style={{ height: "45vh" }} />
+      <div style={{ height: "85vh" }} />{/* room to scroll even a short last section to the top */}
     </div>
   );
 }
