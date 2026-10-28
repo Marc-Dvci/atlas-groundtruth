@@ -3,6 +3,7 @@
  * scripts/export_static.py, so a recorded mission can be served by any static host with no keys and no server.
  */
 export const STATIC = import.meta.env.VITE_STATIC === "1";
+export const LIVE = import.meta.env.VITE_LIVE === "1"; // the hosted live-audit server opens on the live page
 const BASE = import.meta.env.BASE_URL;
 const S = `${BASE}static`;
 const WAYBACK = "https://wayback.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/WMTS/1.0.0/default028mm/MapServer/tile";
@@ -11,7 +12,9 @@ export const url = {
   case: (run: string, id: string) => (STATIC ? `${S}/runs/${run}/cases/${id}.json` : `/api/runs/${run}/cases/${id}`),
   caseLedger: (run: string, id: string) => (STATIC ? `${S}/runs/${run}/ledger_${id}.json` : `/api/runs/${run}/ledger?case=${id}`),
   ledgerRaw: (run: string) => (STATIC ? `${S}/runs/${run}/ledger.jsonl` : `/api/runs/${run}/ledger.jsonl`),
-  evaluation: (run: string) => (STATIC ? `${S}/runs/${run}/evaluation.json` : `/api/runs/${run}/evaluation`),
+  triage: (run: string) => (STATIC ? `${S}/runs/${run}/triage.json` : `/api/runs/${run}/triage`),
+  evaluation: (run: string, key = "cases") =>
+    STATIC ? `${S}/runs/${run}/${key === "cases" ? "evaluation" : `evaluation_${key}`}.json` : `/api/runs/${run}/evaluation?key=${key}`,
   compare: (run: string, other: string) => (STATIC ? `${S}/runs/${run}/compare_${other}.json` : `/api/runs/${run}/compare/${other}`),
   province: (name: string) => (STATIC ? `${S}/province_${name}.json` : `/api/province/${name}`),
   summary: () => (STATIC ? `${S}/summary.json` : "/api/summary"),

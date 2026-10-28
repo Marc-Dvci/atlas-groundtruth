@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { OUTCOME_COLOR, OUTCOME_LABEL, fmt } from "../data";
 import type { CaseFile } from "./types";
 import { STATIC, url } from "../api";
-import { readLines, sealLocal } from "../ledger/verify";
+import { readLines, sealLocal, type Line } from "../ledger/verify";
+import { CHALLENGES, myKey, signStatement, verifyDecision, type MyKey, type Statement } from "../ledger/sign";
 import { smoothScroll } from "../scroll";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -95,6 +96,14 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
           <span className="mono">start {c.award}</span>
           <span className="mono" title={c.completion_basis}>declared complete {c.completion}</span>
         </div>
+        {c.revision && (
+          <p className="note revision">
+            Revised after a signed challenge (ledger #{c.revision.challenge_seq}). Before it:{" "}
+            {c.revision.previous.map((p, i) => (
+              <span key={i}>{i ? "; " : ""}{OUTCOME_LABEL[p.outcome as keyof typeof OUTCOME_LABEL] ?? p.outcome} ({p.reason}), kept as {p.file}</span>
+            ))}. Every earlier entry stays on the ledger.
+          </p>
+        )}
         {c.completion_basis && !c.completion_basis.startsWith("DPWH") && (
           <p className="note">Completion date: {c.completion_basis}.</p>
         )}
@@ -275,6 +284,8 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
         </Section>
       )}
 
+      {reached("next") && (c.triage?.tier || c.triage?.exists_dated != null) && <Next c={c} run={run} />}
+
       {reached("file") && (
         <Section id="file" eyebrow={`Case file · ${c.models?.writer ?? "Muse Wonder"}, every paragraph cited`}>
           {c.case_file ? (
@@ -347,44 +358,124 @@ function Elsewhere({ c, spark }: { c: CaseFile; spark: string }) {
   );
 }
 
+const centerOf = (g: GeoJSON.Geometry): [number, number] | null => {
+  const cs = g.type === "LineString" ? g.coordinates : g.type === "MultiLineString" ? g.coordinates.flat() : [];
+  const m = cs[Math.floor(cs.length / 2)];
+  return m ? [m[0], m[1]] : null;
+};
+
+/** An investigator's decision, signed with this browser's Ed25519 key. A challenge names its reason; a challenge
+ * that the works are elsewhere names the reach, and the live server audits the case again there. */
 function Sign({ c, run }: { c: CaseFile; run: string }) {
-  const [name, setName] = useState("");
-  const [seal, setSeal] = useState<{ hash: string; seq: number } | null>(null);
+  const [name, setName] = useState(() => {
+    try { return localStorage.getItem("atlas-investigator") ?? ""; } catch { return ""; }
+  });
+  const [key, setKey] = useState<MyKey | null>(null);
+  const [open, setOpen] = useState(false);
+  const [why, setWhy] = useState("WRONG_SITE");
+  const [note, setNote] = useState("");
+  const second = c.triage?.second_reach ? centerOf(c.triage.second_reach) : null;
+  const [site, setSite] = useState("");
+  const [seal, setSeal] = useState<{ hash: string; seq: number; decision: string; verified: boolean; where: string; reaudit: boolean } | null>(null);
   const [err, setErr] = useState("");
+  useEffect(() => {
+    myKey().then(setKey).catch(() => setErr("This browser cannot create an Ed25519 key, so it cannot sign."));
+  }, []);
+
   const go = async (decision: string) => {
+    if (!key) return;
     setErr("");
+    try { localStorage.setItem("atlas-investigator", name); } catch { /* a remembered name is a convenience only */ }
+    let base: { verdict: string; verdict_reason: string; verdict_entry: string; ledger_head: string };
+    let lines: Line[] = [];
     if (STATIC) {
-      const lines = readLines(await (await fetch(url.ledgerRaw(run))).text());
-      const e = await sealLocal(lines, c.id, `human:${name}`, "signature",
-        { decision, note: "", verdict: c.verdict.outcome, reason: c.verdict.reason });
-      return setSeal({ hash: e.hash, seq: e.seq });
+      lines = readLines(await (await fetch(url.ledgerRaw(run))).text());
+      const v = [...lines].reverse().find((l) => l.case === c.id && l.kind === "verdict");
+      base = { verdict: c.verdict.outcome, verdict_reason: c.verdict.reason, verdict_entry: v?.hash ?? "",
+        ledger_head: lines[lines.length - 1].hash };
+    } else {
+      const reg = await (await fetch("/api/investigators")).json();
+      if (!reg.investigators.some((r: { key_id: string }) => r.key_id === key.keyId)) {
+        const e = await fetch("/api/investigators/enrol", { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ public_key: key.publicKey, name }) });
+        if (!e.ok) return setErr(await e.text());
+      }
+      base = await (await fetch(`/api/runs/${run}/cases/${c.id}/to-sign`)).json();
     }
-    const r = await fetch(`/api/runs/${run}/cases/${c.id}/sign`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ investigator: name, decision }),
-    });
+    const challenge = decision === "challenge";
+    const st: Statement = {
+      run, case: c.id, decision, challenge: challenge ? why : "", note: challenge ? note : "",
+      verdict: base.verdict, verdict_reason: base.verdict_reason, verdict_entry: base.verdict_entry,
+      ledger_head: base.ledger_head, key_id: key.keyId, signed_at: new Date().toISOString().slice(0, 19) + "Z",
+      site: challenge && why === "WRONG_SITE" ? site.replace(/\s+/g, "") : "",
+    };
+    const payload = { statement: st, public_key: key.publicKey, signature: await signStatement(key, st), investigator: name };
+    const verified = await verifyDecision(payload);
+    if (STATIC) {
+      const e = await sealLocal(lines, c.id, `human:${key.keyId}`, challenge ? "challenge" : "signature", payload);
+      return setSeal({ hash: e.hash, seq: e.seq, decision, verified, reaudit: false,
+        where: "sealed in this browser with a key made here; no audit office has enrolled it" });
+    }
+    const r = await fetch(`/api/runs/${run}/cases/${c.id}/sign`, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload) });
     if (!r.ok) return setErr(await r.text());
     const e = await r.json();
-    setSeal({ hash: e.hash, seq: e.seq });
+    setSeal({ hash: e.hash, seq: e.seq, decision, verified, reaudit: !!e.reaudit, where: "sealed on the run's ledger by the server, which checked it against the registry" });
   };
+  const DONE: Record<string, string> = { concur: "Concurs", refer_for_site_visit: "Refers for a site visit", dissent: "Dissents",
+    challenge: "Challenges the finding" };
   return (
     <div className="sign">
-      <div className="eyebrow" style={{ marginBottom: 10 }}>Investigator</div>
+      <div className="eyebrow" style={{ marginBottom: 10 }}>
+        Investigator{key ? ` · Ed25519 key ${key.keyId}` : ""}
+      </div>
       <AnimatePresence mode="wait">
         {seal ? (
           <motion.div key="seal" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, ease }}>
-            <div className="serif" style={{ fontSize: 26 }}>Signed by {name}</div>
+            <div className="serif" style={{ fontSize: 26 }}>{DONE[seal.decision]} · signed by {name}</div>
             <div className="mono seal">ledger #{seal.seq} · {seal.hash.slice(0, 16)}…{seal.hash.slice(-6)}</div>
+            <p className="note">
+              Signature {seal.verified ? "verifies" : "does NOT verify"} against key {key?.keyId}; {seal.where}.
+              {seal.reaudit && " Atlas is auditing the case again at the reach you named: the earlier case file and every earlier entry stay on the record."}
+              {seal.decision === "challenge" && why === "WRONG_SITE" && STATIC &&
+                " On the live server, a challenge that names a reach starts a new audit there; this static copy has no server."}
+            </p>
           </motion.div>
         ) : (
           <motion.div key="form" exit={{ opacity: 0 }}>
             <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="name" />
-            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-              <button className="pill" onClick={() => go("concur")} disabled={!name}>Concur and sign</button>
-              <button className="pill ghost" onClick={() => go("refer_for_site_visit")} disabled={!name}>Refer for a site visit</button>
-              <button className="pill ghost" onClick={() => go("dissent")} disabled={!name}>Dissent</button>
+            <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
+              <button className="pill" onClick={() => go("concur")} disabled={!name || !key}>Concur and sign</button>
+              <button className="pill ghost" onClick={() => go("refer_for_site_visit")} disabled={!name || !key}>Refer for a site visit</button>
+              <button className="pill ghost" onClick={() => go("dissent")} disabled={!name || !key}>Dissent</button>
+              <button className="pill ghost" onClick={() => setOpen(!open)} disabled={!name || !key}>Challenge…</button>
             </div>
+            {open && (
+              <div className="challenge">
+                {Object.entries(CHALLENGES).map(([k, t]) => (
+                  <label key={k} className={why === k ? "on" : ""}>
+                    <input type="radio" name="why" checked={why === k} onChange={() => setWhy(k)} />
+                    <span>{t}</span>
+                  </label>
+                ))}
+                {why === "WRONG_SITE" && (
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <input className="name mono" style={{ width: 250 }} value={site} onChange={(e) => setSite(e.target.value)}
+                      placeholder="lon, lat of the works" />
+                    {second && (
+                      <button className="pill ghost" onClick={() => setSite(`${second[0].toFixed(6)},${second[1].toFixed(6)}`)}>
+                        Use the second Locator's reach
+                      </button>
+                    )}
+                  </div>
+                )}
+                <textarea className="name" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="What the record shows" />
+                <button className="pill" onClick={() => go("challenge")}
+                  disabled={!name || !key || (why === "WRONG_SITE" && !/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(site.trim()))}>
+                  Sign the challenge
+                </button>
+              </div>
+            )}
             {err && <div className="note" style={{ color: "var(--ghost)" }}>{err}</div>}
           </motion.div>
         )}
@@ -393,6 +484,48 @@ function Sign({ c, run }: { c: CaseFile; run: string }) {
   );
 }
 
+
+const TIER: Record<string, { label: string; color: string; text: string }> = {
+  lead: { label: "Lead", color: "var(--ghost)", text: "Nothing on the record explains it: ready for an investigator." },
+  needs_plans: { label: "Needs the plans", color: "var(--before)",
+    text: "Not a lead yet. The as-built plans must say what this contract added, and where." },
+  site_disputed: { label: "Site disputed", color: "var(--relocated)",
+    text: "Not a lead yet. A second Locator placed the works elsewhere: confirm which reach the contract paid for." },
+  site_unchecked: { label: "Site not re-checked", color: "var(--unverified)", text: "No second Locator has re-located this contract yet." },
+  dated: { label: "Dated to this contract", color: "var(--exists)",
+    text: "The structure appears in the contract window: the record supports that this contract built what stands here." },
+  undated: { label: "Not dated to this contract", color: "var(--before)",
+    text: "A structure stands, but nothing ties it to this contract's window: it may be older, or another contract's. Not a clearance." },
+};
+
+/** What an investigator does next: the triage rules (atlas/triage.py), over the sealed evidence. */
+function Next({ c, run }: { c: CaseFile; run: string }) {
+  const t = c.triage!;
+  const tier = TIER[t.tier ?? (t.exists_dated ? "dated" : "undated")];
+  return (
+    <Section id="next" eyebrow="Triage · what happens next, decided by rules">
+      <div className="serif" style={{ fontSize: 44, lineHeight: 1, color: tier.color, marginBottom: 12 }}>{tier.label}</div>
+      <p className="prose" style={{ fontSize: 16 }}>{tier.text}</p>
+      <ul className="decisions">
+        {t.reasons.map((r) => (
+          <li key={r.code} className={["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT"].includes(r.code) ? "counted" : "refused"}>
+            <span className="mark">{["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT"].includes(r.code) ? "✓" : "•"}</span>
+            <span>{r.text}</span>
+            <span className="why mono">{r.code.toLowerCase().replace(/_/g, " ")}</span>
+          </li>
+        ))}
+      </ul>
+      {(t.earlier_contracts?.length ?? 0) > 0 && t.earlier_contracts && (
+        <p className="note">
+          Earlier contracts near this reach:{" "}
+          {t.earlier_contracts.slice(0, 6).map((id, i) => <span key={id} className="mono">{i ? ", " : ""}{id}</span>)}
+          {t.earlier_contracts.length > 6 ? "…" : ""}. Pins are unreliable, so they are listed, not counted.
+        </p>
+      )}
+      {t.entry && <a className="mono ledger-link" href={`#/ledger/${run}/${c.id}`}>Sealed as {t.entry.slice(0, 12)}… →</a>}
+    </Section>
+  );
+}
 
 /** Declared vs observed: Muse Image's drawing of what the contract describes, against the real capture. */
 function Compare({ observed, declared, when }: { observed: string; declared: string; when: string }) {

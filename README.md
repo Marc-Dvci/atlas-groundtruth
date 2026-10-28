@@ -67,12 +67,36 @@ investigator or a court can read them, and [`tests/test_verdict.py`](tests/test_
   contradicts.
 - A 10 m change is dated to its season; it predates the award only if the whole season ended before it.
 
+## What happens next: triage
+
+A verdict says what the imagery shows; [`atlas/triage.py`](atlas/triage.py) says what an investigator should do with
+it. Like the verdict, it is plain code over sealed evidence, and each outcome is sealed as a `triage` entry naming the
+verdict and the site check it rests on ([`tests/test_triage.py`](tests/test_triage.py)).
+
+- **Site check.** A second Locator, Muse Spark Open served by Fireworks, re-locates every flagged contract from the
+  contract text alone, without seeing where the first one looked ([`scripts/site_check.py`](scripts/site_check.py)).
+  Unless its reach runs along at least half of the one the verdict was read on, the case is *site disputed*: no lead
+  until an investigator confirms which reach the contract paid for.
+- **A structure that predates the contract is not by itself an improper contract**: the contract may have repaired,
+  raised or extended it, or built another section. It is a *lead* only when sub-metre imagery shows the structure
+  before the award (a 10 m change date alone is not enough), the contract's own words describe new construction (not
+  rehabilitation, repair, improvement, a later phase or an extension), nothing visibly changed between the last capture
+  before the award and the last after it, and Sentinel-2 shows no work on the banks in the contract window. Otherwise it
+  *needs the plans*: the as-built plans must say what the contract added, and where.
+- **Probable ghost, built elsewhere, declared before built** are leads once the site is confirmed.
+- **"Exists" is not a clearance.** It is dated to the contract only when sub-metre imagery shows the reach without the
+  structure at most 18 months before the award and with it afterwards, or Sentinel-2 dates a lasting change to the
+  contract window; otherwise the case says the structure is *not dated to this contract*. (This rule was added after
+  the blind test below.)
+- Earlier contracts published within 200 m of the reach are listed with every case: they may explain an older
+  structure, or show the same works paid twice.
+
 ## Meta models in Atlas
 
 | Model | Role |
 |---|---|
 | **Muse Spark 1.3** | Locator (function calling over six spatial tools), multi-image reading of every capture along the reach, street-photo reading, relocation confirmation, mission parsing |
-| **Muse Spark Open** | The independent second reader of every decisive capture; and the whole audit end to end on open weights (served by Baseten here), for audit institutions that must keep national data on their own hardware |
+| **Muse Spark Open** | The independent second reader of every decisive capture (served by Baseten); the second Locator that re-locates every flagged contract from its text alone (served by Fireworks); and the whole audit end to end on open weights, for audit institutions that must keep national data on their own hardware |
 | **SAM 3.1** | Concept segmentation of hard banks ("riverbank") and water ("river") in every capture; channel tracing where the map has no waterway; before/after change detection along the river |
 | **Muse Wonder** | The case file: four to six cited paragraphs, limits, open questions, documents to request |
 | **Muse Image** | The declared structure drawn onto the real capture, as a labelled illustration |
@@ -94,24 +118,47 @@ candidates. They sit in [`data/answer_key/cases.json`](data/answer_key/cases.jso
 
 | On the 12 contracts | Muse Spark 1.3 | Muse Spark Open |
 |---|---|---|
-| Agree (same finding) | 1 | 1 |
-| Consistent (flags the contract on other grounds) | 4 | 5 |
+| Same finding as the ruling | 1 | 1 |
+| Compatible: flags the contract another way the ruling allows | 4 | 5 |
 | Can't verify | 5 | 4 |
-| Contradict | 2 | 2 |
+| Disagree | 2 | 2 |
 
-- *Consistent* means Atlas flags the contract another way: officials found phase III of a Malis riverbank wall (24CC0055)
-  "built on another portion of the river", and Atlas finds the wall at the located reach standing since January 2020,
-  four years before the award.
-- On the six exact or strong matches, neither host contradicts the official finding. Muse Spark 1.3 abstains on three:
-  one has no sub-metre capture after completion, one has a single source showing nothing (the standard needs two), and
-  one has only a 10 m change after completion.
-- Both contradictions are candidate matches, where Atlas sees a structure after completion and the report quoted
-  found a ghost. On 24CC0011 the April 2025 capture shows a new wall along the west bank of the located reach that the
-  2020 capture does not.
+- *Compatible* is not the same finding. Officials found phase III of a Malis riverbank wall (24CC0055) "built on
+  another portion of the river"; Atlas finds the wall at the located reach standing since January 2020, four years
+  before the award.
+- By what Atlas said: its four "existed before the contract" all fit the ruling (one the same finding, three
+  compatible); of its three "exists", one fits (officials found an older structure) and two disagree with a ghost
+  ruling, both on candidate matches; five times it could not verify. Twelve rulings are too few to state an accuracy
+  for each answer.
+- On the six exact or strong matches, neither host disagrees with the official finding. Muse Spark 1.3 abstains on
+  three: one has no sub-metre capture after completion, one has a single source showing nothing (the standard needs
+  two), and one has only a 10 m change after completion.
 - The two hosts reached the same verdict on 11 of 12 contracts, located the same site on 10, and agreed on 33 of 34
-  capture readings where they looked at the same site.
+  capture readings where they looked at the same site. The second Locator on Fireworks found the same reach on 11 of 12.
+- Triage keeps two of the four flagged contracts as leads, 23CC0156 and 25CC0241, which officials found not built at
+  the paid site, and sends 24CC0055 and 24CC0468 back for the plans.
 
-Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them).
+**Blind test.** After the Bulacan mission was sealed on 27 October, I matched eight more official findings to contract
+IDs (five exact, three strong; [`data/answer_key/blind_2026-10.json`](data/answer_key/blind_2026-10.json)). Neither
+run had seen them.
+
+| On the 8 new rulings | Sealed mission (27 Oct) | Full depth, same code (28 Oct) |
+|---|---|---|
+| Same finding as the ruling | 0 | 0 |
+| Compatible | 3 | 4 |
+| Can't verify | 3 | 2 |
+| Disagree | 2 | 2 |
+
+None of the eight was on the mission's worklist. At full depth Atlas said "exists" on six: four where officials found
+the structure predated the contract (compatible only in that Atlas saw a structure), and two (24CC0014, 24CC0017)
+where officials found the works outside the approved site. Both Locators put those two on the same reach. The
+contract's words point to one reach; the approved bid plans, which are not public, put the works on another, and a
+structure standing on the reach the words describe reads as "exists". This is the limit that matters most: Atlas finds
+contracts where the imagery shows nothing, or an older structure, at the reach the contract describes; it cannot tell
+a structure built on the right river at the wrong spot without the plans' coordinates.
+
+Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them);
+`scripts/evaluate.py --run blind --key blind_2026-10`.
 
 ## The first mission: Bulacan
 
@@ -129,19 +176,49 @@ Meta may train on what it is sent: it carries only public contract records and p
 | Exists | 266 | 18.23 |
 | Can't verify | 606 | 39.42 |
 
-224 contracts worth ₱14.83 billion go to the investigator's worklist. Of the 606 Atlas cannot verify,
+224 contracts worth ₱14.83 billion go to the investigator's worklist. The second Locator found the same reach for
+198 of them. Triage keeps **61 as leads (₱3.77 billion)**: 29 probable ghosts, 5 built elsewhere, 4 declared before
+built, and 23 structures that predate a contract billed as new construction with nothing visibly added. **137
+(₱9.15 billion) need the plans first**: among the 177 structures that predate their contract, 97 are dated before the
+award only by 10 m pixels, 54 contracts describe repair, improvement or a later phase, and 116 show visible work
+between the last capture before the award and the last after it. **25 have a disputed site**, and one was audited
+again after a signed challenge: 22CC0013, a probable ghost at the first reach, is "can't verify" at the reach the second
+Locator chose, 238 m along the same river. Of the 266 "exists", 188 are dated to the contract window and 78 are not.
+
+Of the 606 Atlas cannot verify,
 242 have a single source showing nothing, 205 have no decisive observation after completion,
-118 have no capture after completion, 25 could not be located and 16 have sources that disagree. These
-are leads, not findings of fact: each case names its sources and the reason for its outcome, and a human signs it
-before it leaves the system.
+118 have no capture after completion, 25 could not be located and 16 have sources that disagree. This is
+triage, not a verification of public spending: 40 contracts ran at full depth and 1,056 at screening depth, more than
+half could not be verified, and a lead is a reason to send an investigator, not a finding of fact. Each case names its
+sources and the reason for its outcome, and a human signs it before it leaves the system.
 
-## The evidence ledger
+## Chain of custody
 
-[`atlas/ledger.py`](atlas/ledger.py) appends one entry per tool call, capture, mask, reading, finding, verdict, case
-file and signature. Each entry carries the SHA-256 of the previous one; image chips and masks are stored under the
-hash of their own bytes. The web app re-verifies the whole chain and the case's evidence files in the browser
-([`web/src/ledger/verify.ts`](web/src/ledger/verify.ts)), reproducing the Python canonical JSON byte for byte, so the
-check trusts nothing the server says. Editing one sealed claim in a copy breaks every seal from that entry on.
+- **Hash chain.** [`atlas/ledger.py`](atlas/ledger.py) appends one entry per tool call, capture, mask, reading,
+  finding, verdict, triage, case file, decision and anchor. Each entry carries the SHA-256 of the previous one; image
+  chips and masks are stored under the hash of their own bytes. The web app re-verifies the whole chain and the case's
+  evidence files in the browser ([`web/src/ledger/verify.ts`](web/src/ledger/verify.ts)), reproducing the Python
+  canonical JSON byte for byte. Editing one sealed claim in a copy breaks every seal from that entry on.
+- **Anchored outside Atlas.** A hash chain alone cannot stop whoever holds the whole ledger from rewriting it and every
+  hash after the edit. [`scripts/anchor.py`](scripts/anchor.py) has each run's head timestamped under RFC 3161 by two
+  independent authorities (FreeTSA and DigiCert) and seals each token on the chain as an evidence file. A rewrite after
+  the anchor no longer matches the anchored hash, and the check needs no Atlas code:
+  `openssl ts -verify -digest <head> -in <token>.tsr -CAfile docs/anchors/<authority>.pem`. The browser checks that
+  each token carries the chain's hash at the anchored entry. An anchor proves the ledger existed as it is at the
+  anchor's time, not before.
+- **Signed decisions.** An investigator concurs, refers a case for a site visit, dissents or challenges it by signing a
+  statement with an Ed25519 key ([`atlas/signing.py`](atlas/signing.py), [`web/src/ledger/sign.ts`](web/src/ledger/sign.ts)).
+  The private key is created non-extractable in the investigator's browser; the audit office enrols the public key in
+  [`data/investigators.json`](data/investigators.json). The statement names the verdict entry it is about and the
+  ledger head the investigator saw, so a signature cannot be moved to another case or survive a new verdict. The server
+  seals a decision only when its signature verifies against an enrolled key; the browser re-verifies every signature
+  in the ledger view. On the static demo, a visitor's key is made in the browser and not enrolled, and the page says so.
+- **Challenges.** A challenge names its reason: the works are at another reach, the contract worked on a structure that
+  was already there, a capture reading is wrong, or another reason in a note. A challenge that the works are at another
+  reach names the point, and Atlas audits the case again there: the Locator cuts the declared length on the nearest
+  mapped waterway (or a channel SAM 3.1 traces), and every agent runs again. The earlier case file is kept beside the new
+  one and every earlier entry stays on the ledger: a correction adds to the record, it never edits it. From the command
+  line: [`scripts/challenge.py`](scripts/challenge.py).
 
 ## Cost and budget
 
@@ -149,11 +226,20 @@ Every Meta call is cached on disk by the hash of its request, so a recorded miss
 spending credit, and every call is metered against a hard cap before it is sent. A full-depth audit with a case file
 costs about $0.15; screening depth about $0.03.
 
+## Live audit
+
+[`deploy/modal_app.py`](deploy/modal_app.py) serves the API and the web app on Modal, opening on a live page: pick a
+Bulacan contract, or let Atlas pick one at random, and it audits it at full depth from scratch. The run starts with an
+empty model cache, so every model answer is a call made then, and the page streams each agent's steps as the ledger
+seals them, through to the verdict, the case and its verifiable ledger. A live audit costs about $0.06 of model calls
+when no case file is needed. The server runs one audit at a time under a hard budget and a daily cap; it refuses fleet
+launches, and a challenge's re-audit spends from the same budget.
+
 ## Run it
 
 ```
 python -m venv --system-site-packages .venv
-.venv/Scripts/python -m pip install rasterio shapely pyproj mercantile httpx fastapi uvicorn scipy pillow numpy
+.venv/Scripts/python -m pip install rasterio shapely pyproj mercantile httpx fastapi uvicorn scipy pillow numpy cryptography
 cp .env.example .env            # MODEL_API_KEY; optional MAPILLARY_TOKEN, BASETEN_API_KEY
 .venv/Scripts/python scripts/build_portfolio.py && .venv/Scripts/python scripts/overlaps.py
 .venv/Scripts/python -m uvicorn atlas.server:app --port 8787
@@ -162,14 +248,22 @@ cd web && npm install && npm run dev    # http://localhost:5317
 
 - One contract: `.venv/Scripts/python -m atlas.audit 24CC0032 --run dev` (add `--lm open` for Muse Spark Open)
 - A province: `.venv/Scripts/python scripts/fleet_run.py --run bulacan --budget 40 --full-top 40`
-- The evaluation: `.venv/Scripts/python scripts/evaluate.py --run eval` then `--compare eval eval-open`
+- The evaluation: `.venv/Scripts/python scripts/evaluate.py --run eval` then `--compare eval eval-open`; the blind
+  key: `--run bulacan --key blind_2026-10 --score-only`
+- The second Locator and triage: `scripts/site_check.py --run bulacan` (Muse Spark Open on Fireworks), then
+  `scripts/triage_run.py --run bulacan`
+- Anchors: `scripts/anchor.py --runs eval bulacan` and `--check bulacan`
+- A signed challenge: `scripts/challenge.py --run bulacan --case <id> --challenge WRONG_SITE --site <lon>,<lat>`
+- The live server: `sh deploy/make_secret.sh`, `sh deploy/upload.sh`, `sh deploy/build_web.sh`, then
+  `modal deploy deploy/modal_app.py`
 - Tests: `.venv/Scripts/python -m pytest tests`
 
 ## Layout
 
 - `atlas/agents/` Locator, Existence (optical history, Sentinel-2), Ground, Relocation, Timeline, Valuation, Impact,
   Case builder
-- `atlas/verdict.py` the evidence calculus; `atlas/ledger.py` the hash chain; `atlas/fleet.py` mission planning
+- `atlas/verdict.py` the evidence calculus; `atlas/triage.py` what happens next; `atlas/ledger.py` the hash chain;
+  `atlas/signing.py` signed decisions; `atlas/fleet.py` mission planning
   against budget and deadline; `atlas/meta.py` the model client (cache, meter, default-deny tool gateway, open-weights
   host); `atlas/server.py` the HTTP API
 - `web/` the investigator's interface (React, MapLibre)
@@ -187,5 +281,7 @@ High Resolution Settlement Layer (Meta and CIESIN, CC BY 4.0); Mapillary (CC BY-
 Atlas reports observations and exceptions, never intent. Sub-metre history depends on when Wayback captured a site:
 for contracts completed in 2025 the newest capture often predates completion, and Atlas then says it cannot verify.
 Contract descriptions rarely give stations with a known origin, so the located reach can differ from the approved
-site; the Locator states its confidence and the published pin's offset in every case. A human signs every outcome
+site; the Locator states its confidence and the published pin's offset in every case, a second Locator checks every
+flagged contract, and the blind test shows what remains: two Locators can agree on the reach the words describe while
+the approved plans put the works elsewhere. A human signs every outcome
 before it leaves the system.

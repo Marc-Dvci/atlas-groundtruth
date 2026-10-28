@@ -16,6 +16,14 @@ from pathlib import Path
 from typing import Any, Iterator
 
 GENESIS = "0" * 64
+_LOCKS: dict[str, threading.Lock] = {}
+_LOCKS_GUARD = threading.Lock()
+
+
+def _lock_for(path: Path) -> threading.Lock:
+    """One lock per ledger file, shared by every Ledger object on it in this process."""
+    with _LOCKS_GUARD:
+        return _LOCKS.setdefault(str(path.resolve()), threading.Lock())
 
 
 def canonical(obj: Any) -> bytes:
@@ -63,16 +71,38 @@ class Ledger:
         self.blob_dir = Path(blob_dir)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.blob_dir.mkdir(parents=True, exist_ok=True)
-        self._lock = threading.Lock()
+        self._lock = _lock_for(self.path)
         self._seq = 0
         self._head = GENESIS
-        if self.path.exists():
-            for e in self.entries():
-                self._seq, self._head = e.seq + 1, e.hash
+        self._size = -1
+        self._sync()
+
+    def _sync(self) -> None:
+        """Take the head from the file when it changed since this object last wrote: another Ledger object (a
+        signature sealed while a re-audit runs) or another process may have appended in between."""
+        size = self.path.stat().st_size if self.path.exists() else 0
+        if size == self._size:
+            return
+        self._seq, self._head = 0, GENESIS
+        if size:
+            with self.path.open("rb") as f:
+                f.seek(max(0, size - 4_000_000))
+                tail = f.read().rstrip(b"\n").rsplit(b"\n", 1)[-1]
+            try:
+                d = json.loads(tail)
+            except json.JSONDecodeError:  # a line longer than the tail: read the whole file
+                d = None
+                for e in self.entries():
+                    d = {"seq": e.seq, "hash": e.hash}
+            if d:
+                self._seq, self._head = d["seq"] + 1, d["hash"]
+        self._size = size
 
     @property
     def head(self) -> str:
-        return self._head
+        with self._lock:
+            self._sync()
+            return self._head
 
     def put_blob(self, data: bytes, ext: str) -> str:
         """Store binary evidence by content hash; returns '<sha256>.<ext>'."""
@@ -84,12 +114,14 @@ class Ledger:
 
     def append(self, case: str, actor: str, kind: str, payload: dict) -> Entry:
         with self._lock:
+            self._sync()
             seq, prev, ts = self._seq, self._head, round(time.time(), 3)
             h = entry_hash(seq, ts, case, actor, kind, payload, prev)
             e = Entry(seq, ts, case, actor, kind, payload, prev, h)
             with self.path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(e.as_dict(), ensure_ascii=False) + "\n")
             self._seq, self._head = seq + 1, h
+            self._size = self.path.stat().st_size
             return e
 
     def entries(self) -> Iterator[Entry]:

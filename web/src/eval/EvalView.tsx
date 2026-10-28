@@ -7,8 +7,9 @@ import { smoothScroll } from "../scroll";
 type Row = {
   id: string; match: string; official: string; who: string; atlas: Outcome; reason: string; agree: boolean;
   abstain: boolean; partial: boolean; contradict: boolean; headline: string; quote: string; date: string; sources: string[];
-  desc: string; cost: number; muni: string;
+  desc: string; cost: number; muni: string; tier?: string | null;
 };
+type ByAtlas = Record<string, { n: number; same: number; compatible: number; disagree: number; ids: string[] }>;
 const times = (n: number) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
 const looseNote = (n: number, loose: number) =>
   n === 0 ? "never against a ruling"
@@ -17,8 +18,10 @@ const looseNote = (n: number, loose: number) =>
     : `${loose} of ${n} on contracts only loosely tied to a ruling`;
 
 type Tally = { cases: number; agree: number; partial: number; abstain: number; contradict: number };
-type Ev = { run: string; cases: number; agree: number; partial: number; abstain: number; contradict: number; rows: Row[];
-  by_match?: { exact_or_strong: Tally; candidate: Tally } };
+type Ev = { run: string; key?: string; about?: string; cases: number; agree: number; partial: number; abstain: number; contradict: number; rows: Row[];
+  by_match?: { exact_or_strong: Tally; candidate: Tally }; by_atlas?: ByAtlas;
+  sitecheck?: { checked: number; agree: number; host: string } | null;
+  triage?: { flagged: number; tiers: Record<string, number> } | null };
 type Cmp = { a: string; b: string; cases: number; same_verdict: number; same_site: number; readings_compared: number;
   readings_agree: number; rows: { id: string; same_verdict: boolean; site_gap_m: number | null }[] };
 
@@ -28,15 +31,25 @@ const OFFICIAL: Record<string, string> = {
 };
 const ease = [0.22, 1, 0.36, 1] as const;
 
-export function EvalView({ run }: { run: string }) {
+/** Where Atlas disagrees with a ruling, in one sentence built from the rows themselves. */
+function disagreements(rows: Row[]): string {
+  const d = rows.filter((r) => r.contradict);
+  if (!d.length) return "Atlas never disagreed with a ruling here.";
+  const said = [...new Set(d.map((r) => `“${OUTCOME_LABEL[r.atlas] ?? r.atlas}”`))].join(" or ");
+  const found = [...new Set(d.map((r) => (OFFICIAL[r.official] ?? r.official).toLowerCase()))].join(" or ");
+  const loose = d.every((r) => r.match === "candidate");
+  return `${d.length === 1 ? "The disagreement is" : `All ${d.length} disagreements are`} Atlas saying ${said} where the ruling found ${found}${loose ? ", on contracts tied to the ruling only by a candidate match" : ""}.`;
+}
+
+export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?: string }) {
   const [ev, setEv] = useState<Ev | null>(null);
   const [cmp, setCmp] = useState<Cmp | null>(null);
   const [focus, setFocus] = useState<number | null>(null);
   const other = new URLSearchParams(window.location.search).get("open") ?? `${run}-open`;
   useEffect(() => {
-    fetch(url.evaluation(run)).then((r) => r.json()).then(setEv);
+    fetch(url.evaluation(run, answerKey)).then((r) => r.json()).then(setEv);
     fetch(url.compare(run, other)).then((r) => (r.ok ? r.json() : null)).then((d) => d?.cases && setCmp(d)).catch(() => {});
-  }, [run, other]);
+  }, [run, other, answerKey]);
   useEffect(() => {
     (window as unknown as { __eval: object }).__eval = {
       scrollTo: (sel: string, ms = 1400) => {
@@ -57,8 +70,9 @@ export function EvalView({ run }: { run: string }) {
   // the imagery could not settle the case, or Atlas disagrees with the ruling
   const loose = ev.by_match?.candidate.contradict ?? 0;
   const tally = [
-    { n: ev.agree + ev.partial, label: "fit the ruling", color: "var(--exists)",
-      note: `${ev.agree} same finding · ${ev.partial} compatible finding${ev.partial === 1 ? "" : "s"}` },
+    { n: ev.agree, label: "same finding", color: "var(--exists)", note: "Atlas reached the ruling's own finding" },
+    { n: ev.partial, label: "compatible", color: "var(--exists)",
+      note: "Atlas flagged the contract another way the ruling allows; not the same finding" },
     { n: ev.abstain, label: "can't verify", color: "var(--unverified)", note: "the imagery could not settle the case" },
     { n: ev.contradict, label: "disagree", color: "var(--ghost)", note: looseNote(ev.contradict, loose) },
   ];
@@ -73,6 +87,7 @@ export function EvalView({ run }: { run: string }) {
       <h1 className="serif" style={{ fontSize: 56, lineHeight: 1.04, fontWeight: 400, margin: "12px 0 10px", maxWidth: 1100 }}>
         {ev.cases} contracts that auditors, the ICI or the President already ruled on.
       </h1>
+      {answerKey !== "cases" && ev.about && <p className="note" style={{ maxWidth: 900 }}>{ev.about}</p>}
       <p className="lede">
         Atlas audited each one without seeing the ruling. Where no evidence after completion reached its two-source
         standard, it said it could not verify instead of guessing.
@@ -98,6 +113,42 @@ export function EvalView({ run }: { run: string }) {
           {ev.by_match.exact_or_strong.contradict === 0
             ? "; it never disagreed with one."
             : `; it disagreed ${times(ev.by_match.exact_or_strong.contradict)}.`}
+        </p>
+      )}
+      {ev.by_atlas && (
+        <div className="byatlas">
+          <div className="eyebrow">By what Atlas said</div>
+          <table>
+            <thead><tr><th>Atlas said</th><th>cases</th><th>same finding</th><th>compatible</th><th>disagree</th></tr></thead>
+            <tbody>
+              {Object.entries(ev.by_atlas).sort((a, b) => b[1].n - a[1].n).map(([k, b]) => (
+                <tr key={k}>
+                  <td style={{ color: OUTCOME_COLOR[k as Outcome] }}>{OUTCOME_LABEL[k as Outcome] ?? k}</td>
+                  <td className="mono">{b.n}</td>
+                  <td className="mono">{k === "cant_verify" ? "—" : b.same}</td>
+                  <td className="mono">{k === "cant_verify" ? "—" : b.compatible}</td>
+                  <td className="mono">{k === "cant_verify" ? "—" : b.disagree}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="dim" style={{ maxWidth: 820 }}>
+            {ev.cases} rulings are too few to state an accuracy for each answer; they show where Atlas holds and where it
+            fails. {disagreements(ev.rows)}
+          </p>
+          {(ev.sitecheck || ev.triage) && (
+            <p className="dim" style={{ maxWidth: 820 }}>
+              {ev.sitecheck && `A second Locator (Muse Spark Open on ${ev.sitecheck.host === "fireworks" ? "Fireworks" : "Baseten"}), given only the contract text, found the same reach on ${ev.sitecheck.agree} of ${ev.sitecheck.checked}. `}
+              {ev.triage && `Triage keeps ${ev.triage.tiers.lead ?? 0} of the ${ev.triage.flagged} flagged contracts as leads and sends ${ev.triage.tiers.needs_plans ?? 0} back for the as-built plans first.`}
+            </p>
+          )}
+        </div>
+      )}
+      {answerKey === "cases" && (
+        <p className="lede" style={{ marginTop: 18 }}>
+          Blind test: eight more rulings, matched to contracts after the province run was sealed.{" "}
+          <a href="#/eval/bulacan/blind_2026-10" className="mono">the sealed province run →</a>{" "}
+          <a href="#/eval/blind/blind_2026-10" className="mono">the same eight at full depth →</a>
         </p>
       )}
       {cmp && (
@@ -132,7 +183,8 @@ export function EvalView({ run }: { run: string }) {
               <div className="dim">{r.headline}</div>
             </div>
             <div className={`er-mark mono ${r.agree ? "agree" : r.partial ? "partial" : r.abstain ? "abstain" : "contra"}`}>
-              {r.agree ? "same finding" : r.partial ? "fits" : r.abstain ? "can't verify" : "disagrees"}
+              {r.agree ? "same finding" : r.partial ? "compatible" : r.abstain ? "can't verify" : "disagrees"}
+              {r.tier && <span className="dim" style={{ display: "block" }}>{r.tier === "lead" ? "lead" : r.tier === "needs_plans" ? "needs the plans" : r.tier.replace("_", " ")}</span>}
             </div>
           </motion.a>
         ))}

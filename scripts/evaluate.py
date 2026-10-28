@@ -26,8 +26,10 @@ def _cases(run: str) -> dict[str, dict]:
     return out
 
 
-def score(run: str) -> dict:
-    key = json.loads((DATA / "answer_key/cases.json").read_text(encoding="utf-8"))["cases"]
+def score(run: str, key_name: str = "cases") -> dict:
+    """key_name: an answer key in data/answer_key/. "blind_2026-10" holds rulings matched after the province run was
+    sealed, so it scores that run blind."""
+    key = json.loads((DATA / "answer_key" / f"{key_name}.json").read_text(encoding="utf-8"))["cases"]
     got = _cases(run)
     rows = []
     for k in key:
@@ -59,7 +61,7 @@ def score(run: str) -> dict:
                 "abstain": sum(r["abstain"] for r in rs), "contradict": sum(r["contradict"] for r in rs)}
 
     out = {
-        "run": run, "cases": n,
+        "run": run, "key": key_name, "cases": n,
         "agree": sum(r["agree"] for r in rows),
         "partial": sum(r["partial"] for r in rows),
         "abstain": sum(r["abstain"] for r in rows),
@@ -69,7 +71,8 @@ def score(run: str) -> dict:
                      "candidate": tally([r for r in rows if r["match"] == "candidate"])},
         "rows": rows,
     }
-    (DATA / "runs" / run / "evaluation.json").write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
+    name = "evaluation.json" if key_name == "cases" else f"evaluation_{key_name}.json"
+    (DATA / "runs" / run / name).write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
     return out
 
 
@@ -114,6 +117,7 @@ def main(argv: list[str]) -> None:
     ap.add_argument("--only", nargs="*")
     ap.add_argument("--score-only", action="store_true")
     ap.add_argument("--compare", nargs=2, metavar=("RUN_A", "RUN_B"))
+    ap.add_argument("--key", default="cases", help="answer key in data/answer_key/ (cases, blind_2026-10)")
     a = ap.parse_args(argv)
     if a.compare:
         c = compare(*a.compare)
@@ -123,7 +127,7 @@ def main(argv: list[str]) -> None:
                   f"readings {r['readings_agree']}/{r['readings_compared']}")
         return
     if not a.score_only:
-        key = json.loads((DATA / "answer_key/cases.json").read_text(encoding="utf-8"))["cases"]
+        key = json.loads((DATA / "answer_key" / f"{a.key}.json").read_text(encoding="utf-8"))["cases"]
         ids = a.only or [k["id"] for k in key]
         recs, decl = portfolio(), declarations()
         meta = make_client()
@@ -139,7 +143,7 @@ def main(argv: list[str]) -> None:
             v = out.get("verdict") or {}
             print(f"{cid}: {v.get('outcome')} ({v.get('reason')}) {out['seconds']} s err={out.get('error')} "
                   f"meta=${meta.meter.spent_usd:.3f} open=${meta.open_meter.spent_usd:.3f}", flush=True)
-    s = score(a.run)
+    s = score(a.run, a.key)
     print(json.dumps({k: v for k, v in s.items() if k != "rows"}, indent=1))
     for r in s["rows"]:
         print(f"  {r['id']} [{r['match']:>9}] official={r['official']:<24} atlas={str(r['atlas']):<22} "

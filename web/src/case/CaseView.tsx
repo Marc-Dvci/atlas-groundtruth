@@ -21,6 +21,7 @@ export function beatsFor(c: CaseFile | null): Beat[] {
     { key: "money", label: "Money" },
     { key: "impact", label: "People" },
     { key: "verdict", label: "Verdict" },
+    ...(c?.triage?.tier || c?.triage?.exists_dated != null ? [{ key: "next", label: "Triage" }] : []),
     { key: "file", label: "Case file" },
   ];
 }
@@ -121,7 +122,7 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
   // keyboard + director hooks (the film drives these)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.tagName === "INPUT") return;
+      if (["INPUT", "TEXTAREA"].includes((e.target as HTMLElement)?.tagName)) return;
       if (e.key === "ArrowRight") setBeat((b) => Math.min(beats.length - 1, b + 1));
       if (e.key === "ArrowLeft") setBeat((b) => Math.max(0, b - 1));
     };

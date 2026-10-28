@@ -52,7 +52,19 @@ def test_changing_one_pixel_of_sealed_evidence_is_caught(tmp_path):
 
 def test_a_reopened_ledger_continues_the_chain(tmp_path):
     lg, _ = make(tmp_path, 3)
+    before = lg.head
     lg2 = Ledger(lg.path, lg.blob_dir)
     e = lg2.append("C1", "human:investigator", "signature", {"decision": "concur"})
-    assert e.seq == 3 and e.prev == lg.head
+    assert e.seq == 3 and e.prev == before and lg.head == e.hash
     assert lg2.verify()[0]
+
+
+def test_two_ledger_objects_on_one_file_keep_one_chain(tmp_path):
+    a = Ledger(tmp_path / "ledger.jsonl", tmp_path / "blobs")
+    b = Ledger(tmp_path / "ledger.jsonl", tmp_path / "blobs")
+    for i in range(3):
+        a.append("C1", "existence", "finding", {"i": i})
+        b.append("C1", "human:x", "signature", {"i": i})
+    assert a.verify() == (True, None, "chain intact")
+    assert [e.seq for e in a.entries()] == list(range(6))
+    assert a.head == b.head

@@ -1,0 +1,11 @@
+{
+ "investigators": [
+  {
+   "key_id": "a3c40361a8b02cfa",
+   "name": "Demo investigator",
+   "public_key": "GEWZm/vaUFsOIHkOeHlBXB7VmXfKL/0Y1Zfwoer8aDk=",
+   "role": "investigator",
+   "enrolled_at": "2026-10-28T19:32:30Z"
+  }
+ ]
+}

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
-import { plain, readLines, tamper, verifyBlob, verifyLines, type Line, type Result } from "./verify";
+import { plain, readLines, tamper, tokenCarries, verifyBlob, verifyLines, type Line, type Result } from "./verify";
+import { verifyDecision } from "./sign";
 import { url } from "../api";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -14,7 +15,10 @@ function label(kind: string, actor: string, p: P): string {
   if (kind === "tool_call") return `${p.tool}(${Object.values(p.args ?? {}).slice(0, 2).join(", ")})`;
   if (kind === "capture") return `capture ${p.capture?.captured} · ${p.capture?.sensor ?? ""} · ${String(p.blob ?? "").slice(0, 10)}…`;
   if (kind === "verdict") return `${p.outcome} · ${p.reason}`;
-  if (kind === "signature") return `signed by ${actor.replace("human:", "")} · ${p.decision}`;
+  if (kind === "signature") return `${p.investigator ?? actor.replace("human:", "")} · ${p.statement?.decision ?? p.decision} · Ed25519 key ${p.statement?.key_id ?? "none"}`;
+  if (kind === "challenge") return `${p.investigator} challenges · ${p.statement?.challenge}${p.statement?.site ? ` · site ${p.statement.site}` : ""}`;
+  if (kind === "triage") return `triage · ${String(p.tier).replace("_", " ")} · ${(p.reasons ?? []).map((r: P) => r.code).slice(0, 3).join(", ")}`;
+  if (kind === "site_override") return `site set by challenge #${p.challenge_seq} · ${p.lon}, ${p.lat}`;
   if (kind === "case_file") return `case file · ${String(p.file?.headline ?? "").slice(0, 70)}`;
   if (kind === "located") return `located · ${p.waterway ?? ""} · pin ${p.pin_offset_m ?? "?"} m off`;
   if (kind === "imagery_reading") return `${MODEL[p.model] ?? p.model ?? "model"} reads the captures · ${String(p.answer?.change ?? "")}`;
@@ -36,6 +40,8 @@ export function LedgerView({ run, id }: { run: string; id: string }) {
   const [lines, setLines] = useState<Line[] | null>(null);
   const [check, setCheck] = useState<(Result & { blobs?: [number, number] }) | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
+  const [sigs, setSigs] = useState<{ n: number; good: number } | null>(null);
+  const [anchors, setAnchors] = useState<{ seq: number; authority: string; time: string; carries: boolean; atSeq: boolean; verify: string }[] | null>(null);
   const [tam, setTam] = useState<{ changed: { seq: number; from: string; to: string; source: string } | null; tampered: Result;
     original: Result; lines: Line[] } | null>(null);
 
@@ -53,6 +59,20 @@ export function LedgerView({ run, id }: { run: string; id: string }) {
     const names = [...new Set(mine.flatMap((l) => blobs(plain(l.raw.payload))))];
     let good = 0;
     for (const n of names) if (await verifyBlob(url.evidence(n), n)) good++;
+    // every signed decision in the run: the Ed25519 signature against the key it names
+    const decisions = lines.filter((l) => l.kind === "signature" || l.kind === "challenge");
+    let okSig = 0;
+    for (const l of decisions) if (await verifyDecision(plain(l.raw.payload) as P)) okSig++;
+    setSigs({ n: decisions.length, good: okSig });
+    // anchors: the timestamp token carries the anchored head, and that head is the chain's entry at that number
+    const bySeq = new Map(lines.map((l) => [l.seq, l.hash]));
+    const an = [];
+    for (const l of lines.filter((x) => x.kind === "anchor")) {
+      const p = plain(l.raw.payload) as P;
+      an.push({ seq: p.anchored_seq, authority: p.authority, time: p.time, verify: p.verify,
+        carries: await tokenCarries(url.evidence(p.tsr_blob), p.anchored_head), atSeq: bySeq.get(p.anchored_seq) === p.anchored_head });
+    }
+    setAnchors(an);
     setProgress(null);
     setCheck({ ...r, blobs: [good, names.length] });
   };
@@ -99,7 +119,23 @@ export function LedgerView({ run, id }: { run: string; id: string }) {
                 <span className="mono dim">
                   {check.entries.toLocaleString("en-US")} entries re-hashed in {Math.round(check.ms)} ms
                   {check.blobs ? ` · ${check.blobs[0]} of ${check.blobs[1]} evidence files match their seal` : ""}
+                  {sigs && sigs.n > 0 ? ` · ${sigs.good} of ${sigs.n} signed decisions verify (Ed25519)` : ""}
                 </span>
+                {anchors && anchors.length > 0 && (
+                  <div className="anchors">
+                    <span className="eyebrow">Anchored outside Atlas · RFC 3161</span>
+                    {anchors.map((a, i) => (
+                      <span key={i} className="mono dim">
+                        #{a.seq} by {a.authority}, {a.time}: {a.carries && a.atSeq ? "the token carries this chain's hash" : "DOES NOT MATCH this chain"}
+                      </span>
+                    ))}
+                    <span className="mono dim anchor-cmd">{anchors[anchors.length - 1].verify}</span>
+                    <span className="dim" style={{ fontSize: 13 }}>
+                      A timestamp authority signed the hash of entry #{anchors[anchors.length - 1].seq} at that time. Anyone holding
+                      the whole ledger can still rewrite it, but no longer to a version that matches the anchored hash.
+                    </span>
+                  </div>
+                )}
               </motion.div>
             )}
             {tam && (

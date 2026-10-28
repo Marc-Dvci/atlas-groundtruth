@@ -25,10 +25,14 @@ from typing import Any, Callable
 import httpx
 
 BASE_URL = os.environ.get("META_BASE_URL", "https://api.meta.ai/v1")
-OPEN_BASE_URL = os.environ.get("OPEN_BASE_URL", "https://inference.baseten.co/v1")
-# Muse Spark Open (open weights), served by Baseten for the hackathon. The agents call it through the same
-# interface as Muse Spark; only the host changes. An institution can serve the same weights itself.
+# Muse Spark Open (open weights), served by Baseten and by Fireworks for the hackathon. The agents call it through
+# the same interface as Muse Spark; only the host changes. An institution can serve the same weights itself.
 OPEN = "meta-models/muse-spark-open-1026"
+# host -> (base URL, key variable, the host's id for the same weights)
+OPEN_HOSTS = {
+    "baseten": (os.environ.get("OPEN_BASE_URL", "https://inference.baseten.co/v1"), "BASETEN_API_KEY", OPEN),
+    "fireworks": ("https://api.fireworks.ai/inference/v1", "FIREWORKS_API_KEY", "accounts/fireworks/models/muse-spark-open"),
+}
 
 # USD per 1M tokens (input, cached input, output); dev.meta.ai/docs/pricing-rate-limits.
 PRICES = {
@@ -161,7 +165,7 @@ class Turn:
 
 class MetaClient:
     def __init__(self, cache_dir: Path, meter: Meter, *, offline: bool = False, api_key: str | None = None,
-                 open_meter: Meter | None = None):
+                 open_meter: Meter | None = None, open_host: str = "baseten"):
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.meter = meter
@@ -169,9 +173,12 @@ class MetaClient:
         self.open_meter = open_meter or meter
         self.offline = offline
         self.api_key = api_key or os.environ.get("MODEL_API_KEY", "")
-        self.open_key = os.environ.get("BASETEN_API_KEY", "")
+        self.open_host = open_host
+        open_url, key_var, self.open_model_id = OPEN_HOSTS[open_host]
+        self.open_key_var = key_var
+        self.open_key = os.environ.get(key_var, "")
         self._http = httpx.Client(base_url=BASE_URL, timeout=httpx.Timeout(180.0, connect=20.0))
-        self._open_http = httpx.Client(base_url=OPEN_BASE_URL, timeout=httpx.Timeout(300.0, connect=20.0))
+        self._open_http = httpx.Client(base_url=open_url, timeout=httpx.Timeout(300.0, connect=20.0))
 
     # ---------- transport ----------
     def _post(self, path: str, body: dict, est_usd: float, *, files: dict | None = None) -> dict:
@@ -250,7 +257,7 @@ class MetaClient:
 
     def _respond_open(self, model: str, instructions: str, items: list[dict], *, schema: dict | None,
                       schema_name: str, tools: list["Tool"] | None, effort: str | None, est_usd: float) -> dict:
-        body: dict[str, Any] = {"model": model, "messages": self._to_chat(instructions, items), "max_tokens": 16000,
+        body: dict[str, Any] = {"model": self.open_model_id, "messages": self._to_chat(instructions, items), "max_tokens": 16000,
                                 # without an effort the open model's guided JSON can stall in whitespace
                                 "reasoning_effort": effort or "low"}
         if tools:
@@ -259,14 +266,15 @@ class MetaClient:
         elif schema:  # guided JSON and tool calls don't mix on this host: the tool loop asks for the JSON last
             body["response_format"] = {"type": "json_schema", "json_schema": {"name": schema_name, "schema": schema,
                                                                               "strict": True}}
-        key = _key({"path": "baseten:/chat/completions", **body})
+        path = f"{self.open_host}:/chat/completions"
+        key = _key({"path": path, **body})
         hit = self.cache_dir / f"{key}.json"
         if hit.exists():
             return json.loads(hit.read_text(encoding="utf-8"))
         if self.offline:
             raise OfflineMiss(f"open model not in cache ({key[:12]})")
         if not self.open_key:
-            raise RuntimeError("BASETEN_API_KEY is not set (put it in atlas/.env)")
+            raise RuntimeError(f"{self.open_key_var} is not set (put it in atlas/.env)")
         self.open_meter.check(est_usd)
         last = ""
         for attempt in range(4):
@@ -281,7 +289,7 @@ class MetaClient:
                 time.sleep(2 ** attempt + 0.5)
                 continue
             if r.status_code >= 400:
-                raise RuntimeError(f"Muse Spark Open -> HTTP {r.status_code}: {r.text[:800]}")
+                raise RuntimeError(f"Muse Spark Open ({self.open_host}) -> HTTP {r.status_code}: {r.text[:800]}")
             d = r.json()
             ch = (d.get("choices") or [{}])[0]
             msg = ch.get("message") or {}
@@ -305,11 +313,11 @@ class MetaClient:
             if not out["output"]:
                 last = f"empty answer ({ch.get('finish_reason')})"
                 continue
-            out["_atlas"] = {"cached_at": time.time(), "path": "baseten:/chat/completions"}
+            out["_atlas"] = {"cached_at": time.time(), "path": path}
             hit.write_text(json.dumps({k: v for k, v in out.items() if k != "_fresh"}, ensure_ascii=False), encoding="utf-8")
             out["_usd_billed"] = usd
             return out
-        raise RuntimeError(f"Muse Spark Open gave no usable answer after 4 tries: {last}")
+        raise RuntimeError(f"Muse Spark Open ({self.open_host}) gave no usable answer after 4 tries: {last}")
 
     # ---------- Responses API ----------
     def respond(

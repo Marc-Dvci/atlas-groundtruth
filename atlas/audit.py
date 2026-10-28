@@ -43,21 +43,29 @@ def open_run(run: str) -> tuple[Ledger, Path]:
     return Ledger(rdir / "ledger.jsonl", DATA / "evidence"), rdir
 
 
-def make_client(offline: bool = False, cap_usd: float | None = None) -> MetaClient | None:
+def make_client(offline: bool = False, cap_usd: float | None = None, open_host: str = "baseten",
+                cache_dir: Path | None = None, meter_path: Path | None = None) -> MetaClient | None:
+    """open_host: who serves Muse Spark Open (baseten or fireworks); each host's credit has its own meter.
+    cache_dir and meter_path give a live audit its own empty cache (every answer is a fresh call) and its own budget."""
     load_env(ROOT / ".env")
     import os
     cap = cap_usd if cap_usd is not None else float(os.environ.get("ATLAS_BUDGET_USD", "120"))
-    meter = Meter(DATA / "meter.json", cap)
-    open_meter = Meter(DATA / "meter_open.json", float(os.environ.get("ATLAS_OPEN_BUDGET_USD", "90")))
+    meter = Meter(meter_path or DATA / "meter.json", cap)
+    if open_host == "fireworks":
+        open_meter = Meter(DATA / "meter_fireworks.json", float(os.environ.get("ATLAS_FIREWORKS_BUDGET_USD", "20")))
+    else:
+        open_meter = Meter(DATA / "meter_open.json", float(os.environ.get("ATLAS_OPEN_BUDGET_USD", "90")))
     if not offline and not os.environ.get("MODEL_API_KEY"):
         return None
-    return MetaClient(DATA / "cache/meta", meter, offline=offline, open_meter=open_meter)
+    return MetaClient(cache_dir or DATA / "cache/meta", meter, offline=offline, open_meter=open_meter, open_host=open_host)
 
 
 def audit(record: dict, ledger: Ledger, meta: MetaClient | None, emit: Callable[[Event], None], rdir: Path,
-          *, casefile: bool = True, declaration: dict | None = None, depth: str = "full", lm: str = "meta") -> dict:
+          *, casefile: bool = True, declaration: dict | None = None, depth: str = "full", lm: str = "meta",
+          site: dict | None = None) -> dict:
     """lm="meta": Muse Spark 1.3 and Muse Wonder on the Meta Model API. lm="open": every language call
-    (Locator, readings, case file) goes to Muse Spark Open, the open-weights model."""
+    (Locator, readings, case file) goes to Muse Spark Open, the open-weights model. site: {lon, lat, challenge_entry,
+    challenge_seq} when an investigator's challenge says where the works are; the Locator then cuts the reach there."""
     case = Case(record, ledger, meta, emit, rdir / "cases" / record["id"])
     case.facts["depth"] = depth
     from .meta import BULK, OPEN, SPARK, WONDER
@@ -67,6 +75,7 @@ def audit(record: dict, ledger: Ledger, meta: MetaClient | None, emit: Callable[
         case.facts["spark"] = SPARK if depth == "full" else BULK
         case.facts["writer"] = WONDER if depth == "full" else BULK  # Muse Wonder writes the full-depth case files
     case.facts["lm"] = lm
+    case.facts["site_override"] = site
     t0 = time.time()
     case.say("fleet", "case_start", record={k: record.get(k) for k in (
         "id", "desc", "muni", "province", "contractor", "cost", "start", "completion", "lon", "lat", "flags", "status")})

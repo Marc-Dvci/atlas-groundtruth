@@ -44,8 +44,9 @@ def _fc(p: Path) -> list[dict]:
 
 class GeoIndex:
     def __init__(self, province: str = "bulacan"):
-        osm = ROOT / "data/osm" / province
-        adm = ROOT / "data/admin"
+        from ..case import DATA
+        osm = DATA / "osm" / province
+        adm = DATA / "admin"
         psa_b = adm / f"{province}_barangays.geojson"
         self.barangay_source = "PSA/NAMRIA (HDX COD-AB)" if psa_b.exists() else "OpenStreetMap"
         self.barangays = []

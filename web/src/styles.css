@@ -253,7 +253,7 @@ mark.hl-declared {
 .evalpage { position: absolute; inset: 0; overflow-y: auto; padding: 26px 64px 80px;
   background: radial-gradient(90% 60% at 20% 0%, #0d1522, var(--ink) 70%); }
 .evalpage .lede { color: var(--text-2); font-size: 18px; max-width: 900px; margin: 0 0 28px; }
-.evaltally { display: grid; grid-template-columns: repeat(3, minmax(0, 300px)); gap: 56px; margin-bottom: 30px; }
+.evaltally { display: grid; grid-template-columns: repeat(4, minmax(0, 240px)); gap: 44px; margin-bottom: 30px; }
 .evaltally > div { display: flex; flex-direction: column; gap: 8px; }
 .evaltally .serif { font-size: 88px; line-height: 0.95; }
 .evaltally .tally-label { font-size: 21px; color: var(--text); }
@@ -372,3 +372,28 @@ mark.hl-declared {
 .worklist .wl-id { font-size: 12px; color: var(--text-2); }
 .worklist .wl-what { color: var(--text-2); }
 .worklist .wl-php { font-size: 12px; color: var(--muted); }
+
+.challenge { display: grid; gap: 8px; margin-top: 14px; max-width: 560px; }
+.challenge label { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text-2); cursor: pointer; }
+.challenge label.on { color: var(--text); }
+.challenge input[type="radio"] { margin-top: 3px; accent-color: var(--observed); }
+.challenge textarea { resize: vertical; font-family: var(--sans); }
+.revision { color: var(--before); }
+.anchors { display: grid; gap: 4px; margin-top: 14px; }
+.anchor-cmd { font-size: 11px; word-break: break-all; opacity: 0.8; }
+.byatlas { margin-top: 30px; }
+.byatlas table { border-collapse: collapse; margin: 10px 0 6px; font-size: 14px; }
+.byatlas th { text-align: left; font-weight: 400; color: var(--muted); font-size: 12px; padding: 4px 18px 4px 0; }
+.byatlas td { padding: 5px 18px 5px 0; border-top: 1px solid var(--hair); }
+.wl-tiers { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 8px; font-size: 13px; color: var(--text-2); }
+.wl-tiers b { font-weight: 500; font-size: 16px; margin-right: 4px; }
+.worklist .wl-tier { font-size: 11px; color: var(--muted); }
+.live-grid { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 40px; margin-top: 10px; }
+.live-feed { list-style: none; margin: 26px 0 0; padding: 0; max-height: 62vh; overflow-y: auto; font-size: 13px; }
+.live-feed li { display: grid; grid-template-columns: 58px 92px 1fr; gap: 10px; padding: 5px 0; border-top: 1px solid var(--hair); color: var(--text-2); }
+.live-feed li.v { color: var(--text); }
+.live-feed .who { color: var(--declared); font-size: 12px; }
+.live-recent { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; font-size: 14px; }
+.live-recent li { display: flex; gap: 16px; }
+@media (max-width: 860px) { .live-grid { grid-template-columns: 1fr; } }
+.live-link { font-size: 12px; color: var(--declared); margin-left: 10px; }

@@ -16,6 +16,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const STATUS_CODE: Record<string, number> = { running: 1, exists: 2, exists_before_contract: 3, relocated: 4, probable_ghost: 5, cant_verify: 6, built_late: 7 };
 
 const params = new URLSearchParams(window.location.search);
+const LIVE_URL = import.meta.env.VITE_LIVE_URL as string | undefined; // the hosted live-audit server, when there is one
 const DEFAULT_RUN = "bulacan"; // the province mission; ?run=eval replays the evaluation instead
 
 export function Mission() {
@@ -209,6 +210,7 @@ export function Mission() {
         <span className="eyebrow" style={{ color: "var(--faint)" }}>
           declared <span style={{ color: "var(--declared)" }}>━</span> observed <span style={{ color: "var(--observed)" }}>━</span>
         </span>
+        {LIVE_URL && <a href={LIVE_URL} className="mono live-link">audit a contract live →</a>}
       </header>
 
       <AnimatePresence mode="wait">
@@ -411,25 +413,50 @@ function Callouts({ map, spots }: { map: MLMap; spots: { name: string; muni: str
 
 const FLAGGED: Outcome[] = ["probable_ghost", "built_late", "relocated", "exists_before_contract"];
 
-/** When the mission ends: the contracts that need an investigator, most money first. */
+type TriageRow = { id: string; outcome: Outcome; tier: string; cost: number; muni: string };
+type TriageSummary = { flagged: number; tiers: Record<string, number>; php: Record<string, number>; rows: TriageRow[] };
+const TIER_LABEL: Record<string, string> = { lead: "lead", needs_plans: "needs the plans", site_disputed: "site disputed",
+  site_unchecked: "site not re-checked", revised: "revised after a challenge" };
+
+/** When the mission ends: the contracts that need an investigator. Triage (atlas/triage.py) puts the leads first: a
+ * structure that predates its contract, a repair-scope contract or a disputed site waits for the plans or a second look. */
 function Worklist({ fleet, prov }: { fleet: FleetState; prov: Proj[] }) {
   const run = params.get("run") ?? DEFAULT_RUN;
+  const [tri, setTri] = useState<TriageSummary | null>(null);
+  useEffect(() => {
+    fetch(url.triage(run)).then((r) => (r.ok ? r.json() : null)).then(setTri).catch(() => setTri(null));
+  }, [run]);
   const rows = prov
     .filter((p) => FLAGGED.includes(fleet.status[p.id] as Outcome))
     .sort((a, b) => FLAGGED.indexOf(fleet.status[a.id] as Outcome) - FLAGGED.indexOf(fleet.status[b.id] as Outcome) || b.cost - a.cost);
   const php = rows.reduce((a, p) => a + p.cost, 0);
+  const tier = new Map((tri?.rows ?? []).map((r) => [r.id, r.tier]));
+  const order = (id: string) => ["lead", "site_disputed", "revised", "needs_plans", "site_unchecked"].indexOf(tier.get(id) ?? "site_unchecked");
+  const shown = tri ? [...rows].sort((a, b) => order(a.id) - order(b.id) || b.cost - a.cost) : rows;
   return (
     <motion.div className="worklist" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease }}>
       <div className="eyebrow" style={{ marginTop: 18 }}>
         Worklist · {rows.length} contracts · ₱{(php / 1e9).toFixed(2)} billion for an investigator
       </div>
+      {tri && (
+        <div className="wl-tiers">
+          <span><b style={{ color: "var(--ghost)" }}>{tri.tiers.lead ?? 0}</b> leads now</span>
+          <span><b style={{ color: "var(--before)" }}>{tri.tiers.needs_plans ?? 0}</b> need the plans first</span>
+          {(tri.tiers.site_disputed ?? 0) > 0 && <span><b style={{ color: "var(--relocated)" }}>{tri.tiers.site_disputed}</b> site disputed</span>}
+          {(tri.tiers.site_unchecked ?? 0) > 0 && <span><b>{tri.tiers.site_unchecked}</b> site not re-checked</span>}
+          {(tri.tiers.revised ?? 0) > 0 && <span><b>{tri.tiers.revised}</b> revised after a challenge</span>}
+        </div>
+      )}
       <ol>
-        {rows.slice(0, 9).map((p) => (
+        {shown.slice(0, 9).map((p) => (
           <li key={p.id}>
             <a href={`#/case/${run}/${p.id}`}>
               <i style={{ background: OUTCOME_COLOR[fleet.status[p.id] as Outcome] }} />
               <span className="mono wl-id">{p.id}</span>
-              <span className="wl-what">{OUTCOME_LABEL[fleet.status[p.id] as Outcome]} · {p.muni}</span>
+              <span className="wl-what">
+                {OUTCOME_LABEL[fleet.status[p.id] as Outcome]} · {p.muni}
+                {tier.get(p.id) && <span className="mono wl-tier"> · {TIER_LABEL[tier.get(p.id)!]}</span>}
+              </span>
               <span className="mono wl-php">₱{(p.cost / 1e6).toFixed(1)}M</span>
             </a>
           </li>

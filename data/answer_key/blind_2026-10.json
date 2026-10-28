@@ -1,0 +1,125 @@
+{
+ "_about": "Eight official findings on Bulacan contracts (five exact matches, three strong), matched to contract IDs on 28 October 2026, after the province mission was sealed on 27 October. No audit read them before its verdict was sealed.",
+ "cases": [
+  {
+   "id": "24CC0149",
+   "match": "exact",
+   "finding": "existed_before_contract",
+   "expected": [
+    "exists_before_contract",
+    "relocated"
+   ],
+   "who": "Independent Commission for Infrastructure; Commission on Audit",
+   "date": "2025-11-06",
+   "quote": "the project was never constructed at the designated location in the Approved Bid Plans (ICI); a structure was already present at the approved site (COA, 26 Sep 2025)",
+   "sources": [
+    "https://tribune.net.ph/2025/11/06/ici-flags-p95m-ghost-flood-control-project-in-bulacan",
+    "https://www.philstar.com/headlines/2025/09/26/2475638/coa-files-p360-m-fraudulent-bulacan-flood-control-projects-ici"
+   ]
+  },
+  {
+   "id": "24CC0403",
+   "match": "exact",
+   "finding": "existed_before_contract",
+   "expected": [
+    "exists_before_contract",
+    "relocated"
+   ],
+   "who": "Commission on Audit, fraud audit report",
+   "date": "2025-09-18",
+   "quote": "already had an existing slope protection structure weeks before",
+   "sources": [
+    "https://www.gmanetwork.com/news/topstories/nation/959619/coa-dpwh-bulacan-flood-control-projects-p390-million/story"
+   ]
+  },
+  {
+   "id": "24CC0402",
+   "match": "exact",
+   "finding": "existed_before_contract",
+   "expected": [
+    "exists_before_contract",
+    "relocated"
+   ],
+   "who": "Commission on Audit, fraud audit report",
+   "date": "2025-09-18",
+   "quote": "already had an existing slope protection structure weeks before",
+   "sources": [
+    "https://www.gmanetwork.com/news/topstories/nation/959619/coa-dpwh-bulacan-flood-control-projects-p390-million/story"
+   ]
+  },
+  {
+   "id": "24CC0014",
+   "match": "exact",
+   "finding": "relocated",
+   "expected": [
+    "relocated",
+    "probable_ghost"
+   ],
+   "who": "Commission on Audit, report to the ICI",
+   "date": "2026-01-20",
+   "quote": "found no structure at the designated site",
+   "sources": [
+    "https://tribune.net.ph/2026/01/20/coa-spots-new-bulacan-flood-issues"
+   ]
+  },
+  {
+   "id": "24CC0052",
+   "match": "exact",
+   "finding": "not_built_at_site",
+   "expected": [
+    "probable_ghost",
+    "relocated"
+   ],
+   "who": "Commission on Audit, report to the ICI",
+   "date": "2026-01-20",
+   "quote": "the structure was not built at the approved site",
+   "sources": [
+    "https://tribune.net.ph/2026/01/20/coa-spots-new-bulacan-flood-issues"
+   ]
+  },
+  {
+   "id": "24CC0017",
+   "match": "strong",
+   "finding": "relocated",
+   "expected": [
+    "relocated",
+    "probable_ghost"
+   ],
+   "who": "Commission on Audit, report to the ICI",
+   "date": "2026-01-20",
+   "quote": "the structure was outside the approved site",
+   "sources": [
+    "https://tribune.net.ph/2026/01/20/coa-spots-new-bulacan-flood-issues"
+   ]
+  },
+  {
+   "id": "24CC0001",
+   "match": "strong",
+   "finding": "existed_before_contract",
+   "expected": [
+    "exists_before_contract"
+   ],
+   "who": "Commission on Audit, report to the ICI",
+   "date": "2025-11-12",
+   "quote": "pre-existing riverbank protection structure",
+   "sources": [
+    "https://tribune.net.ph/2025/11/12/coa-flags-p344m-bulacan-flood-projects-as-fake-or-defective"
+   ]
+  },
+  {
+   "id": "24CC0025",
+   "match": "strong",
+   "finding": "relocated",
+   "expected": [
+    "relocated",
+    "probable_ghost"
+   ],
+   "who": "Commission on Audit (Feb 2026 batch; finding wording from a search summary)",
+   "date": "2026-02-13",
+   "quote": "constructed at a site different from that indicated in the approved bid plans",
+   "sources": [
+    "https://www.gmanetwork.com/news/topstories/nation/976487/coa-p275m-flood-control-projects-bulacan-towns/story"
+   ]
+  }
+ ]
+}

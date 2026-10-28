@@ -220,6 +220,8 @@ def run(case: Case, gi: GeoIndex, tracer=None) -> dict:
         case.record_entry(AGENT, "tool_call", {"tool": t.name, "args": t.arguments, "refused": t.refused,
                                                "result": json.loads(json.dumps(t.result, default=str))})
 
+    if case.facts.get("site_override"):
+        return finish(case, gi, tools, at_site(case, tools, case.facts["site_override"]), None)
     if case.meta is None:
         return finish(case, gi, tools, screen(case, tools, h), None)
     out = case.meta.tool_loop(case.facts.get("spark", SPARK), INSTRUCTIONS, [{"type": "input_text", "text": json.dumps(brief, ensure_ascii=False)}],
@@ -260,6 +262,37 @@ def screen(case: Case, tools: LocatorTools, h: dict) -> dict:
         "reasoning": "Screening locator (fixed rules, no model): " + (
             f"waterway nearest the pin inside Barangay {pick['name']}." if pick and chosen else
             "nearest mapped waterway to the published pin." if chosen else "no waterway matched."),
+    }
+
+
+def at_site(case: Case, tools: LocatorTools, site: dict) -> dict:
+    """An investigator's challenge names the site: cut the declared length on the waterway nearest that point (or on a
+    channel SAM 3.1 traces there when the map has none). No model chooses anything."""
+    r = case.record
+    length = r.get("length_m") or DEFAULT_LENGTH_M
+    lon, lat = site["lon"], site["lat"]
+    case.record_entry(AGENT, "site_override", {"lon": lon, "lat": lat, "challenge_entry": site.get("challenge_entry"),
+                                               "challenge_seq": site.get("challenge_seq")})
+    near = [w for w in tools.waterways_near(lon, lat, radius_m=150) if "waterway_id" in w]
+    res, how = None, ""
+    if near:
+        w = near[0]
+        res = tools.propose_reach(w["waterway_id"], length, anchor_lon=lon, anchor_lat=lat)
+        how = f"the mapped waterway nearest the point ({w['name'] or w['kind']}, {w['distance_m']} m away)"
+    elif tools.tracer:
+        traced = tools.trace_river_from_imagery(lon, lat)
+        if traced.get("waterway_id"):
+            res = tools.propose_reach(traced["waterway_id"], length, anchor_lon=lon, anchor_lat=lat)
+            how = "a channel SAM 3.1 traced at the point"
+    seq = site.get("challenge_seq")
+    return {
+        "structure": r["desc"], "river": r.get("river_text"), "barangays": [], "purok_or_sitio": None, "section": None,
+        "stations": [str(x) for x in (r.get("stations_m") or [])], "declared_length_m": r.get("length_m"),
+        "reach_id": res["reach_id"] if res else None, "confidence": "high", "pin": "unknown",
+        "reasoning": (f"Site set by an investigator's challenge (ledger #{seq}): {length:.0f} m centred on "
+                      f"{lon:.6f}, {lat:.6f}, along {how}." if res else
+                      f"The investigator's challenge (ledger #{seq}) names {lon:.6f}, {lat:.6f}, but no waterway was "
+                      f"found there."),
     }
 
 
@@ -307,7 +340,8 @@ def finish(case: Case, gi: GeoIndex, tools: LocatorTools, ans: dict, out: dict |
         "waterway_geom": waterway_geom,
         "ticks": chainage_ticks(reach, 50),
         "barangay_source": gi.barangay_source,
-        "mode": f"{label(case.facts.get('spark', SPARK))} tool loop" if out else "screening rules (no model)",
+        "mode": f"{label(case.facts.get('spark', SPARK))} tool loop" if out else
+                "set by an investigator's challenge" if case.facts.get("site_override") else "screening rules (no model)",
         "model": case.facts.get("spark", SPARK) if out else None,
     }
     case.record_entry(AGENT, "located", {k: v for k, v in result.items() if k not in ("ticks", "waterway_geom")})

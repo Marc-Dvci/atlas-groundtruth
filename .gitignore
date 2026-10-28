@@ -14,3 +14,6 @@ data/osm/*/raw/
 data/_src_flood_watch/
 data/meter_open.json
 web/public/film/
+data/keys/
+data/meter_fireworks.json
+data/meter_live.json

@@ -155,7 +155,24 @@ export type CaseFile = {
     blob_before?: string;
     blob_after?: string;
   } | null;
+  triage?: Triage;
+  revision?: {
+    n: number; challenge_entry: string; challenge_seq: number;
+    previous: { outcome: string; reason: string; headline: string; file: string; ledger_head: string }[];
+  };
   seconds: number;
   ledger_head: string;
   error?: string;
+};
+
+export type Triage = {
+  tier: "lead" | "needs_plans" | "site_disputed" | "site_unchecked" | null;
+  exists_dated?: boolean;
+  site?: "confirmed" | "disputed" | "unchecked";
+  reasons: { code: string; text: string }[];
+  scope?: { scope: string; words: string | null; admits_existing: boolean };
+  earlier_contracts?: string[];
+  site_check?: { agree: boolean | null; gap_m: number | null; overlap: number | null; why: string; model: string } | null;
+  second_reach?: GeoJSON.Geometry | null;
+  entry?: string;
 };

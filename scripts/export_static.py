@@ -80,10 +80,14 @@ def export_run(run: str, out: Path, blobs: set[str]) -> None:
         (dst / f"ledger_{cid}.json").write_text(json.dumps(by_case.get(cid, []), ensure_ascii=False),
                                                 encoding="utf-8")
     if (DATA / "answer_key/cases.json").exists() and any((DATA / "runs" / run / "cases").glob("*")):
-        try:
-            (dst / "evaluation.json").write_text(json.dumps(server.evaluation(run), ensure_ascii=False), encoding="utf-8")
-        except KeyError:
-            pass  # a run outside the answer key (a province mission) has no evaluation
+        for key in (p.stem for p in (DATA / "answer_key").glob("*.json")):
+            ev = server.evaluation(run, key)
+            if ev["cases"]:  # only the keys whose contracts this run audited
+                name = "evaluation.json" if key == "cases" else f"evaluation_{key}.json"
+                (dst / name).write_text(json.dumps(ev, ensure_ascii=False), encoding="utf-8")
+    for extra in ("triage.json", "summary.json"):
+        if (src / extra).exists():
+            shutil.copyfile(src / extra, dst / extra)
     for other in (p.name for p in (DATA / "runs").iterdir() if p.is_dir()):
         if other != run and (DATA / "runs" / other / f"compare_{run}.json").exists():
             shutil.copyfile(DATA / "runs" / other / f"compare_{run}.json", dst / f"compare_{other}.json")

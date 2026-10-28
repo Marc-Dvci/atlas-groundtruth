@@ -167,3 +167,20 @@ export function plain(v: Val): unknown {
 }
 
 export const __test = { parse, canonical, sha256 };
+
+/** Canonical JSON of a plain object (strings, booleans, integers), the bytes Python's canonical() writes. */
+export function canonicalOf(x: unknown): string {
+  return canonical(toVal(x));
+}
+
+/** Does an RFC 3161 token carry this SHA-256 digest as its message imprint? (The authority's signature itself is checked
+ * with `openssl ts -verify`; see the anchor entry's `verify` line.) */
+export async function tokenCarries(url: string, digestHex: string): Promise<boolean> {
+  const buf = new Uint8Array(await (await fetch(url)).arrayBuffer());
+  const want = Uint8Array.from(digestHex.match(/../g)!.map((h) => parseInt(h, 16)));
+  outer: for (let i = 0; i + want.length <= buf.length; i++) {
+    for (let j = 0; j < want.length; j++) if (buf[i + j] !== want[j]) continue outer;
+    return true;
+  }
+  return false;
+}

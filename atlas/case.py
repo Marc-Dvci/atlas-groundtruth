@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
 from dataclasses import dataclass, field
@@ -13,7 +14,7 @@ from .meta import MetaClient
 from .verdict import Finding
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = ROOT / "data"
+DATA = Path(os.environ.get("ATLAS_DATA") or ROOT / "data")  # a hosted deployment keeps its data on a volume
 
 
 @dataclass
