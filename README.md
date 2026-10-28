@@ -124,54 +124,50 @@ compact one-bit format; [`atlas/sam_codec.py`](atlas/sam_codec.py) decodes it (b
 
 ## Evaluation against the official record
 
-Twelve Bulacan contracts carry an official finding (Commission on Audit, the Independent Commission for
-Infrastructure, the President's own inspection) that can be tied to a contract ID: six exactly or strongly, six only as
-candidates. They sit in [`data/answer_key/cases.json`](data/answer_key/cases.json). No audit reads that file;
-[`scripts/evaluate.py`](scripts/evaluate.py) compares only after every verdict is sealed.
+Every official finding on a Bulacan flood-control contract that I could tie to a contract ID (Commission on Audit, the
+Independent Commission for Infrastructure, the President's own inspection) sits in a key that no audit reads:
+[`cases.json`](data/answer_key/cases.json), [`blind_2026-10.json`](data/answer_key/blind_2026-10.json) and
+[`blind_2026-10b.json`](data/answer_key/blind_2026-10b.json). [`scripts/evaluate.py`](scripts/evaluate.py) compares
+only after every verdict is sealed.
 
-| On the 12 contracts | Muse Spark 1.3 | Muse Spark Open |
-|---|---|---|
-| Same finding as the ruling | 1 | 1 |
-| Compatible: flags the contract another way the ruling allows | 4 | 5 |
-| Can't verify | 5 | 4 |
-| Disagree | 2 | 2 |
+Atlas does one of three things with a contract: it flags it (probable ghost, built elsewhere, declared before built,
+existed before the contract), it clears it, or it sends it to an investigator unsettled. It clears a contract only
+when a structure stands at the reach the text describes, the imagery dates it to the contract, no other contract built
+at the same time claims that reach, and the second Locator finds the same reach.
 
-- *Compatible* is not the same finding. Officials found phase III of a Malis riverbank wall (24CC0055) "built on
-  another portion of the river"; Atlas finds the wall at the located reach standing since January 2020, four years
-  before the award.
-- By what Atlas said: its four "existed before the contract" all fit the ruling (one the same finding, three
-  compatible); of its three "exists", one fits (officials found an older structure) and two disagree with a ghost
-  ruling, both on candidate matches; five times it could not verify. Twelve rulings are too few to state an accuracy
-  for each answer.
-- On the six exact or strong matches, neither host disagrees with the official finding. Muse Spark 1.3 abstains on
-  three: one has no sub-metre capture after completion, one has a single source showing nothing (the standard needs
-  two), and one has only a 10 m change after completion.
-- The two hosts reached the same verdict on 11 of 12 contracts, located the same site on 10, and agreed on 33 of 34
-  capture readings where they looked at the same site. The second Locator on Fireworks found the same reach on 11 of 12.
-- Triage keeps two of the four flagged contracts as leads, 23CC0156 and 25CC0241, which officials found not built at
-  the paid site, and sends 24CC0055 and 24CC0468 back for the plans.
+| Rulings (full depth) | Same finding | Flagged another way | Not settled | Cleared |
+|---|---|---|---|---|
+| First 12 (6 exact or strong matches, 6 candidates) | 1 | 3 | 8 | 0 |
+| Blind 8: matched after the province run was sealed on 27 Oct | 0 | 0 | 7 | 1 |
+| Fresh 2: committed with the 28 Oct rules (`7114509`) before any verdict on them was read | 0 | 0 | 2 | 0 |
 
-**Blind test.** After the Bulacan mission was sealed on 27 October, I matched eight more official findings to contract
-IDs (five exact, three strong; [`data/answer_key/blind_2026-10.json`](data/answer_key/blind_2026-10.json)). Neither
-run had seen them.
+The sealed province run gives the same tallies for the blind eight and the fresh two.
 
-| On the 8 new rulings | Sealed mission (27 Oct) | Full depth, same code (28 Oct) |
-|---|---|---|
-| Same finding as the ruling | 0 | 0 |
-| Compatible | 3 | 4 |
-| Can't verify | 3 | 2 |
-| Disagree | 2 | 2 |
-
-None of the eight was on the mission's worklist. At full depth Atlas said "exists" on six: four where officials found
-the structure predated the contract (compatible only in that Atlas saw a structure), and two (24CC0014, 24CC0017)
-where officials found the works outside the approved site. Both Locators put those two on the same reach. The
-contract's words point to one reach; the approved bid plans, which are not public, put the works on another, and a
-structure standing on the reach the words describe reads as "exists". This is the limit that matters most: Atlas finds
-contracts where the imagery shows nothing, or an older structure, at the reach the contract describes; it cannot tell
-a structure built on the right river at the wrong spot without the plans' coordinates.
+- **What the blind test changed.** Until 28 October "exists" carried no conditions, and Atlas said it on six of the
+  eight blind contracts, which officials had found built elsewhere or already there. Five of those six, and all three
+  "exists" among the first twelve, now fail a clearance condition: six sit on a reach that another contract built at
+  the same time also claims (24CC0045 shares its reach with three others, all read as "exists": one reach credited to
+  four contracts), three carry a structure the imagery cannot date to the contract, and three are on a reach the second
+  Locator disputes (a contract can fail several). The conditions were written after seeing these rulings, so these
+  twenty do not test them. The fresh two do: neither is cleared. Two rulings are too few to say more.
+- **The scoring changed too.** Until 28 October an "exists" counted as compatible with an older structure, which
+  scored the first twenty as 1 same finding, 7 compatible, 8 can't verify and 4 disagreements. Four of those
+  "compatible" were structures Atlas had dated to the contract window, the opposite of an older structure; only a flag
+  now counts as compatible.
+- **The limit that remains:** 24CC0017. Both Locators agree on the reach the contract's words describe, a structure
+  appears there during the contract, and no other contract claims it; officials found the works outside the approved
+  site. Without the approved plans' coordinates, which are not public, a structure on the right river at the wrong
+  spot clears.
+- **What these rulings do not show.** Every one of them found a problem, so they measure what Atlas misses, not what it
+  flags wrongly; a research pass found no published inspection of a Bulacan contract found built as declared
+  ([`docs/rulings/R10_fresh_rulings.md`](docs/rulings/R10_fresh_rulings.md)). Atlas flags 4 of the 22 ruled contracts (18%) against 226 of the 1,096 in the
+  province (21%), and clears 1 of 22 against 62 of 1,096 (6%). On this record it rarely clears a contract officials
+  found faulty; it does not yet show that it flags faulty contracts more often than the rest.
+- **Open weights.** The first twelve audited end to end on Muse Spark Open reach the same verdict as on Muse Spark 1.3
+  for 11, locate the same site for 10, and agree on 33 of 34 capture readings.
 
 Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them);
-`scripts/evaluate.py --run blind --key blind_2026-10`.
+`scripts/evaluate.py --run blind --key blind_2026-10` and `--key blind_2026-10b`.
 
 ## The first mission: Bulacan
 
@@ -183,27 +179,39 @@ Meta may train on what it is sent: it carries only public contract records and p
 | Outcome | Contracts | ₱ billion |
 |---|---|---|
 | Existed before the contract | 177 | 12.02 |
-| Probable ghost | 36 | 2.08 |
-| Built elsewhere | 6 | 0.46 |
-| Declared before built | 5 | 0.27 |
-| Exists | 266 | 18.23 |
-| Can't verify | 606 | 39.42 |
+| Probable ghost | 38 | 2.27 |
+| Declared before built | 8 | 0.49 |
+| Built elsewhere | 3 | 0.24 |
+| Exists | 265 | 18.13 |
+| Can't verify | 605 | 39.32 |
 
-224 contracts worth ₱14.83 billion go to the investigator's worklist. The second Locator found the same reach for
-198 of them. Triage keeps **61 as leads (₱3.77 billion)**: 29 probable ghosts, 5 built elsewhere, 4 declared before
+226 contracts worth ₱15.02 billion go to the investigator's worklist. The second Locator found the same reach for
+200 of them. Triage keeps **63 as leads (₱3.95 billion)**: 32 probable ghosts, 2 built elsewhere, 6 declared before
 built, and 23 structures that predate a contract billed as new construction with nothing visibly added. **137
 (₱9.15 billion) need the plans first**: among the 177 structures that predate their contract, 97 are dated before the
 award only by 10 m pixels, 54 contracts describe repair, improvement or a later phase, and 116 show visible work
-between the last capture before the award and the last after it. **25 have a disputed site**, and one was audited
+between the last capture before the award and the last after it. **26 have a disputed site**, and one was audited
 again after a signed challenge: 22CC0013, a probable ghost at the first reach, is "can't verify" at the reach the second
-Locator chose, 238 m along the same river. Of the 266 "exists", 188 are dated to the contract window and 78 are not.
+Locator chose, 238 m along the same river.
 
-Of the 606 Atlas cannot verify,
-242 have a single source showing nothing, 205 have no decisive observation after completion,
-118 have no capture after completion, 25 could not be located and 16 have sources that disagree. This is
+Of the 265 "exists", **62 clear their contract (₱4.61 billion)**. The other 203 go to an investigator: 147 share their
+reach with a contract built at the same time, 76 carry a structure not dated to the contract, and 16 are on a reach the
+second Locator disputes.
+
+Of the 605 Atlas cannot verify, 239 have a single source showing nothing, 208 have no decisive observation after
+completion, 118 have no capture after completion, 25 could not be located and 15 have sources that disagree. This is
 triage, not a verification of public spending: 40 contracts ran at full depth and 1,056 at screening depth, more than
 half could not be verified, and a lead is a reason to send an investigator, not a finding of fact. Each case names its
 sources and the reason for its outcome, and a human signs it before it leaves the system.
+
+**Audited again under the second-reader rule (28 October).** 83 sealed cases had a decisive reading the second reader
+had not confirmed (most of them captures before the award that only one model had read, or a relocation candidate).
+Each was audited again in place with [`scripts/revise.py`](scripts/revise.py): the earlier case file is kept beside the
+new one and every earlier ledger entry stays. Nine outcomes changed: three "built elsewhere" became probable ghosts (the
+second reader did not confirm the candidate elsewhere), three "can't verify" became "declared before built" (the same
+unconfirmed candidate had blocked that rule), two "exists" became "can't verify", and one "can't verify" became "exists"
+(a street photo read by one model no longer contradicts the imagery). The twelve first-set and eight blind contracts
+were audited again the same way, and none of their verdicts changed.
 
 ## Chain of custody
 
@@ -288,6 +296,8 @@ DPWH flood-control projects (the President's portal list, 9,855 rows, and later 
 Esri World Imagery Wayback; Sentinel-2 L2A (ESA Copernicus, via Element 84 Earth Search); Copernicus DEM GLO-30;
 High Resolution Settlement Layer (Meta and CIESIN, CC BY 4.0); Mapillary (CC BY-SA 4.0); OpenStreetMap waterways
 (ODbL); PSA/NAMRIA barangay boundaries via OCHA COD-AB (CC BY-IGO). Imagery attribution is shown on every map.
+The official rulings behind the blind keys, with their sources and match grades, are in
+[`docs/rulings/`](docs/rulings/).
 
 ## Limits
 
@@ -296,5 +306,5 @@ for contracts completed in 2025 the newest capture often predates completion, an
 Contract descriptions rarely give stations with a known origin, so the located reach can differ from the approved
 site; the Locator states its confidence and the published pin's offset in every case, a second Locator checks every
 flagged contract, and the blind test shows what remains: two Locators can agree on the reach the words describe while
-the approved plans put the works elsewhere. A human signs every outcome
-before it leaves the system.
+the approved plans put the works elsewhere. Every published ruling on a Bulacan contract found a problem, so how
+often Atlas flags a sound contract is not measured. A human signs every outcome before it leaves the system.

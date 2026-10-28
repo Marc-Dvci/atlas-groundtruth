@@ -1,5 +1,5 @@
 {
- "_about": "Two more official findings (strong matches), found by a research pass on 28 October 2026 that never opened an audit run (research/R10_fresh_rulings.md). Written down before their verdicts were looked at, after the clearance rules of 28 October were fixed: the only rulings that test those rules.",
+ "_about": "Two more official findings (strong matches), found by a research pass on 28 October 2026 that never opened an audit run. Written down and committed together with the clearance rules of 28 October (7114509) before any verdict on them was looked at: the only rulings that test those rules. Quotes checked against the GMA article's text. 25CC0063: the article lists the site as Purok 2; the contract record says Purok 3, and it is the only SYMS record in San Roque near P74 million. 24CC0010: no Atlas outcome is a partial build, so only a flag counts as compatible and a clearance counts against Atlas.",
  "cases": [
   {
    "id": "25CC0063",
@@ -10,7 +10,7 @@
    ],
    "who": "Commission on Audit, fraud audit report to the ICI",
    "date": "2025-11-12",
-   "quote": "the P74 million project by SYMS Construction Trading in Baliuag was non-existent (the article names Purok 2; the contract record, Purok 3)",
+   "quote": "the P74 million project by SYMS Construction Trading in Baliuag was non-existent",
    "sources": [
     "https://www.gmanetwork.com/news/topstories/nation/965797/coa-finds-p344-m-bulacan-flood-control-projects-as-ghost-mismatched/story",
     "https://tribune.net.ph/2025/11/12/coa-flags-p344m-bulacan-flood-projects-as-fake-or-defective"
@@ -23,7 +23,7 @@
    "expected": [],
    "who": "Commission on Audit, fraud audit report to the ICI",
    "date": "2025-11-12",
-   "quote": "the P77 million Malolos project by Wawao Builders spanned only 55 meters at the approved location, far shorter than the approved 148.8 meters",
+   "quote": "the P77 million Malolos project by Wawao Builders spanned only 55 meters at the approved location--far shorter than the approved 148.8 meters",
    "sources": [
     "https://www.gmanetwork.com/news/topstories/nation/965797/coa-finds-p344-m-bulacan-flood-control-projects-as-ghost-mismatched/story",
     "https://tribune.net.ph/2025/11/12/coa-flags-p344m-bulacan-flood-projects-as-fake-or-defective"
