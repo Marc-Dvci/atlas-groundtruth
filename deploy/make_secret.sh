@@ -4,8 +4,9 @@
 set -e
 export MSYS_NO_PATHCONV=1 PYTHONUTF8=1 PYTHONIOENCODING=utf-8
 grep -q "^ATLAS_LIVE_TOKEN=" .env || printf 'ATLAS_LIVE_TOKEN=%s\n' "$(.venv/Scripts/python -c 'import secrets; print(secrets.token_urlsafe(18))')" >> .env
-tmp="$(mktemp)"
+# a relative path the Windows modal.exe can read (a Git Bash /tmp path it cannot); removed whatever happens
+tmp=".env.modal.tmp"
+trap 'rm -f "$tmp"' EXIT
 grep -E "^(MODEL_API_KEY|MAPILLARY_TOKEN|BASETEN_API_KEY|BASETEN_MODEL|ATLAS_LIVE_TOKEN)=" .env > "$tmp"
 .venv/Scripts/modal secret create atlas-keys --from-dotenv "$tmp" --force
-rm -f "$tmp"
 echo "secret atlas-keys created; your owner token is ATLAS_LIVE_TOKEN in .env"

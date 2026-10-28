@@ -17,3 +17,4 @@ web/public/film/
 data/keys/
 data/meter_fireworks.json
 data/meter_live.json
+.env.*
