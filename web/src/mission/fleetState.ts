@@ -1,5 +1,6 @@
 import type { Outcome } from "../data";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- event and ledger payloads are free-form JSON
 export type Ev = { t: number; kind: string; case: string; agent: string; data: Record<string, any> };
 
 export const AGENTS: { key: string; label: string; model: string }[] = [

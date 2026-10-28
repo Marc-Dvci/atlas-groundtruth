@@ -510,17 +510,13 @@ function Next({ c, run }: { c: CaseFile; run: string }) {
         {t.reasons.map((r) => (
           <li key={r.code} className={["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT"].includes(r.code) ? "counted" : "refused"}>
             <span className="mark">{["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT"].includes(r.code) ? "✓" : "•"}</span>
-            <span>{r.text}</span>
+            <span>{r.text.replace(/^1 earlier contract\(s\)/, "1 earlier contract").replace(/contract\(s\)/, "contracts")}</span>
             <span className="why mono">{r.code.toLowerCase().replace(/_/g, " ")}</span>
           </li>
         ))}
       </ul>
-      {(t.earlier_contracts?.length ?? 0) > 0 && t.earlier_contracts && (
-        <p className="note">
-          Earlier contracts near this reach:{" "}
-          {t.earlier_contracts.slice(0, 6).map((id, i) => <span key={id} className="mono">{i ? ", " : ""}{id}</span>)}
-          {t.earlier_contracts.length > 6 ? "…" : ""}. Pins are unreliable, so they are listed, not counted.
-        </p>
+      {(t.earlier_contracts?.length ?? 0) > 0 && (
+        <p className="note">Published pins are unreliable, so earlier contracts are listed, not counted.</p>
       )}
       {t.entry && <a className="mono ledger-link" href={`#/ledger/${run}/${c.id}`}>Sealed as {t.entry.slice(0, 12)}… →</a>}
     </Section>

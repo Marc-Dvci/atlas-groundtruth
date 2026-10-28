@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { OUTCOME_COLOR, OUTCOME_LABEL, type Outcome } from "../data";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- event and ledger payloads are free-form JSON
 type Ev = { t: number; kind: string; case: string; agent: string; data: Record<string, any> };
 type Status = { enabled: boolean; open: boolean; running: { run: string; id: string; started: number } | null; spent_usd: number;
   budget_usd: number; today: number; per_day: number; recent: { run: string; id: string; outcome: Outcome | null; seconds: number | null; done: boolean }[] };
@@ -25,7 +26,7 @@ function brief(e: Ev): string | null {
   if (k === "ground:photo") return `street photo ${d.date}: ${d.reading?.structure ?? ""}`;
   if (e.kind === "finding") return `finding · ${d.finding?.source} · ${d.finding?.claim} (quality ${d.finding?.quality})`;
   if (k === "timeline:timeline") return `timeline: ${(d.flags ?? []).join("; ") || "no date flag"}`;
-  if (k === "valuation:valuation") return `money: ${(d.flags ?? []).map((f: any) => f.text).join("; ") || "no money flag"}`;
+  if (k === "valuation:valuation") return `money: ${(d.flags ?? []).map((f: { text: string }) => f.text).join("; ") || "no money flag"}`;
   if (k === "impact:impact") return `${d.people_low_ground?.toLocaleString("en-US")} people on low ground behind the reach`;
   if (k === "verdict:verdict") return `VERDICT (rules): ${d.headline}`;
   if (k === "casebuilder:case_file") return `Muse Wonder wrote the case file: ${d.headline}`;

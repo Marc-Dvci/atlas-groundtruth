@@ -6,6 +6,7 @@ import { url } from "../api";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- event and ledger payloads are free-form JSON
 type P = Record<string, any>;
 const MODEL: Record<string, string> = { "muse-spark-1.3": "Muse Spark 1.3", "muse-spark-1.3-contributor": "Muse Spark 1.3",
   "meta-models/muse-spark-open-1026": "Muse Spark Open", "muse-wonder-1.0": "Muse Wonder" };

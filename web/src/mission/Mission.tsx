@@ -9,7 +9,8 @@ import { STATIC, streamEvents, url } from "../api";
 
 type Stage = "globe" | "province" | "fleet";
 type Proj = { id: string; desc: string; muni: string; contractor: string; cost: number; lon: number; lat: number;
-  flags: { code: string; text: string }[]; priority: number };
+  flags: { code: string; text: string }[]; priority: number; abc?: number | null };
+type Summary = { overlaps?: { province: string }[]; pins?: { over_1km: number } | null };
 
 const BULACAN: [number, number, number, number] = [120.62, 14.68, 121.26, 15.2];
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -23,7 +24,7 @@ export function Mission() {
   const [map, setMap] = useState<MLMap | null>(null);
   const [cols, setCols] = useState<Columns | null>(null);
   const [prov, setProv] = useState<Proj[] | null>(null);
-  const [summary, setSummary] = useState<any>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [stage, setStage] = useState<Stage>("globe");
   const [fleet, setFleet] = useState<FleetState>(empty);
   const [spec, setSpec] = useState<MissionSpec | null>(null);
@@ -184,7 +185,7 @@ export function Mission() {
   };
 
   useEffect(() => {
-    (window as any).__mission = { goProvince, launch, setStage };
+    (window as unknown as { __mission: object }).__mission = { goProvince, launch, setStage };
   });
 
   // the headline counts the President's portal list only; later DPWH records are drawn but not counted
@@ -194,10 +195,10 @@ export function Mission() {
   const flags = useMemo(() => {
     if (!prov) return null;
     const c = (code: string) => prov.filter((p) => p.flags.some((f) => f.code === code)).length;
-    return { ceiling: c("BID_AT_CEILING") + c("ABOVE_ABC"), above: c("ABOVE_ABC"), withBudget: prov.filter((p: any) => p.abc).length,
+    return { ceiling: c("BID_AT_CEILING") + c("ABOVE_ABC"), above: c("ABOVE_ABC"), withBudget: prov.filter((p) => p.abc).length,
       repeated: c("REPEATED_AMOUNT"), shared: c("SHARED_PIN"), copied: c("PIN_COPIED_DECIMALS") };
   }, [prov]);
-  const overlaps = summary?.overlaps?.filter((o: any) => o.province === "Bulacan").length ?? 0;
+  const overlaps = summary?.overlaps?.filter((o) => o.province === "Bulacan").length ?? 0;
   const deadline = spec?.deadline ?? fleet.plan?.deadline ?? params.get("deadline") ?? "2026-11-06";
   const deadlineLabel = new Date(deadline + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
 

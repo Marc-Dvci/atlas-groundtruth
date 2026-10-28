@@ -62,7 +62,7 @@ export function VoiceMission({ onMission }: Props) {
     await send(wav);
   };
   // the film plays a recorded mission through the same path: listen() while it is heard, then sendUrl(wav)
-  (window as any).__voice = {
+  (window as unknown as { __voice: object }).__voice = {
     listen: () => {
       setState("listening");
       const t0 = performance.now();
