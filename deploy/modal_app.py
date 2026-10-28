@@ -21,7 +21,9 @@ image = (
         "requests",
     )
     .env({"ATLAS_DATA": "/data", "ATLAS_LIVE": "1", "ATLAS_LIVE_BUDGET_USD": "15", "ATLAS_LIVE_PER_DAY": "30",
-          "ATLAS_SELF_ENROL": "1", "ATLAS_BUDGET_USD": "200", "GDAL_HTTP_TIMEOUT": "60"})
+          "ATLAS_SELF_ENROL": "1", "GDAL_HTTP_TIMEOUT": "60",
+          # caps for the meters a hosted server could reach: Meta outside live audits, and Baseten (the second reader)
+          "ATLAS_BUDGET_USD": "15", "ATLAS_OPEN_BUDGET_USD": "5"})
     .add_local_dir(ROOT / "web" / "dist-live", "/web")
     .add_local_python_source("atlas")
 )

@@ -393,8 +393,8 @@ async def mission_voice(request: Request):
     """Body: a mono 16-bit WAV (16 or 24 kHz). Muse Voice Transcribe, then Muse Spark parses the mission."""
     from .audit import make_client
     from .mission import parse, transcribe
-    if LIVE_ON:
-        live_gate(request, audit=False)
+    if LIVE_ON:  # every paid call on the hosted server goes through the live audit's budget; missions are not among them
+        raise HTTPException(403, "missions are off on the hosted server; use the live audit")
     wav = await request.body()
     client = make_client()
     if client is None:
@@ -408,8 +408,8 @@ async def mission_voice(request: Request):
 async def mission_text(request: Request):
     from .audit import make_client
     from .mission import parse
-    if LIVE_ON:
-        live_gate(request, audit=False)
+    if LIVE_ON:  # every paid call on the hosted server goes through the live audit's budget; missions are not among them
+        raise HTTPException(403, "missions are off on the hosted server; use the live audit")
     body = await request.json()
     client = make_client()
     if client is None:
