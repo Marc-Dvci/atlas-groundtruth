@@ -4,6 +4,8 @@ import { OUTCOME_COLOR, OUTCOME_LABEL } from "../data";
 import { BaseMap } from "../map/BaseMap";
 import { reachCoords, setupCaseLayers, type CaseLayers } from "./caseMap";
 import { Dossier } from "./Dossier";
+import { FlatCase } from "./FlatCase";
+import { webglAvailable } from "../map/webgl";
 import { Scrubber } from "./Scrubber";
 import type { CaseFile } from "./types";
 import { url } from "../api";
@@ -64,6 +66,11 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
   }, [run, id]);
 
   const onReady = useCallback((m: MLMap) => setMap(m), []);
+
+  // without WebGL the layers effect never runs: start on the newest capture as the map would
+  useEffect(() => {
+    if (c && !webglAvailable()) setActive(c.frames.length - 1);
+  }, [c]);
 
   // layers
   useEffect(() => {
@@ -136,7 +143,8 @@ export function CaseView({ run, id, onBack }: { run: string; id: string; onBack:
   const v = c?.verdict;
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <BaseMap onReady={onReady} initial={{ center: [120.88, 14.9], zoom: 12 }} />
+      <BaseMap onReady={onReady} initial={{ center: [120.88, 14.9], zoom: 12 }}
+        fallback={c ? <FlatCase c={c} active={active} beat={key} showMasks={reached("history")} /> : null} />
       <div className="vignette case" />
       <div className="topshade" />
       <header className="case-head">

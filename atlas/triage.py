@@ -18,10 +18,15 @@ question the paperwork or a second look must answer first. Like the verdict, it 
   Otherwise it "needs the plans": the as-built plans must say what the contract added, and where.
 * Probable ghost, built elsewhere, declared before built: a lead once the site is confirmed.
 
-"Exists" is not a clearance either. It says a structure stands at the reach the text describes after completion; it
-is dated to the contract only when sub-metre imagery shows the reach without it at most 18 months before the award and
-with it afterwards, or Sentinel-2 dates a lasting change to the contract window. Otherwise the structure is "not dated
-to this contract": it may be older, or another contract's (this rule was added after the blind test of 28 Oct 2026).
+"Exists" is not a clearance either. It says a structure stands at the reach the text describes after completion. A
+contract is cleared only when all three hold (rules added on 28 Oct 2026, after the blind test showed Atlas clearing
+contracts officials had found built elsewhere or already there):
+  - dated: sub-metre imagery shows the reach without the structure at most 18 months before the award and with it
+    afterwards, or Sentinel-2 dates a lasting change to the contract window. Otherwise it may be older;
+  - one wall, one contract: no other contract whose works ran at the same time claims the same reach (the two located
+    reaches run along each other for at least half their length). One structure cannot show which of them built it;
+  - site confirmed: the second Locator found the same reach.
+Every other "exists" goes to an investigator with the reasons.
 
 Earlier contracts paid for works near the same reach are listed with every case: they may explain a structure that
 predates this contract, or show the same works paid twice. Either way the investigator needs to see them.
@@ -36,6 +41,8 @@ Tier = Literal["lead", "needs_plans", "site_disputed", "site_unchecked"]
 FLAGGED = ("probable_ghost", "relocated", "built_late", "exists_before_contract")
 GROWTH = 0.25  # share of the reach a structure must gain to count as visible work
 SAME_REACH = 0.5  # share of their length two located reaches must run along each other to be one site
+SAME_SITE_M = 50  # and the largest gap between them
+OVERLAP_BUFFER_M = 40  # a reach runs along another where it stays within this distance of it
 AFTER_WINDOW_DAYS = 365  # works often go on after the declared completion
 
 _REPAIR = re.compile(r"\b(rehabilitat\w*|repair\w*|restor\w*|retrofit\w*|improvement|improving|upgrad\w*|rais(e|ing)\w*|"
@@ -43,6 +50,34 @@ _REPAIR = re.compile(r"\b(rehabilitat\w*|repair\w*|restor\w*|retrofit\w*|improve
 _LATER = re.compile(r"\b(phase\s*(ii|iii|iv|v|vi|2|3|4|5|6)\b|continuation|extension|additional|completion of)", re.I)
 _YES = ("yes", "partly")
 DATING_GAP_MONTHS = 18  # the last capture without the structure must be this close to the award to date it
+
+
+def reach_overlap(a: dict, b: dict) -> tuple[float, float]:
+    """Gap (m) between two located reaches (GeoJSON), and the share of each that runs along the other (the smaller)."""
+    from shapely.geometry import shape
+
+    from .geo.geom import to_m
+    ra, rb = to_m(shape(a)), to_m(shape(b))
+    ov = min(ra.intersection(rb.buffer(OVERLAP_BUFFER_M)).length / max(ra.length, 1),
+             rb.intersection(ra.buffer(OVERLAP_BUFFER_M)).length / max(rb.length, 1))
+    return ra.distance(rb), ov
+
+
+def concurrent_on_reach(case: dict, others: list[dict]) -> list[dict]:
+    """Other contracts whose works window overlaps this one's and whose located reach is the same site."""
+    reach = (case.get("locator") or {}).get("reach")
+    if not reach:
+        return []
+    out = []
+    for o in others:
+        r = (o.get("locator") or {}).get("reach")
+        if o["id"] == case["id"] or not r or not (o["award"] <= case["completion"] and case["award"] <= o["completion"]):
+            continue
+        gap, ov = reach_overlap(reach, r)
+        if gap < SAME_SITE_M and ov >= SAME_REACH:
+            out.append({"id": o["id"], "award": o["award"], "completion": o["completion"], "overlap": round(ov, 2),
+                        "outcome": (o.get("verdict") or {}).get("outcome"), "cost": (o.get("record") or {}).get("cost")})
+    return out
 
 
 def scope(desc: str) -> dict:
@@ -124,20 +159,24 @@ def dated_to_contract(case: dict) -> dict:
                                    "no lasting change to the contract window."}
 
 
-def assess(case: dict, site_check: dict | None) -> dict:
-    """case: the sealed case.json of one contract; site_check: the second Locator's comparison, if any."""
+def assess(case: dict, site_check: dict | None, concurrent: list[dict] | None = None) -> dict:
+    """case: the sealed case.json of one contract; site_check: the second Locator's comparison, if any; concurrent:
+    the other contracts on the same reach whose works ran at the same time (concurrent_on_reach)."""
     v = case.get("verdict") or {}
     oc = v.get("outcome")
-    if oc == "exists":
-        d = dated_to_contract(case)
-        return {"tier": None, "exists_dated": d["dated"], "reasons": [
-            {"code": "DATED_TO_CONTRACT" if d["dated"] else "NOT_DATED_TO_CONTRACT", "text": d["why"]}]}
-    if oc not in FLAGGED:
+    if oc not in FLAGGED and oc != "exists":
         return {"tier": None, "reasons": []}
     reasons: list[dict] = []
+    concurrent = concurrent or []
 
     def say(code: str, text: str) -> None:
         reasons.append({"code": code, "text": text})
+
+    def shared() -> None:
+        if concurrent:
+            say("SHARED_REACH", f"{len(concurrent)} other contract(s) whose works ran at the same time claim the same reach: "
+                                + ", ".join(o["id"] for o in concurrent[:4]) + ("…" if len(concurrent) > 4 else "")
+                                + ". One structure there cannot show which of them built it.")
 
     if site_check is None or site_check.get("agree") is None:
         site = "unchecked"
@@ -153,6 +192,16 @@ def assess(case: dict, site_check: dict | None) -> dict:
         say("SITE_DISPUTED", f"A second Locator ({site_check.get('model', 'Muse Spark Open')}) placed the works elsewhere: "
                              f"{why}. An investigator must confirm the site first.")
 
+    if oc == "exists":
+        d = dated_to_contract(case)
+        say("DATED_TO_CONTRACT" if d["dated"] else "NOT_DATED_TO_CONTRACT", d["why"])
+        shared()
+        cleared = d["dated"] and not concurrent and site == "confirmed"
+        if cleared:
+            say("CLEARED", "Dated to this contract, no concurrent contract on the reach, and both Locators agree on it.")
+        return {"tier": None, "exists_dated": d["dated"], "cleared": cleared, "site": site,
+                "shared_with": [o["id"] for o in concurrent], "reasons": reasons}
+    shared()
     rec = case.get("record") or {}
     sc = scope(rec.get("desc") or "")
     vis = visible_addition(case.get("frames") or [], case.get("award") or rec.get("start") or "")
@@ -190,7 +239,7 @@ def assess(case: dict, site_check: dict | None) -> dict:
     tier: Tier = ("site_disputed" if site == "disputed" else "needs_plans" if plans
                   else "site_unchecked" if site == "unchecked" else "lead")
     return {"tier": tier, "site": site, "scope": sc, "visible": vis, "change_in_window": win,
-            "earlier_contracts": [p["id"] for p in prior], "reasons": reasons}
+            "earlier_contracts": [p["id"] for p in prior], "shared_with": [o["id"] for o in concurrent], "reasons": reasons}
 
 
 TIER_TEXT = {

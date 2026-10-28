@@ -19,19 +19,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from shapely.geometry import shape  # noqa: E402
 
 from atlas.agents import existence, locator  # noqa: E402
 from atlas.audit import make_client, open_run  # noqa: E402
 from atlas.case import DATA, Case, Event  # noqa: E402
-from atlas.geo.geom import to_m  # noqa: E402
+from atlas.triage import SAME_REACH, SAME_SITE_M, reach_overlap  # noqa: E402
 from atlas.geo.index import get_index  # noqa: E402
 from atlas.meta import OPEN  # noqa: E402
 
 FLAGS = ("probable_ghost", "relocated", "built_late", "exists_before_contract")
-SAME_SITE_M = 50  # the reaches lie within this distance of each other
-SAME_REACH = 0.5  # and run along each other for at least this share of their length (atlas/triage.py)
-OVERLAP_BUFFER_M = 40  # a reach counts as overlapping where it runs within this distance of the other
 
 
 def compare(a: dict | None, b: dict | None) -> dict:
@@ -40,10 +36,7 @@ def compare(a: dict | None, b: dict | None) -> dict:
         return {"agree": False, "gap_m": None, "overlap": 0.0,
                 "why": "only one locator found a site" if (a or {}).get("reach") or (b or {}).get("reach")
                 else "neither locator found a site"}
-    ra, rb = to_m(shape(a["reach"])), to_m(shape(b["reach"]))
-    gap = ra.distance(rb)
-    ov = min(ra.intersection(rb.buffer(OVERLAP_BUFFER_M)).length / max(ra.length, 1),
-             rb.intersection(ra.buffer(OVERLAP_BUFFER_M)).length / max(rb.length, 1))
+    gap, ov = reach_overlap(a["reach"], b["reach"])
     agree = gap < SAME_SITE_M and ov >= SAME_REACH
     why = (f"the reaches overlap along {ov:.0%} of their length" if ov > 0 else f"the reaches are {gap:.0f} m apart")
     return {"agree": agree, "gap_m": round(gap), "overlap": round(ov, 2), "why": why}

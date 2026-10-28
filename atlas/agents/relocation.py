@@ -4,7 +4,7 @@ Triggered when sub-metre imagery shows the declared reach bare after completion.
 Atlas walks the same waterway 1.5 km each way, compares SAM 3.1 hard-bank masks
 in the last capture before the award with the first after completion, keeps
 banks that turned hard in between, and asks Muse Spark to confirm the best
-candidate. The DPWH itself said 337 of 416 flagged projects "exist but at a
+candidate; the second reader must confirm it too. The DPWH itself said 337 of 416 flagged projects "exist but at a
 different location": this is how to find them.
 """
 from __future__ import annotations
@@ -17,9 +17,9 @@ from shapely.ops import substring, unary_union
 
 from ..case import Case
 from ..geo.geom import bbox_around, buffer_m, to_deg, to_m
-from ..meta import SPARK, segment_image
+from ..meta import SPARK, label, segment_image
 from ..verdict import Finding
-from .existence import Z, _root, captures, chip_for
+from .existence import Z, _root, captures, chip_for, second_reader
 
 AGENT = "relocation"
 SPAN_M, STEP_M, WIN_M = 1500, 380, 260
@@ -97,23 +97,38 @@ def run(case: Case, award: str, completion: str, waterway_geo: dict) -> dict | N
         return result
     cb, ca = chip_for(b_rel["release"], best["bbox"]), chip_for(a_rel["release"], best["bbox"])
     blob_b, blob_a = case.blob(cb.jpeg(), "jpg"), case.blob(ca.jpeg(), "jpg")
-    res = case.meta.structured(case.facts.get("spark", SPARK), CONFIRM, [
+    pair = [
         {"type": "input_text", "text": f"Before: {b_rel['captured']}"},
         {"type": "input_image", "image_url": "data:image/jpeg;base64," + base64.b64encode(cb.jpeg()).decode()},
         {"type": "input_text", "text": f"After: {a_rel['captured']}"},
-        {"type": "input_image", "image_url": "data:image/jpeg;base64," + base64.b64encode(ca.jpeg()).decode()}],
-        SCHEMA, schema_name="relocation", effort="medium", est_usd=0.02)
+        {"type": "input_image", "image_url": "data:image/jpeg;base64," + base64.b64encode(ca.jpeg()).decode()}]
+    res = case.meta.structured(case.facts.get("spark", SPARK), CONFIRM, pair, SCHEMA, schema_name="relocation",
+                               effort="medium", est_usd=0.02)
     ans = res["data"]
     dist = round(to_m(Point(best["center"])).distance(to_m(reach)))
     found = ans["new_structure"] == "yes"
+    second, ans2, missing = second_reader(case), None, None
+    if found:  # a candidate counts only when the second reader also sees a new structure
+        if second is None:
+            missing = "no second reader is configured"
+        else:
+            try:
+                ans2 = case.meta.structured(second, CONFIRM, pair, SCHEMA, schema_name="relocation",
+                                            effort="low", est_usd=0.01)["data"] or {}
+            except Exception as e:
+                missing = f"the second reading failed ({type(e).__name__})"
+        found = bool(ans2) and ans2.get("new_structure") == "yes"
     result.update({"found": found, "confirm": ans, "distance_m": dist, "blob_before": blob_b, "blob_after": blob_a})
+    if ans2 is not None or missing:
+        result["confirm_second"] = {**(ans2 or {}), "model": label(second) if second else None, "missing": missing}
     h = case.record_entry(AGENT, "relocation_search", {k: v for k, v in result.items() if k != "new_hard_banks"})
     case.say(AGENT, "candidate", center=best["center"], distance_m=dist, found=found, reading=ans,
              new_hard_banks=result["new_hard_banks"][:40])
     if found:
         case.file(Finding(AGENT, f"{a_rel['provider'] or 'Wayback'} {a_rel['captured']} ({a_rel['sensor']}, {a_rel['resolution_m']} m), "
                                  f"{dist} m along the waterway", "optical_vhr", _root(a_rel), a_rel["captured"], "present", 0.85,
-                          f"new hard bank built between {b_rel['captured']} and {a_rel['captured']}: {ans['what_i_see'][:160]}",
+                          f"new hard bank built between {b_rel['captured']} and {a_rel['captured']}: {ans['what_i_see'][:160]}; "
+                          f"{label(second)} agrees",
                           h, site=f"elsewhere:{dist} m from the declared reach, on the same waterway"))
     return result
 

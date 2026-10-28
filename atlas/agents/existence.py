@@ -304,35 +304,10 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
         case.say(AGENT, "reading", **ans)
         for im in ans.get("images", []):
             verdicts[im["date"][:10]] = im
-    # Decisive captures (every one after completion, and the last before the award) get a second reader.
-    from ..meta import OPEN, label
-    primary = case.facts.get("spark", SPARK)
-    second = OPEN if case.meta is not None and case.meta.open_key else None
-    cross: dict[str, dict] = {}
-    if second and frames:
-        last_before = [f for f in frames if f["window"] == "before_award"][-1:]
-        b64 = lambda fr: "data:image/jpeg;base64," + __import__("base64").b64encode(fr["chip"].with_line(reach)).decode()  # noqa: E731
-        for f in last_before + [f for f in frames if f["window"] == "after_completion"]:
-            ref = [r for r in frames if r["window"] == "before_award" and r["captured"] < f["captured"]][-1:]
-            content = [{"type": "input_text", "text": f"Contract: {case.record['desc']}."}]
-            for r in ref:
-                content += [{"type": "input_text", "text": f"Reference: capture of {r['captured']}, before the contract."},
-                            {"type": "input_image", "image_url": b64(r)}]
-            content += [{"type": "input_text", "text": f"The capture to judge: {f['captured']}."},
-                        {"type": "input_image", "image_url": b64(f)}]
-            try:
-                res = case.meta.structured(second, CROSS.format(**(CROSS_REF if ref else CROSS_ALONE)), content,
-                                           CROSS_SCHEMA, schema_name="cross_reading", effort="low", est_usd=0.01)
-            except Exception as e:  # a missing second reading leaves the first one standing, and says so
-                case.record_entry(AGENT, "cross_reading_failed", {"capture": f["captured"], "error": str(e)[:200]})
-                continue
-            x = res["data"] or {}
-            if x.get("structure") in ("yes", "partly", "no", "cannot tell"):
-                cross[f["captured"]] = {**x, "model": label(second), "reference": ref[0]["captured"] if ref else None}
-                case.record_entry(AGENT, "cross_reading", {"model": second, "capture": f["captured"], "answer": x})
-    # One finding per capture. The reading (Muse Spark) says WHAT is on the bank; the SAM 3.1 masks say
+    # One claim per capture. The reading (Muse Spark) says WHAT is on the bank; the SAM 3.1 masks say
     # WHERE, and their agreement is recorded. SAM's "riverbank" also fires on some natural banks, so a mask
     # alone never makes a claim.
+    first = {}
     for f in frames:
         v = verdicts.get(f["captured"][:10])
         cov = f["coverage"]
@@ -355,17 +330,20 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
                 why += " (masks disagree)"
         else:
             claim, why, q = "inconclusive", f"reading: structure {v['structure_visible']} on {v['extent_fraction']:.0%}", 0.4
+        first[f["captured"]] = (v, claim, why, q)
+    # Every claim that can decide a verdict (any capture before the award, any after completion) goes to a second
+    # reader, and counts only when that reader explicitly agrees.
+    from ..meta import label
+    primary = case.facts.get("spark", SPARK)
+    second = second_reader(case)
+    todo = [f for f in frames if f["window"] in DECISIVE and first[f["captured"]][1] in ("present", "absent")]
+    cross, missing = cross_read(case, second, frames, todo, reach)
+    checked = {id(f) for f in todo}
+    for f in frames:
+        v, claim, why, q = first[f["captured"]]
         x = cross.get(f["captured"])
-        if x and claim in ("present", "absent"):
-            other_yes, other_no = x["structure"] in ("yes", "partly"), x["structure"] == "no"
-            if (claim == "present" and other_no) or (claim == "absent" and other_yes):
-                why = (f"readers disagree: {label(primary)} reads {claim}, {x['model']} reads "
-                       f"'{x['structure']}' ({x['what_i_see'][:120]})")
-                claim, q = "inconclusive", 0.0
-            elif other_yes or other_no:
-                why += f"; {x['model']} agrees"
-            else:
-                why += f"; {x['model']} cannot tell"
+        if id(f) in checked:
+            claim, why, q = confirm(claim, why, q, x, missing.get(f["captured"]), label(primary))
         f["reading"] = v
         f["cross"] = x
         case.file(Finding(
@@ -376,6 +354,73 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
     for f in frames:
         f.pop("chip", None)
     return frames
+
+
+# Windows whose readings can decide a verdict (verdict.py never counts a sub-metre reading from inside the contract).
+DECISIVE = ("before_award", "after_completion")
+
+
+def second_reader(case: Case) -> str | None:
+    """The model that re-reads every decisive claim, or None when no host for it is configured."""
+    from ..meta import OPEN
+    return OPEN if case.meta is not None and case.meta.open_key else None
+
+
+def cross_read(case: Case, second: str | None, frames: list[dict], todo: list[dict],
+               reach: LineString) -> tuple[dict[str, dict], dict[str, str]]:
+    """Second readings of `todo`, each beside the capture before it from before the award. Returns the readings by
+    capture date, and why a reading is missing for the others."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    from ..meta import label
+    if not todo:
+        return {}, {}
+    if second is None:
+        return {}, {f["captured"]: "no second reader is configured" for f in todo}
+    b64 = lambda fr: "data:image/jpeg;base64," + __import__("base64").b64encode(fr["chip"].with_line(reach)).decode()  # noqa: E731
+
+    def ask(f: dict) -> tuple[dict | None, dict | None, str]:
+        ref = [r for r in frames if r["window"] == "before_award" and r["captured"] < f["captured"]][-1:]
+        content = [{"type": "input_text", "text": f"Contract: {case.record['desc']}."}]
+        for r in ref:
+            content += [{"type": "input_text", "text": f"Reference: capture of {r['captured']}, before the contract."},
+                        {"type": "input_image", "image_url": b64(r)}]
+        content += [{"type": "input_text", "text": f"The capture to judge: {f['captured']}."},
+                    {"type": "input_image", "image_url": b64(f)}]
+        try:
+            res = case.meta.structured(second, CROSS.format(**(CROSS_REF if ref else CROSS_ALONE)), content,
+                                       CROSS_SCHEMA, schema_name="cross_reading", effort="low", est_usd=0.01)
+        except Exception as e:
+            return None, ref[0] if ref else None, f"the second reading failed ({type(e).__name__})"
+        return res["data"] or {}, ref[0] if ref else None, ""
+
+    with ThreadPoolExecutor(4) as ex:
+        answers = list(ex.map(ask, todo))
+    cross, missing = {}, {}
+    for f, (x, ref, err) in zip(todo, answers):  # sealed in capture order, whatever order the answers came back in
+        if x is None:
+            case.record_entry(AGENT, "cross_reading_failed", {"capture": f["captured"], "error": err})
+            missing[f["captured"]] = err
+        elif x.get("structure") in ("yes", "partly", "no", "cannot tell"):
+            cross[f["captured"]] = {**x, "model": label(second), "reference": ref["captured"] if ref else None}
+            case.record_entry(AGENT, "cross_reading", {"model": second, "capture": f["captured"], "answer": x})
+        else:
+            missing[f["captured"]] = "the second reading gave no answer"
+    return cross, missing
+
+
+def confirm(claim: str, why: str, q: float, x: dict | None, missing: str | None, primary: str) -> tuple[str, str, float]:
+    """A decisive claim stands only when the second reader says the same thing. A second reader that contradicts it,
+    cannot tell, gave no answer or is not configured leaves the capture inconclusive, with the reason."""
+    if x is None:
+        return "inconclusive", f"{why}; not confirmed: {missing or 'no second reading'}", 0.0
+    other_yes, other_no = x["structure"] in ("yes", "partly"), x["structure"] == "no"
+    if (claim == "present" and other_yes) or (claim == "absent" and other_no):
+        return claim, f"{why}; {x['model']} agrees", q
+    if other_yes or other_no:
+        return "inconclusive", (f"readers disagree: {primary} reads {claim}, {x['model']} reads "
+                                f"'{x['structure']}' ({x['what_i_see'][:120]})"), 0.0
+    return "inconclusive", f"{why}; not confirmed: {x['model']} cannot tell ({x['what_i_see'][:120]})", 0.0
 
 
 def _root(f: dict) -> str:

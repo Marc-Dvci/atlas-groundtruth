@@ -38,21 +38,26 @@ def score(run: str, key_name: str = "cases") -> dict:
             continue
         v = c.get("verdict") or {}
         oc = v.get("outcome")
+        tri = c.get("triage") or {}
         agree = oc in k["expected"]
-        # Consistent but less specific. Every official finding here says the contract's works are not what it declared.
-        # Atlas is consistent when it flags the contract another way: the structure at the declared reach predates the
-        # contract, the reach was bare when certified, or the works stand elsewhere; or, where officials found an older
-        # structure, when it sees a structure without dating it. Atlas contradicts them when it sees the works standing
-        # after completion where officials found none, or finds the reach bare where officials saw an older structure.
+        # Every official finding here says the contract's works are not what it declared. Atlas is
+        # - compatible when it flags the contract another way (older structure, bare when certified, built elsewhere);
+        # - unresolved when it sends the contract to an investigator without a flag: "can't verify", or "exists" that does
+        #   not clear the contract (not dated to it, a reach other concurrent contracts also claim, or a site the second
+        #   Locator disputes; atlas/triage.py);
+        # - in disagreement only when it clears the contract.
+        # Until 28 Oct an "exists" counted as compatible with an older structure; it no longer does: Atlas had dated those
+        # structures to the contract window, which says the opposite.
         flags = {"probable_ghost", "relocated", "built_late", "exists_before_contract"}
-        if k["finding"] == "existed_before_contract":
-            partial = (not agree) and oc == "exists"
-        else:
-            partial = (not agree) and oc in flags
+        cleared = oc == "exists" and bool(tri.get("cleared"))
+        partial = (not agree) and oc in flags
+        abstain = oc == "cant_verify" or (oc == "exists" and not cleared)
         rows.append({"id": k["id"], "match": k["match"], "official": k["finding"], "who": k["who"],
-                     "atlas": oc, "reason": v.get("reason"), "agree": agree, "partial": partial, "abstain": oc == "cant_verify",
-                     "contradict": (not agree) and (not partial) and oc != "cant_verify", "headline": v.get("headline"),
-                     "error": c.get("error"), "model": (c.get("locator") or {}).get("model")})
+                     "atlas": oc, "reason": v.get("reason"), "agree": agree, "partial": partial, "abstain": abstain,
+                     "contradict": (not agree) and (not partial) and (not abstain), "cleared": cleared,
+                     "not_cleared": [r["code"] for r in tri.get("reasons", []) if r["code"] in (
+                         "NOT_DATED_TO_CONTRACT", "SHARED_REACH", "SITE_DISPUTED", "SITE_UNCHECKED")] if oc == "exists" else [],
+                     "headline": v.get("headline"), "error": c.get("error"), "model": (c.get("locator") or {}).get("model")})
     n = len(rows)
     decided = [r for r in rows if not r["abstain"]]
 

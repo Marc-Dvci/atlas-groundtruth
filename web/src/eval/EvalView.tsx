@@ -7,15 +7,18 @@ import { smoothScroll } from "../scroll";
 type Row = {
   id: string; match: string; official: string; who: string; atlas: Outcome; reason: string; agree: boolean;
   abstain: boolean; partial: boolean; contradict: boolean; headline: string; quote: string; date: string; sources: string[];
-  desc: string; cost: number; muni: string; tier?: string | null;
+  desc: string; cost: number; muni: string; tier?: string | null; cleared?: boolean; not_cleared?: string[];
 };
-type ByAtlas = Record<string, { n: number; same: number; compatible: number; disagree: number; ids: string[] }>;
-const times = (n: number) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
+type ByAtlas = Record<string, { n: number; same: number; compatible: number; unresolved?: number; disagree: number; ids: string[] }>;
+const NOT_CLEARED: Record<string, string> = {
+  NOT_DATED_TO_CONTRACT: "not dated to it", SHARED_REACH: "reach shared", SITE_DISPUTED: "site disputed",
+  SITE_UNCHECKED: "site unchecked",
+};
 const looseNote = (n: number, loose: number) =>
-  n === 0 ? "never against a ruling"
-    : loose === n ? (n === 1 ? "on a contract only loosely tied to a ruling"
-      : `${n === 2 ? "both" : "all"} on contracts only loosely tied to a ruling`)
-    : `${loose} of ${n} on contracts only loosely tied to a ruling`;
+  n === 0 ? "Atlas cleared none of them"
+    : "the ruling found a problem; Atlas cleared the contract" + (loose === 0 ? ""
+      : loose === n ? (n === 1 ? ", on a contract only loosely tied to a ruling" : ", all on contracts only loosely tied to a ruling")
+      : `, ${loose} of ${n} on contracts only loosely tied to a ruling`);
 
 type Tally = { cases: number; agree: number; partial: number; abstain: number; contradict: number };
 type Ev = { run: string; key?: string; about?: string; cases: number; agree: number; partial: number; abstain: number; contradict: number; rows: Row[];
@@ -28,17 +31,27 @@ type Cmp = { a: string; b: string; cases: number; same_verdict: number; same_sit
 const OFFICIAL: Record<string, string> = {
   ghost: "Ghost", existed_before_contract: "Existed before the contract", relocated: "Built elsewhere",
   not_built_at_site: "Not built at the approved site", not_built_when_declared: "Not built when declared complete",
+  partly_built: "Partly built",
 };
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/** Where Atlas disagrees with a ruling, in one sentence built from the rows themselves. */
+/** Where Atlas cleared a contract a ruling found a problem with, in one sentence built from the rows themselves. */
 function disagreements(rows: Row[]): string {
   const d = rows.filter((r) => r.contradict);
-  if (!d.length) return "Atlas never disagreed with a ruling here.";
-  const said = [...new Set(d.map((r) => `“${OUTCOME_LABEL[r.atlas] ?? r.atlas}”`))].join(" or ");
+  if (!d.length) return "Atlas cleared none of these contracts.";
   const found = [...new Set(d.map((r) => (OFFICIAL[r.official] ?? r.official).toLowerCase()))].join(" or ");
-  const loose = d.every((r) => r.match === "candidate");
-  return `${d.length === 1 ? "The disagreement is" : `All ${d.length} disagreements are`} Atlas saying ${said} where the ruling found ${found}${loose ? ", on contracts tied to the ruling only by a candidate match" : ""}.`;
+  return `Atlas cleared ${d.map((r) => r.id).join(", ")}, where the ruling found ${found}: both Locators agree on the reach the contract's text describes and a new structure stands there, but the approved plans put the works somewhere else.`;
+}
+
+/** Why the structures Atlas saw did not clear their contracts. */
+function exceptions(rows: Row[]): string | null {
+  const e = rows.filter((r) => r.atlas === "exists" && !r.cleared);
+  if (!e.length) return null;
+  const n = (code: string) => e.filter((r) => r.not_cleared?.includes(code)).length;
+  const parts = [n("SHARED_REACH") && `${n("SHARED_REACH")} on a reach that other contracts built at the same time also claim`,
+    n("NOT_DATED_TO_CONTRACT") && `${n("NOT_DATED_TO_CONTRACT")} with a structure the imagery cannot date to the contract`,
+    n("SITE_DISPUTED") && `${n("SITE_DISPUTED")} where the second Locator placed the works elsewhere`].filter(Boolean);
+  return `Atlas saw a structure on ${e.length} of them but did not clear the contract: ${parts.join("; ")} (a contract can have several reasons).`;
 }
 
 export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?: string }) {
@@ -66,15 +79,16 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
     };
   }, []);
   if (!ev) return null;
-  // three plain outcomes: what Atlas found fits the ruling (the same finding, or another flag compatible with it),
-  // the imagery could not settle the case, or Atlas disagrees with the ruling
+  // what Atlas does with a contract a ruling found a problem with: flags it (for the ruling's reason or another),
+  // sends it to an investigator unsettled, or clears it
   const loose = ev.by_match?.candidate.contradict ?? 0;
   const tally = [
     { n: ev.agree, label: "same finding", color: "var(--exists)", note: "Atlas reached the ruling's own finding" },
-    { n: ev.partial, label: "compatible", color: "var(--exists)",
-      note: "Atlas flagged the contract another way the ruling allows; not the same finding" },
-    { n: ev.abstain, label: "can't verify", color: "var(--unverified)", note: "the imagery could not settle the case" },
-    { n: ev.contradict, label: "disagree", color: "var(--ghost)", note: looseNote(ev.contradict, loose) },
+    { n: ev.partial, label: "flagged another way", color: "var(--exists)",
+      note: "Atlas flagged the contract, for another reason than the ruling's" },
+    { n: ev.abstain, label: "not settled", color: "var(--unverified)",
+      note: "sent to an investigator without a finding: no decisive imagery, or a structure Atlas cannot tie to this contract" },
+    { n: ev.contradict, label: "cleared", color: "var(--ghost)", note: looseNote(ev.contradict, loose) },
   ];
   return (
     <div className="evalpage">
@@ -89,8 +103,14 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
       </h1>
       {answerKey !== "cases" && ev.about && <p className="note" style={{ maxWidth: 900 }}>{ev.about}</p>}
       <p className="lede">
-        Atlas audited each one without seeing the ruling. Where no evidence after completion reached its two-source
-        standard, it said it could not verify instead of guessing.
+        Atlas audited each one without seeing the ruling. It clears a contract only when a structure stands at the reach
+        its text describes, the imagery dates it to the contract, no other contract built at the same time claims that
+        reach, and a second Locator finds the same reach. Everything else goes to an investigator.
+      </p>
+      <p className="note" style={{ maxWidth: 900 }}>
+        The last three conditions were added on 28 October 2026, after these rulings showed Atlas reporting a structure on
+        contracts officials had found built elsewhere or already there. They were written after seeing these rulings, so
+        these rulings do not test them.
       </p>
       <div className="evaltally">
         {tally.map((t, i) => (
@@ -104,22 +124,17 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
       </div>
       {ev.by_match && (
         <p className="lede" style={{ marginTop: 18 }}>
-          On the {ev.by_match.exact_or_strong.cases} contracts tied firmly to a ruling (an exact or strong match), what
-          Atlas found{" "}
-          {[ev.by_match.exact_or_strong.agree + ev.by_match.exact_or_strong.partial > 0 &&
-              `fit the ruling ${times(ev.by_match.exact_or_strong.agree + ev.by_match.exact_or_strong.partial)}`,
-            ev.by_match.exact_or_strong.abstain > 0 && `could not be verified ${times(ev.by_match.exact_or_strong.abstain)}`]
-            .filter(Boolean).join(" and ")}
-          {ev.by_match.exact_or_strong.contradict === 0
-            ? "; it never disagreed with one."
-            : `; it disagreed ${times(ev.by_match.exact_or_strong.contradict)}.`}
+          On the {ev.by_match.exact_or_strong.cases} contracts tied firmly to a ruling (an exact or strong match), Atlas
+          flagged {ev.by_match.exact_or_strong.agree + ev.by_match.exact_or_strong.partial}, left{" "}
+          {ev.by_match.exact_or_strong.abstain} unsettled for an investigator, and cleared{" "}
+          {ev.by_match.exact_or_strong.contradict}.
         </p>
       )}
       {ev.by_atlas && (
         <div className="byatlas">
           <div className="eyebrow">By what Atlas said</div>
           <table>
-            <thead><tr><th>Atlas said</th><th>cases</th><th>same finding</th><th>compatible</th><th>disagree</th></tr></thead>
+            <thead><tr><th>Atlas said</th><th>cases</th><th>same finding</th><th>flagged another way</th><th>not settled</th><th>cleared</th></tr></thead>
             <tbody>
               {Object.entries(ev.by_atlas).sort((a, b) => b[1].n - a[1].n).map(([k, b]) => (
                 <tr key={k}>
@@ -127,6 +142,7 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
                   <td className="mono">{b.n}</td>
                   <td className="mono">{k === "cant_verify" ? "—" : b.same}</td>
                   <td className="mono">{k === "cant_verify" ? "—" : b.compatible}</td>
+                  <td className="mono">{b.unresolved ?? "—"}</td>
                   <td className="mono">{k === "cant_verify" ? "—" : b.disagree}</td>
                 </tr>
               ))}
@@ -134,7 +150,8 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
           </table>
           <p className="dim" style={{ maxWidth: 820 }}>
             {ev.cases} rulings are too few to state an accuracy for each answer; they show where Atlas holds and where it
-            fails. {disagreements(ev.rows)}
+            fails. Every ruling here found a problem, so they test what Atlas misses, not what it flags wrongly.{" "}
+            {exceptions(ev.rows)} {disagreements(ev.rows)}
           </p>
           {(ev.sitecheck || ev.triage) && (
             <p className="dim" style={{ maxWidth: 820 }}>
@@ -149,6 +166,10 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
           Blind test: eight more rulings, matched to contracts after the province run was sealed.{" "}
           <a href="#/eval/bulacan/blind_2026-10" className="mono">the sealed province run →</a>{" "}
           <a href="#/eval/blind/blind_2026-10" className="mono">the same eight at full depth →</a>
+          <br />
+          Second blind test: two rulings found after the 28 October rules were fixed, the only ones that test them.{" "}
+          <a href="#/eval/bulacan/blind_2026-10b" className="mono">the sealed province run →</a>{" "}
+          <a href="#/eval/blind/blind_2026-10b" className="mono">at full depth →</a>
         </p>
       )}
       {cmp && (
@@ -183,7 +204,10 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
               <div className="dim">{r.headline}</div>
             </div>
             <div className={`er-mark mono ${r.agree ? "agree" : r.partial ? "partial" : r.abstain ? "abstain" : "contra"}`}>
-              {r.agree ? "same finding" : r.partial ? "compatible" : r.abstain ? "can't verify" : "disagrees"}
+              {r.agree ? "same finding" : r.partial ? "flagged another way" : r.abstain ? "not settled" : "cleared"}
+              {r.atlas === "exists" && !r.cleared && r.not_cleared?.length ? (
+                <span className="dim" style={{ display: "block" }}>{r.not_cleared.map((c) => NOT_CLEARED[c] ?? c).join(" · ")}</span>
+              ) : null}
               {r.tier && <span className="dim" style={{ display: "block" }}>{r.tier === "lead" ? "lead" : r.tier === "needs_plans" ? "needs the plans" : r.tier.replace("_", " ")}</span>}
             </div>
           </motion.a>

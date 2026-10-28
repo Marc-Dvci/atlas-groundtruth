@@ -98,7 +98,10 @@ export function Dossier({ c, beat, reached, active, onPickFrame, tools, run }: P
         </div>
         {c.revision && (
           <p className="note revision">
-            Revised after a signed challenge (ledger #{c.revision.challenge_seq}). Before it:{" "}
+            {c.revision.kind === "rule"
+              ? <>Audited again under a corrected rule (ledger #{c.revision.rule_seq}): {c.revision.rule_text}.</>
+              : <>Revised after a signed challenge (ledger #{c.revision.challenge_seq}).</>}{" "}
+            Before:{" "}
             {c.revision.previous.map((p, i) => (
               <span key={i}>{i ? "; " : ""}{OUTCOME_LABEL[p.outcome as keyof typeof OUTCOME_LABEL] ?? p.outcome} ({p.reason}), kept as {p.file}</span>
             ))}. Every earlier entry stays on the ledger.
@@ -492,24 +495,25 @@ const TIER: Record<string, { label: string; color: string; text: string }> = {
   site_disputed: { label: "Site disputed", color: "var(--relocated)",
     text: "Not a lead yet. A second Locator placed the works elsewhere: confirm which reach the contract paid for." },
   site_unchecked: { label: "Site not re-checked", color: "var(--unverified)", text: "No second Locator has re-located this contract yet." },
-  dated: { label: "Dated to this contract", color: "var(--exists)",
-    text: "The structure appears in the contract window: the record supports that this contract built what stands here." },
-  undated: { label: "Not dated to this contract", color: "var(--before)",
-    text: "A structure stands, but nothing ties it to this contract's window: it may be older, or another contract's. Not a clearance." },
+  cleared: { label: "Cleared", color: "var(--exists)",
+    text: "The structure appears in the contract window, no other contract built at the same time claims this reach, and a second Locator found the same reach. Only the approved plans can still put the works elsewhere." },
+  not_cleared: { label: "Not cleared", color: "var(--before)",
+    text: "A structure stands, but the record does not tie it to this contract. An investigator decides." },
 };
+const OK_CODES = ["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT", "CLEARED"];
 
 /** What an investigator does next: the triage rules (atlas/triage.py), over the sealed evidence. */
 function Next({ c, run }: { c: CaseFile; run: string }) {
   const t = c.triage!;
-  const tier = TIER[t.tier ?? (t.exists_dated ? "dated" : "undated")];
+  const tier = TIER[t.tier ?? (t.cleared ? "cleared" : "not_cleared")];
   return (
     <Section id="next" eyebrow="Triage · what happens next, decided by rules">
       <div className="serif" style={{ fontSize: 44, lineHeight: 1, color: tier.color, marginBottom: 12 }}>{tier.label}</div>
       <p className="prose" style={{ fontSize: 16 }}>{tier.text}</p>
       <ul className="decisions">
         {t.reasons.map((r) => (
-          <li key={r.code} className={["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT"].includes(r.code) ? "counted" : "refused"}>
-            <span className="mark">{["SITE_CONFIRMED", "BILLED_AS_NEW_NOTHING_ADDED", "DATED_TO_CONTRACT"].includes(r.code) ? "✓" : "•"}</span>
+          <li key={r.code} className={OK_CODES.includes(r.code) ? "counted" : "refused"}>
+            <span className="mark">{OK_CODES.includes(r.code) ? "✓" : "•"}</span>
             <span>{r.text.replace(/^1 earlier contract\(s\)/, "1 earlier contract").replace(/contract\(s\)/, "contracts")}</span>
             <span className="why mono">{r.code.toLowerCase().replace(/_/g, " ")}</span>
           </li>

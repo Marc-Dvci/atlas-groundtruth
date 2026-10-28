@@ -441,10 +441,11 @@ def evaluation(run: str, key: str = "cases"):
     # what Atlas said, against what the ruling said: how often each kind of answer held
     by: dict[str, dict] = {}
     for r in out["rows"]:
-        b = by.setdefault(r["atlas"] or "error", {"n": 0, "same": 0, "compatible": 0, "disagree": 0, "ids": []})
+        b = by.setdefault(r["atlas"] or "error", {"n": 0, "same": 0, "compatible": 0, "unresolved": 0, "disagree": 0, "ids": []})
         b["n"] += 1
         b["same"] += r["agree"]
         b["compatible"] += r["partial"]
+        b["unresolved"] += r["abstain"]
         b["disagree"] += r["contradict"]
         b["ids"].append(r["id"])
     out["by_atlas"] = by

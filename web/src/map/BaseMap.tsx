@@ -1,5 +1,6 @@
 import maplibregl, { type Map as MLMap, type StyleSpecification } from "maplibre-gl";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { markWebglFailed, webglAvailable } from "./webgl";
 
 const ESRI =
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
@@ -45,29 +46,43 @@ type Props = {
   onReady: (map: MLMap) => void;
   initial?: { center: [number, number]; zoom: number; pitch?: number; bearing?: number };
   interactive?: boolean;
+  /** shown instead of the map when the browser cannot start WebGL */
+  fallback?: ReactNode;
 };
 
-export function BaseMap({ onReady, initial, interactive = true }: Props) {
+export function BaseMap({ onReady, initial, interactive = true, fallback }: Props) {
   const el = useRef<HTMLDivElement>(null);
+  const [failed, setFailed] = useState(() => !webglAvailable());
   useEffect(() => {
-    if (!el.current) return;
-    const map = new maplibregl.Map({
-      container: el.current,
-      style: baseStyle,
-      center: initial?.center ?? [121.5, 12.5],
-      zoom: initial?.zoom ?? 1.6,
-      pitch: initial?.pitch ?? 0,
-      bearing: initial?.bearing ?? 0,
-      interactive,
-      attributionControl: { compact: true },
-      maxPitch: 75,
-      fadeDuration: 0,
-      canvasContextAttributes: { preserveDrawingBuffer: true, antialias: true },
-    });
+    if (!el.current || failed) return;
+    let map: MLMap;
+    try {
+      map = new maplibregl.Map({
+        container: el.current,
+        style: baseStyle,
+        center: initial?.center ?? [121.5, 12.5],
+        zoom: initial?.zoom ?? 1.6,
+        pitch: initial?.pitch ?? 0,
+        bearing: initial?.bearing ?? 0,
+        interactive,
+        attributionControl: { compact: true },
+        maxPitch: 75,
+        fadeDuration: 0,
+        canvasContextAttributes: { preserveDrawingBuffer: true, antialias: true },
+      });
+    } catch {
+      // a context the browser refuses (GPU blocked, WebGL off) throws here; uncaught, it blanked the whole page
+      markWebglFailed();
+      setFailed(true);
+      return;
+    }
     (window as unknown as { __map: MLMap }).__map = map;
     map.on("load", () => onReady(map));
     return () => map.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [failed]);
+  if (failed) {
+    return <>{fallback ?? <p className="nomap mono">This browser cannot start WebGL, so the map is off. Every case, its sealed captures and its ledger still open.</p>}</>;
+  }
   return <div ref={el} style={{ position: "absolute", inset: 0 }} />;
 }

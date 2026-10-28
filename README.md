@@ -29,8 +29,8 @@ scratch). The case below: [24CC0055](https://marc-dvci.github.io/atlas-groundtru
    describes.
 3. **History.** Every distinct sub-metre capture of the site since 2010 (Esri World Imagery Wayback). SAM 3.1 segments
    the hard banks and the water in each one; Muse Spark reads every capture along the reach, oldest first; Muse Spark
-   Open re-reads each capture that decides the case beside the last capture before the award, and a reading counts
-   only when both models agree. Wayback can list one image under several dates; identical pixels count once.
+   Open re-reads every capture that could decide the case (all before the award, all after completion), each beside the
+   last earlier capture from before the award, and a reading counts only when both models say the same thing. Wayback can list one image under several dates; identical pixels count once.
 4. **Elsewhere.** When the declared reach is bare after completion, Atlas walks the same waterway 1.5 km each way,
    compares SAM 3.1 hard-bank masks before the award and after completion window by window, and asks Muse Spark to
    confirm the strongest candidate.
@@ -64,8 +64,14 @@ investigator or a court can read them, and [`tests/test_verdict.py`](tests/test_
   cannot testify about a structure shorter than about 150 m.
 - A Sentinel-2 bank that dips and then regrows (cleared ground, equipment, fresh concrete) makes that source
   inconclusive; it never counts as absence.
-- A reading below the quality floor (haze, cloud, blur) is refused, and so is a decisive reading the second model
-  contradicts.
+- A reading below the quality floor (haze, cloud, blur) is refused.
+- **Two readers.** A reading that can decide a verdict (any sub-metre capture before the award or after completion,
+  every street photo, every relocation candidate) counts only when a second model, Muse Spark Open, explicitly says
+  the same thing. A contradiction, a "cannot tell", a failed call or no second reader configured leaves that capture
+  inconclusive, with the reason ([`tests/test_second_reader.py`](tests/test_second_reader.py)). In open-weights mode
+  both readings come from Muse Spark Open, the second under its narrower question. (Until 28 October a missing or
+  "cannot tell" second reading let the first stand, and only the last capture before the award was read twice; every
+  sealed case this could change was audited again, see the evaluation below.)
 - A 10 m change is dated to its season; it predates the award only if the whole season ended before it.
 
 ## What happens next: triage
@@ -85,10 +91,16 @@ verdict and the site check it rests on ([`tests/test_triage.py`](tests/test_tria
   before the award and the last after it, and Sentinel-2 shows no work on the banks in the contract window. Otherwise it
   *needs the plans*: the as-built plans must say what the contract added, and where.
 - **Probable ghost, built elsewhere, declared before built** are leads once the site is confirmed.
-- **"Exists" is not a clearance.** It is dated to the contract only when sub-metre imagery shows the reach without the
-  structure at most 18 months before the award and with it afterwards, or Sentinel-2 dates a lasting change to the
-  contract window; otherwise the case says the structure is *not dated to this contract*. (This rule was added after
-  the blind test below.)
+- **"Exists" clears a contract only when three things hold**, otherwise it goes to an investigator with the reasons:
+  - *dated*: sub-metre imagery shows the reach without the structure at most 18 months before the award and with it
+    afterwards, or Sentinel-2 dates a lasting change to the contract window;
+  - *one wall, one contract*: no other contract whose works ran at the same time claims the same reach (the located
+    reaches run along each other for at least half their length, the same test as the site check). One structure
+    cannot show which of them built it;
+  - *site confirmed*: the second Locator found the same reach.
+
+  These rules were added on 28 October, after the blind test below showed Atlas saying "exists" on contracts officials
+  had found built elsewhere or already there.
 - Earlier contracts published within 200 m of the reach are listed with every case: they may explain an older
   structure, or show the same works paid twice.
 
@@ -97,7 +109,7 @@ verdict and the site check it rests on ([`tests/test_triage.py`](tests/test_tria
 | Model | Role |
 |---|---|
 | **Muse Spark 1.3** | Locator (function calling over six spatial tools), multi-image reading of every capture along the reach, street-photo reading, relocation confirmation, mission parsing |
-| **Muse Spark Open** | The independent second reader of every decisive capture (served by Baseten); the second Locator that re-locates every flagged contract from its text alone (served by Fireworks); and the whole audit end to end on open weights, for audit institutions that must keep national data on their own hardware |
+| **Muse Spark Open** | The second reader of every reading that can decide a verdict: sub-metre captures, street photos and relocation candidates (served by Baseten); the second Locator that re-locates every flagged contract from its text alone (served by Fireworks); and the whole audit end to end on open weights, for audit institutions that must keep national data on their own hardware |
 | **SAM 3.1** | Concept segmentation of hard banks ("riverbank") and water ("river") in every capture; channel tracing where the map has no waterway; before/after change detection along the river |
 | **Muse Wonder** | The case file: four to six cited paragraphs, limits, open questions, documents to request |
 | **Muse Image** | The declared structure drawn onto the real capture, as a labelled illustration |

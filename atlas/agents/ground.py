@@ -2,7 +2,8 @@
 
 A photo taken from the bank by a passer-by is a capture chain of its own: a
 different camera, a different day, a different person. Muse Spark reads what
-it shows; the photo's creator is its capture root.
+it shows; the photo's creator is its capture root. A photo's claim counts only
+when the second reader, asked a narrower question, says the same thing.
 """
 from __future__ import annotations
 
@@ -17,8 +18,9 @@ from shapely.geometry import Point, shape
 
 from ..case import DATA, Case
 from ..geo.geom import buffer_m, to_m
-from ..meta import SPARK
+from ..meta import SPARK, label
 from ..verdict import Finding, window_of
+from .existence import confirm, second_reader
 
 AGENT = "ground"
 API = "https://graph.mapillary.com/images"
@@ -37,6 +39,16 @@ SCHEMA = {
         "what_i_see": {"type": "string"},
     },
     "required": ["river_visible", "bank_visible", "structure", "what_i_see"],
+}
+
+CROSS = """You are checking a street-level photo for a public-works audit. Is a concrete or masonry river wall,
+revetment, slope protection or earth dike visible on a riverbank in this photo? Answer literally; say "cannot tell"
+when no riverbank is visible or the view of it is blocked."""
+CROSS_SCHEMA = {
+    "type": "object", "additionalProperties": False,
+    "properties": {"structure": {"type": "string", "enum": ["yes", "no", "cannot tell"]},
+                   "what_i_see": {"type": "string"}},
+    "required": ["structure", "what_i_see"],
 }
 
 
@@ -90,7 +102,16 @@ def run(case: Case, award: str, completion: str, max_photos: int = 3) -> list[di
     case.say(AGENT, "photos", found=len(cands), after_completion=len(after), picked=[c["id"] for c in picked])
     out = []
     for c in picked:
-        img = httpx.get(c["url"], timeout=60).content
+        # Mapillary's image links expire; the photo is kept by its id so a later audit reads the same pixels
+        kept = DATA / "cache/mapillary/img" / f"{c['id']}.jpg"
+        if kept.exists():
+            img = kept.read_bytes()
+        else:
+            r = httpx.get(c["url"], timeout=60)
+            r.raise_for_status()
+            img = r.content
+            kept.parent.mkdir(parents=True, exist_ok=True)
+            kept.write_bytes(img)
         blob = case.blob(img, "jpg")
         h = case.record_entry(AGENT, "photo", {k: v for k, v in c.items() if k != "url"} | {"blob": blob,
                                                                                            "licence": "CC BY-SA 4.0 (Mapillary)"})
@@ -110,9 +131,34 @@ def run(case: Case, award: str, completion: str, max_photos: int = 3) -> list[di
             claim = {"concrete or masonry wall": "present", "earth dike": "present", "no structure": "absent"}.get(
                 reading["structure"], "inconclusive")
             q = 0.8 if c["distance_m"] < 40 else 0.65
+            why = reading["what_i_see"][:200]
+            if claim in ("present", "absent"):
+                x, missing = _second(case, img, c)
+                out[-1]["cross"] = x
+                claim, why, q = confirm(claim, why, q, x, missing, label(case.facts.get("spark", SPARK)))
             case.file(Finding(AGENT, f"Mapillary {c['date']} (street photo, {c['distance_m']} m away)", "street",
-                              f"mapillary:{c['creator']}", c["date"], claim, q, reading["what_i_see"][:200], h))
+                              f"mapillary:{c['creator']}", c["date"], claim, q, why, h))
         elif reading:
             case.file(Finding(AGENT, f"Mapillary {c['date']} (street photo)", "street", f"mapillary:{c['creator']}",
                               c["date"], "inconclusive", 0.0, "the bank is not visible in the photo", h))
     return out
+
+
+def _second(case: Case, img: bytes, c: dict) -> tuple[dict | None, str | None]:
+    """The second reader's answer on a photo whose claim could count, or why there is none."""
+    second = second_reader(case)
+    if second is None:
+        return None, "no second reader is configured"
+    try:
+        res = case.meta.structured(second, CROSS, [
+            {"type": "input_text", "text": f"Contract: {case.record['desc']}. Photo taken {c['date']}."},
+            {"type": "input_image", "image_url": "data:image/jpeg;base64," + base64.b64encode(img).decode()}],
+            CROSS_SCHEMA, schema_name="street_cross_reading", effort="low", est_usd=0.01)
+    except Exception as e:
+        case.record_entry(AGENT, "cross_reading_failed", {"photo": c["id"], "error": type(e).__name__})
+        return None, f"the second reading failed ({type(e).__name__})"
+    x = res["data"] or {}
+    if x.get("structure") not in ("yes", "no", "cannot tell"):
+        return None, "the second reading gave no answer"
+    case.record_entry(AGENT, "cross_reading", {"model": second, "photo": c["id"], "answer": x})
+    return {**x, "model": label(second)}, None

@@ -157,8 +157,9 @@ export type CaseFile = {
   } | null;
   triage?: Triage;
   revision?: {
-    n: number; challenge_entry: string; challenge_seq: number;
-    previous: { outcome: string; reason: string; headline: string; file: string; ledger_head: string }[];
+    n: number; kind?: "rule" | "challenge"; challenge_entry?: string; challenge_seq?: number;
+    rule?: string; rule_text?: string; rule_entry?: string; rule_seq?: number;
+    previous: { kind?: string; outcome: string; reason: string; headline: string; file: string; ledger_head: string }[];
   };
   seconds: number;
   ledger_head: string;
@@ -168,6 +169,8 @@ export type CaseFile = {
 export type Triage = {
   tier: "lead" | "needs_plans" | "site_disputed" | "site_unchecked" | null;
   exists_dated?: boolean;
+  cleared?: boolean;
+  shared_with?: string[];
   site?: "confirmed" | "disputed" | "unchecked";
   reasons: { code: string; text: string }[];
   scope?: { scope: string; words: string | null; admits_existing: boolean };

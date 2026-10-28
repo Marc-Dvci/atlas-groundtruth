@@ -1,5 +1,5 @@
 """Triage: a structure that predates its contract is a lead only when nothing else explains it."""
-from atlas.triage import assess, scope, visible_addition
+from atlas.triage import assess, concurrent_on_reach, scope, visible_addition
 
 AWARD, DONE = "2024-02-01", "2024-08-01"
 
@@ -97,4 +97,34 @@ def test_exists_is_dated_when_the_reach_was_bare_shortly_before_the_award():
 def test_exists_is_not_dated_when_the_last_bare_capture_is_years_before():
     fr = [frame("2020-01-30", [("west", "no", 0)]), frame("2025-04-20", [("west", "yes", 0.9)])]
     t = assess(case(outcome="exists", reason="PRESENT_AFTER_COMPLETION", frames=fr), SAME)
-    assert t["exists_dated"] is False and codes(t) == ["NOT_DATED_TO_CONTRACT"]
+    assert t["exists_dated"] is False and "NOT_DATED_TO_CONTRACT" in codes(t) and t["cleared"] is False
+
+
+BARE_THEN_WALL = [frame("2023-06-01", [("west", "no", 0)]), frame("2025-04-20", [("west", "yes", 0.9)])]
+
+
+def test_exists_dated_alone_on_a_confirmed_site_is_cleared():
+    t = assess(case(outcome="exists", reason="PRESENT_AFTER_COMPLETION", frames=BARE_THEN_WALL), SAME)
+    assert t["cleared"] is True and "CLEARED" in codes(t)
+
+
+def test_one_wall_cannot_clear_two_concurrent_contracts():
+    other = [{"id": "24CC0155", "award": "2024-03-01", "completion": "2024-10-27", "overlap": 0.9}]
+    t = assess(case(outcome="exists", reason="PRESENT_AFTER_COMPLETION", frames=BARE_THEN_WALL), SAME, other)
+    assert t["cleared"] is False and "SHARED_REACH" in codes(t) and t["shared_with"] == ["24CC0155"]
+
+
+def test_exists_on_an_unchecked_site_is_not_cleared():
+    t = assess(case(outcome="exists", reason="PRESENT_AFTER_COMPLETION", frames=BARE_THEN_WALL), None)
+    assert t["cleared"] is False and "SITE_UNCHECKED" in codes(t)
+
+
+def test_concurrent_contracts_on_the_same_reach_are_found():
+    line = {"type": "LineString", "coordinates": [[120.90, 14.80], [120.902, 14.80]]}  # about 215 m
+    near = {"type": "LineString", "coordinates": [[120.9002, 14.8001], [120.9021, 14.8001]]}
+    far = {"type": "LineString", "coordinates": [[120.91, 14.80], [120.912, 14.80]]}
+    me = {"id": "A", "award": "2024-02-01", "completion": "2024-08-01", "locator": {"reach": line}}
+    others = [{"id": "B", "award": "2024-05-01", "completion": "2024-12-01", "locator": {"reach": near}},  # same reach, same time
+              {"id": "C", "award": "2022-01-01", "completion": "2022-06-01", "locator": {"reach": near}},  # same reach, earlier
+              {"id": "D", "award": "2024-05-01", "completion": "2024-12-01", "locator": {"reach": far}}]  # same time, 1 km away
+    assert [o["id"] for o in concurrent_on_reach(me, others)] == ["B"]

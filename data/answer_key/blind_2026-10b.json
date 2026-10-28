@@ -1,0 +1,33 @@
+{
+ "_about": "Two more official findings (strong matches), found by a research pass on 28 October 2026 that never opened an audit run (research/R10_fresh_rulings.md). Written down before their verdicts were looked at, after the clearance rules of 28 October were fixed: the only rulings that test those rules.",
+ "cases": [
+  {
+   "id": "25CC0063",
+   "match": "strong",
+   "finding": "ghost",
+   "expected": [
+    "probable_ghost"
+   ],
+   "who": "Commission on Audit, fraud audit report to the ICI",
+   "date": "2025-11-12",
+   "quote": "the P74 million project by SYMS Construction Trading in Baliuag was non-existent (the article names Purok 2; the contract record, Purok 3)",
+   "sources": [
+    "https://www.gmanetwork.com/news/topstories/nation/965797/coa-finds-p344-m-bulacan-flood-control-projects-as-ghost-mismatched/story",
+    "https://tribune.net.ph/2025/11/12/coa-flags-p344m-bulacan-flood-projects-as-fake-or-defective"
+   ]
+  },
+  {
+   "id": "24CC0010",
+   "match": "strong",
+   "finding": "partly_built",
+   "expected": [],
+   "who": "Commission on Audit, fraud audit report to the ICI",
+   "date": "2025-11-12",
+   "quote": "the P77 million Malolos project by Wawao Builders spanned only 55 meters at the approved location, far shorter than the approved 148.8 meters",
+   "sources": [
+    "https://www.gmanetwork.com/news/topstories/nation/965797/coa-finds-p344-m-bulacan-flood-control-projects-as-ghost-mismatched/story",
+    "https://tribune.net.ph/2025/11/12/coa-flags-p344m-bulacan-flood-projects-as-fake-or-defective"
+   ]
+  }
+ ]
+}
