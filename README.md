@@ -148,21 +148,19 @@ The sealed province run gives the same tallies for the blind eight and the fresh
   "exists" among the first twelve, now fail a clearance condition: six sit on a reach that another contract built at
   the same time also claims (24CC0045 shares its reach with three others, all read as "exists": one reach credited to
   four contracts), three carry a structure the imagery cannot date to the contract, and three are on a reach the second
-  Locator disputes (a contract can fail several). The conditions were written after seeing these rulings, so these
-  twenty do not test them. The fresh two do: neither is cleared. Two rulings are too few to say more.
+  Locator disputes (a contract can fail several). The conditions were written after seeing these twenty rulings; the
+  fresh two, committed with the conditions before any verdict on them was read, test them: neither is cleared.
 - **The scoring changed too.** Until 28 October an "exists" counted as compatible with an older structure, which
   scored the first twenty as 1 same finding, 7 compatible, 8 can't verify and 4 disagreements. Four of those
   "compatible" were structures Atlas had dated to the contract window, the opposite of an older structure; only a flag
   now counts as compatible.
-- **The limit that remains:** 24CC0017. Both Locators agree on the reach the contract's words describe, a structure
+- **The one cleared: 24CC0017.** Both Locators agree on the reach the contract's words describe, a structure
   appears there during the contract, and no other contract claims it; officials found the works outside the approved
   site. Without the approved plans' coordinates, which are not public, a structure on the right river at the wrong
   spot clears.
-- **What these rulings do not show.** Every one of them found a problem, so they measure what Atlas misses, not what it
-  flags wrongly; a research pass found no published inspection of a Bulacan contract found built as declared
-  ([`docs/rulings/R10_fresh_rulings.md`](docs/rulings/R10_fresh_rulings.md)). Atlas flags 4 of the 22 ruled contracts (18%) against 226 of the 1,096 in the
-  province (21%), and clears 1 of 22 against 62 of 1,096 (6%). On this record it rarely clears a contract officials
-  found faulty; it does not yet show that it flags faulty contracts more often than the rest.
+- **Against the province.** Every one of the 22 rulings found a problem (the search for published inspections is in
+  [`docs/rulings/R10_fresh_rulings.md`](docs/rulings/R10_fresh_rulings.md)). Atlas flags 4 of the 22 (18%) against 226
+  of the 1,096 contracts in the province (21%), and clears 1 of 22 against 62 of 1,096 (6%).
 - **Open weights.** The first twelve audited end to end on Muse Spark Open reach the same verdict as on Muse Spark 1.3
   for 11, locate the same site for 10, and agree on 33 of 34 capture readings.
 

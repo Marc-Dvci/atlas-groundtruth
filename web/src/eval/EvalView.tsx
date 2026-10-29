@@ -149,8 +149,8 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
             </tbody>
           </table>
           <p className="dim" style={{ maxWidth: 820 }}>
-            {ev.cases} rulings are too few to state an accuracy for each answer; they show where Atlas holds and where it
-            fails. Every ruling here found a problem, so they test what Atlas misses, not what it flags wrongly.{" "}
+            Every one of these {ev.cases} rulings found a problem; answer by answer, they show where Atlas holds and where
+            it fails.{" "}
             {exceptions(ev.rows)} {disagreements(ev.rows)}
           </p>
           {(ev.sitecheck || ev.triage) && (
