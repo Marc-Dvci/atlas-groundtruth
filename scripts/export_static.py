@@ -85,7 +85,7 @@ def export_run(run: str, out: Path, blobs: set[str]) -> None:
             if ev["cases"]:  # only the keys whose contracts this run audited
                 name = "evaluation.json" if key == "cases" else f"evaluation_{key}.json"
                 (dst / name).write_text(json.dumps(ev, ensure_ascii=False), encoding="utf-8")
-    for extra in ("triage.json", "summary.json"):
+    for extra in ("triage.json", "summary.json", "instruments.json"):
         if (src / extra).exists():
             shutil.copyfile(src / extra, dst / extra)
     for other in (p.name for p in (DATA / "runs").iterdir() if p.is_dir()):

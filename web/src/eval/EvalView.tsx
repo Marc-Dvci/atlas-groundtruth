@@ -102,6 +102,15 @@ export function EvalView({ run, answerKey = "cases" }: { run: string; answerKey?
         {ev.cases} contracts that auditors, the ICI or the President already ruled on.
       </h1>
       {answerKey !== "cases" && ev.about && <p className="note" style={{ maxWidth: 900 }}>{ev.about}</p>}
+      {ev.rows.some((r) => r.reason === "BARE_THEN_UNCHANGED") && (
+        <p className="note" style={{ maxWidth: 900 }}>
+          {ev.rows.filter((r) => r.reason === "BARE_THEN_UNCHANGED").map((r) => r.id).join(", ")}: flagged under the "bare,
+          then unchanged" rule, added on 29 October 2026 after these rulings were known.
+        </p>
+      )}
+      <p className="note" style={{ maxWidth: 900 }}>
+        <a href="#/rulings" className="mono">all 22 rulings, by what officials found →</a>
+      </p>
       <p className="lede">
         Atlas audited each one without seeing the ruling. It clears a contract only when a structure stands at the reach
         its text describes, the imagery dates it to the contract, no other contract built at the same time claims that

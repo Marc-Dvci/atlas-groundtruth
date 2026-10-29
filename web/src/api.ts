@@ -13,6 +13,7 @@ export const url = {
   caseLedger: (run: string, id: string) => (STATIC ? `${S}/runs/${run}/ledger_${id}.json` : `/api/runs/${run}/ledger?case=${id}`),
   ledgerRaw: (run: string) => (STATIC ? `${S}/runs/${run}/ledger.jsonl` : `/api/runs/${run}/ledger.jsonl`),
   triage: (run: string) => (STATIC ? `${S}/runs/${run}/triage.json` : `/api/runs/${run}/triage`),
+  instruments: (run: string) => (STATIC ? `${S}/runs/${run}/instruments.json` : `/api/runs/${run}/instruments`),
   evaluation: (run: string, key = "cases") =>
     STATIC ? `${S}/runs/${run}/${key === "cases" ? "evaluation" : `evaluation_${key}`}.json` : `/api/runs/${run}/evaluation?key=${key}`,
   compare: (run: string, other: string) => (STATIC ? `${S}/runs/${run}/compare_${other}.json` : `/api/runs/${run}/compare/${other}`),

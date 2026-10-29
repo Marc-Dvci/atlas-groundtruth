@@ -5,7 +5,11 @@
 Its first mission, Groundtruth, audits whether the flood-control works the Philippines paid for were built. Between
 2022 and 2025 the government recorded 9,855 flood-control projects as complete, worth ₱547.6 billion. Inspectors later
 called hundreds of them ghosts, and the President stood on a riverbank in Bulacan where ₱55.7 million had bought
-nothing. Finding suspects was never the hard part. Proving each one took a team, a site visit and months.
+nothing. Finding suspects was never the hard part. Proving each one took a team, a site visit and months, and the
+hardest part was where: after checking more than 8,000 projects the public-works department listed 421 suspected
+ghosts, then found that 337 of the 416 distinct ones exist at a different location from the one submitted ("the
+location coordinates given to the validators were wrong"), and by January 2026 the Justice Department had confirmed 14
+([SunStar, 19 Jan 2026](https://www.sunstar.com.ph/manila/doj-only-14-flood-projects-confirmed-ghosts-so-far)).
 
 Atlas takes a province and a deadline, and sends a fleet of agents through every contract, most money and most red
 flags first. Each agent tests one audit assertion against independent evidence: sub-metre satellite history, the
@@ -51,7 +55,7 @@ investigator or a court can read them, and [`tests/test_verdict.py`](tests/test_
 
 | Outcome | What it takes |
 |---|---|
-| Probable ghost | Absent after the declared completion in **two independent capture chains** |
+| Probable ghost | Absent after the declared completion in **two independent capture chains**; or bare in sub-metre imagery inside the contract window (or before the award), then no change and no work on either bank in a 10 m series that covers that date until after the completion |
 | Declared before built | Bare after the declared completion in sub-metre imagery, and a 10 m series unchanged until then dates a lasting change only afterwards |
 | Built elsewhere | Absent at the declared reach in two chains, and a new structure on the same waterway during the contract window |
 | Existed before the contract | The structure is visible before the award, or a 10 m series dates the bank's change to before it |
@@ -66,13 +70,19 @@ investigator or a court can read them, and [`tests/test_verdict.py`](tests/test_
   inconclusive; it never counts as absence.
 - A reading below the quality floor (haze, cloud, blur) is refused.
 - **Two readers.** A reading that can decide a verdict (any sub-metre capture before the award or after completion,
-  every street photo, every relocation candidate) counts only when a second model, Muse Spark Open, explicitly says
+  a bare one inside the contract window, every street photo, every relocation candidate) counts only when a second model, Muse Spark Open, explicitly says
   the same thing. A contradiction, a "cannot tell", a failed call or no second reader configured leaves that capture
   inconclusive, with the reason ([`tests/test_second_reader.py`](tests/test_second_reader.py)). In open-weights mode
   both readings come from Muse Spark Open, the second under its narrower question. (Until 28 October a missing or
   "cannot tell" second reading let the first stand, and only the last capture before the award was read twice; every
   sealed case this could change was audited again, see the evaluation below.)
 - A 10 m change is dated to its season; it predates the award only if the whole season ended before it.
+- **Bare, then unchanged** (added 29 October 2026). Free sub-metre imagery of Bulacan stops around April 2025, so most
+  2025 contracts have no sub-metre capture after their completion date. When the last one shows the bank bare inside the
+  contract window (both readers agreeing), and the Sentinel-2 series covers that date and shows no lasting change and no
+  work on either bank until after the completion, the two chains together say the bank was bare and nothing was built
+  on it afterwards. How often Sentinel-2 misses a new wall is measured on the province's own reaches (below): 10 of 251.
+  The rule was written after seeing the rulings in the evaluation, and is labelled so wherever it changes a result.
 
 ## What happens next: triage
 
@@ -130,6 +140,17 @@ Independent Commission for Infrastructure, the President's own inspection) sits 
 [`blind_2026-10b.json`](data/answer_key/blind_2026-10b.json). [`scripts/evaluate.py`](scripts/evaluate.py) compares
 only after every verdict is sealed.
 
+**Officials found 10 of these 22 contracts not built. Atlas let none of them through, and raised the problem on 9.**
+It flagged 3 on its full evidence standard: 25CC0063, which auditors called "non-existent", as a probable ghost, and
+23CC0156 and 25CC0241 because the wall at the reach stood years before the award. It sent 6 more to an investigator
+with a doubt the imagery raised: the bank still bare after the declared completion in one capture chain (2), a wall
+that another contract built at the same time also claims (2), nothing after completion in one chain (1), and readers
+split on a capture ten months after completion, with work on both banks more than a year after it (1). The tenth,
+24CC0604, has no capture after its completion date. 25CC0063 is flagged under a rule added on 29 October, after the
+rulings were known (*bare, then unchanged*, above); without it Atlas flags 2 and sends 7 with a doubt. The other twelve
+rulings found a structure already there (6), built elsewhere (5) or too short (1). Every row, grouped by what the ruling
+found, is in [`docs/rulings/by_finding.md`](docs/rulings/by_finding.md).
+
 Atlas does one of three things with a contract: it flags it (probable ghost, built elsewhere, declared before built,
 existed before the contract), it clears it, or it sends it to an investigator unsettled. It clears a contract only
 when a structure stands at the reach the text describes, the imagery dates it to the contract, no other contract built
@@ -139,7 +160,7 @@ at the same time claims that reach, and the second Locator finds the same reach.
 |---|---|---|---|---|
 | First 12 (6 exact or strong matches, 6 candidates) | 1 | 3 | 8 | 0 |
 | Blind 8: matched after the province run was sealed on 27 Oct | 0 | 0 | 7 | 1 |
-| Fresh 2: committed with the 28 Oct rules (`7114509`) before any verdict on them was read | 0 | 0 | 2 | 0 |
+| Fresh 2: committed with the 28 Oct rules (`7114509`) before any verdict on them was read; 25CC0063's finding comes from the 29 Oct rule, written after (0 / 0 / 2 / 0 without it) | 1 | 0 | 1 | 0 |
 
 The sealed province run gives the same tallies for the blind eight and the fresh two.
 
@@ -159,10 +180,18 @@ The sealed province run gives the same tallies for the blind eight and the fresh
   site. Without the approved plans' coordinates, which are not public, a structure on the right river at the wrong
   spot clears.
 - **Against the province.** Every one of the 22 rulings found a problem (the search for published inspections is in
-  [`docs/rulings/R10_fresh_rulings.md`](docs/rulings/R10_fresh_rulings.md)). Atlas flags 4 of the 22 (18%) against 226
-  of the 1,096 contracts in the province (21%), and clears 1 of 22 against 62 of 1,096 (6%).
+  [`docs/rulings/R10_fresh_rulings.md`](docs/rulings/R10_fresh_rulings.md)). Atlas flags 5 of the 22 (23%) against 250
+  of the 1,096 contracts in the province (23%), and clears 1 of 22 against 62 of 1,096 (6%).
 - **Open weights.** The first twelve audited end to end on Muse Spark Open reach the same verdict as on Muse Spark 1.3
   for 11, locate the same site for 10, and agree on 33 of 34 capture readings.
+- **Each instrument against another.** No published inspection says which Bulacan contracts were built as declared, so
+  the parts are checked against independent sources on the province's own reaches
+  ([`scripts/instruments.py`](scripts/instruments.py), no model call). On 251 reaches where two-reader sub-metre
+  imagery saw a wall built, Sentinel-2 shows a lasting change on 220, work then regrowth on 21, and no change on 10. On
+  20 reaches with a wall before the award and after, it never shows a new lasting change. On 209 banks the sub-metre
+  imagery saw stay bare, it shows a lasting change on 67 (cleared ground, crops, or a wall the readers missed). The two
+  readers agree on 1,765 of 2,012 capture readings (88%, Cohen's kappa 0.73). The two Locators, from the contract text
+  alone, pick the same reach for 283 of the 328 contracts both located (86%).
 
 Reproduce: `ATLAS_AS_OF=2026-10-27 sh scripts/eval_both.sh` (runs `eval` and `eval-open`, then compares them);
 `scripts/evaluate.py --run blind --key blind_2026-10` and `--key blind_2026-10b`.
@@ -177,18 +206,21 @@ Meta may train on what it is sent: it carries only public contract records and p
 | Outcome | Contracts | ₱ billion |
 |---|---|---|
 | Existed before the contract | 177 | 12.02 |
-| Probable ghost | 38 | 2.27 |
+| Probable ghost | 62 | 4.00 |
 | Declared before built | 8 | 0.49 |
 | Built elsewhere | 3 | 0.24 |
 | Exists | 265 | 18.13 |
-| Can't verify | 605 | 39.32 |
+| Can't verify | 581 | 37.60 |
 
-226 contracts worth ₱15.02 billion go to the investigator's worklist. The second Locator found the same reach for
-200 of them. Triage keeps **63 as leads (₱3.95 billion)**: 32 probable ghosts, 2 built elsewhere, 6 declared before
-built, and 23 structures that predate a contract billed as new construction with nothing visibly added. **137
+251 contracts worth ₱16.77 billion go to the investigator's worklist. The second Locator found the same reach for
+221 of the 250 it re-located. Triage keeps **84 as leads (₱5.47 billion)**: 53 probable ghosts, 2 built elsewhere, 6
+declared before built, and 23 structures that predate a contract billed as new construction with nothing visibly added.
+**52 of the 53 probable ghosts (₱3.34 billion) are named in no published ruling**, and about 739,000 people live on low
+ground around them (within 1.5 km of a reach and at most 3 m above its bank, each settlement cell counted once;
+[`scripts/instruments.py`](scripts/instruments.py)). **137
 (₱9.15 billion) need the plans first**: among the 177 structures that predate their contract, 97 are dated before the
 award only by 10 m pixels, 54 contracts describe repair, improvement or a later phase, and 116 show visible work
-between the last capture before the award and the last after it. **26 have a disputed site**, and one was audited
+between the last capture before the award and the last after it. **29 have a disputed site**, and one was audited
 again after a signed challenge: 22CC0013, a probable ghost at the first reach, is "can't verify" at the reach the second
 Locator chose, 238 m along the same river.
 
@@ -196,8 +228,8 @@ Of the 265 "exists", **62 clear their contract (₱4.61 billion)**. The other 20
 reach with a contract built at the same time, 76 carry a structure not dated to the contract, and 16 are on a reach the
 second Locator disputes.
 
-Of the 605 Atlas cannot verify, 239 have a single source showing nothing, 208 have no decisive observation after
-completion, 118 have no capture after completion, 25 could not be located and 15 have sources that disagree. This is
+Of the 581 Atlas cannot verify, 214 have a single source showing nothing, 208 have no decisive observation after
+completion, 119 have no capture after completion, 25 could not be located and 15 have sources that disagree. This is
 triage, not a verification of public spending: 40 contracts ran at full depth and 1,056 at screening depth, more than
 half could not be verified, and a lead is a reason to send an investigator, not a finding of fact. Each case names its
 sources and the reason for its outcome, and a human signs it before it leaves the system.
@@ -210,6 +242,14 @@ second reader did not confirm the candidate elsewhere), three "can't verify" bec
 unconfirmed candidate had blocked that rule), two "exists" became "can't verify", and one "can't verify" became "exists"
 (a street photo read by one model no longer contradicts the imagery). The twelve first-set and eight blind contracts
 were audited again the same way, and none of their verdicts changed.
+
+**Audited again under "bare, then unchanged" (29 October).** 51 sealed cases where one source shows nothing and a
+sub-metre capture before the end of the contract shows the bank bare were audited again the same way (48 in the
+province, 25CC0063 and 24CC0025 in the blind run, 25CC0252 in the evaluation); the bare captures from inside the
+contract were read twice first. 24 province contracts became probable ghosts (₱1.73 billion, among them five
+₱74.1 million contracts in Baliuag and Balagtas, one of them 25CC0063, which auditors called "non-existent"), and so did
+25CC0063 at full depth in the blind run. On three contracts the Locator, run again, drew a slightly different reach (76% to 95% overlap with the sealed one,
+the same site by the site check's test).
 
 ## Chain of custody
 
@@ -300,7 +340,8 @@ The official rulings behind the blind keys, with their sources and match grades,
 ## Limits
 
 Atlas reports observations and exceptions, never intent. Sub-metre history depends on when Wayback captured a site:
-for contracts completed in 2025 the newest capture often predates completion, and Atlas then says it cannot verify.
+for contracts completed in 2025 the newest capture often predates completion, and Atlas then says it cannot verify,
+unless that capture shows the bank bare and Sentinel-2 shows nothing built on it afterwards.
 Contract descriptions rarely give stations with a known origin, so the located reach can differ from the approved
 site; the Locator states its confidence and the published pin's offset in every case, a second Locator checks every
 flagged contract, and the blind test shows what remains: two Locators can agree on the reach the words describe while

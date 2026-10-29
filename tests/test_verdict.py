@@ -117,3 +117,35 @@ def test_readers_that_disagree_are_not_missing_imagery():
 def test_nothing_after_completion_is_missing_imagery():
     v = run([vhr("2023-05-01", "absent")])
     assert (v.outcome, v.reason) == ("cant_verify", "NO_POST_COMPLETION_IMAGERY")
+
+
+def s2_still(day: str = "2025-06-01", since: str = "2022-01-01", q: float = 0.8) -> Finding:
+    return Finding("existence", f"Sentinel-2 {day}", "optical_hr", "s2", day, "absent", q, since=since)
+
+
+def test_bare_inside_the_window_then_unchanged_is_a_probable_ghost():
+    v = run([vhr("2024-04-10", "absent"), s2_still()])
+    assert (v.outcome, v.reason) == ("probable_ghost", "BARE_THEN_UNCHANGED")
+    assert v.counted_roots == ["maxar", "s2"]
+
+
+def test_bare_before_the_award_inside_the_series_then_unchanged_is_a_probable_ghost():
+    v = run([vhr("2023-06-10", "absent"), s2_still()])
+    assert v.reason == "BARE_THEN_UNCHANGED"
+
+
+def test_a_bare_capture_older_than_the_series_cannot_be_carried_forward():
+    v = run([vhr("2021-06-10", "absent"), s2_still(since="2022-01-01")])
+    assert (v.outcome, v.reason) == ("cant_verify", "SINGLE_SOURCE_ONLY")
+
+
+def test_a_wall_seen_after_the_bare_capture_stops_the_rule():
+    v = run([vhr("2024-03-10", "absent"), vhr("2024-06-10", "present"), s2_still()])
+    assert v.outcome == "cant_verify"
+
+
+def test_an_unchanged_series_that_cannot_count_stops_the_rule():
+    v = run([vhr("2024-04-10", "absent"), s2_still(q=0.5)])
+    assert v.outcome == "cant_verify"
+    v = run([vhr("2024-04-10", "absent"), s2_still()], length=60)
+    assert v.outcome == "cant_verify"

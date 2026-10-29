@@ -15,6 +15,13 @@ them. The rules are plain code so an investigator (or a court) can read them:
 * "Declared before it was built" needs two chains too: sub-metre imagery shows
   the reach bare after the declared completion, and a 10 m series that was
   unchanged until then dates a lasting change only afterwards.
+* "Bare, then unchanged" (added 29 Oct 2026): when the only sub-metre capture
+  showing the bank bare was taken inside the contract window (or before the
+  award), a 10 m series that covers that date and shows no lasting change and
+  no work-like disturbance on either bank until after the completion is the
+  second chain: the bank was bare, and nothing was built on it afterwards. The
+  10 m series' miss rate on new walls is measured on the province's own
+  reaches where sub-metre imagery saw a wall built (S2_MISSED below).
 """
 from __future__ import annotations
 
@@ -38,6 +45,9 @@ MIN_RESOLVABLE_M = {
 }
 # Families whose pixels can identify a structure, not just a change.
 PRESENCE_FAMILIES = {"optical_vhr", "street"}
+# Bulacan reaches where two-reader sub-metre imagery saw a wall built after a bare capture, on banks where an unchanged
+# 10 m series would count: how many of them the series showed as unchanged (scripts/instruments.py, run bulacan).
+S2_MISSED = (10, 251)
 
 
 @dataclass(frozen=True)
@@ -52,6 +62,7 @@ class Finding:
     note: str = ""
     entry: str = ""  # ledger hash of the entry that holds the evidence
     site: str = "declared"  # "declared" reach, or "elsewhere:<label>" for a relocation candidate
+    since: str = ""  # an unchanged 10 m series: the first date it could have shown a change (it testifies since..observed)
 
 
 @dataclass
@@ -258,6 +269,46 @@ def decide(
             sorted(present_after),
             decisions,
         )
+
+    # 4b. Bare, then unchanged: the sub-metre chain shows the bank bare inside the window (or before the award), and the
+    # 10 m chain, covering that date, shows nothing built on it from then until after the completion.
+    s2_still = absent_after.get("s2")
+    if s2_still is not None and s2_still.since and len(absent_after) == 1:
+        bare = [f for f, w in usable if f.claim == "absent" and f.family in PRESENCE_FAMILIES and f.site == "declared"
+                and w in ("before_award", "during_contract") and f.observed[:10] >= s2_still.since]
+        bare = [f for f in bare if not any(g.claim == "present" and g.site == "declared" and g.observed > f.observed
+                                           for g, _ in usable)]
+        if bare:
+            last = max(bare, key=lambda f: f.observed)
+            pair = {last.capture_root: last, "s2": s2_still}
+            when = ("before the award" if window_of(last.observed, award, completion) == "before_award" else
+                    f"{(date.fromisoformat(last.observed[:10]) - date.fromisoformat(award[:10])).days // 30} months into the contract")
+            missed, of = S2_MISSED
+            why = [f"{last.source}: no structure at the located reach, {when}.",
+                   f"{s2_still.source}: {s2_still.note}; no lasting change and no work-like disturbance on either bank "
+                   f"from {s2_still.since} on.",
+                   f"Two capture chains: the sub-metre image shows the bank bare, the 10 m series shows nothing built on it "
+                   f"afterwards. On {of} Bulacan reaches where sub-metre imagery saw a wall built, the 10 m series showed "
+                   f"no change on {missed}."]
+            if elsewhere:
+                label, f_else = next(iter(elsewhere.items()))
+                mark(pair, "bare, then unchanged until after the completion")
+                decisions.append(SourceDecision(f_else, True, "new structure at another reach during the contract window"))
+                mark_rest()
+                return Verdict("relocated", "BARE_THEN_UNCHANGED_ELSEWHERE",
+                               "Exists elsewhere: the declared reach stayed bare, a new structure stands at another one.",
+                               why + [f"{f_else.source} shows a new structure at {label.split(':', 1)[-1]}."],
+                               sorted(pair), decisions)
+            mark(pair, "bare, then unchanged until after the completion")
+            mark_rest()
+            return Verdict(
+                "probable_ghost",
+                "BARE_THEN_UNCHANGED",
+                f"Probable ghost: bare on {last.observed}, and no change on either bank from then to {s2_still.observed}.",
+                why + ["A human investigator must sign before this leaves the system."],
+                sorted(pair),
+                decisions,
+            )
 
     # 4. Absent after completion.
     if len(absent_after) >= 2:

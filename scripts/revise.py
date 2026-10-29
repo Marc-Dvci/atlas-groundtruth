@@ -2,7 +2,8 @@
 
     .venv/Scripts/python scripts/revise.py --run eval [--only ID ...] [--dry-run]
 
-The rule (28 Oct 2026): a reading that can decide a verdict counts only when the second reader explicitly agrees.
+The rules: (28 Oct 2026) a reading that can decide a verdict counts only when the second reader explicitly agrees;
+(29 Oct 2026) a bare capture inside the contract window can decide one when Sentinel-2 shows nothing built after it.
 Before it, a missing or "cannot tell" second reading left the first reading standing, captures before the award other
 than the last one were never read twice, and street photos and relocation candidates had one reader.
 
@@ -29,6 +30,30 @@ from atlas.verdict import window_of  # noqa: E402
 
 RULE = "SECOND_READER_MUST_AGREE"
 RULE_TEXT = "a reading that can decide a verdict counts only when the second reader explicitly agrees"
+# 29 Oct 2026: a bare sub-metre capture from inside the contract, followed by an unchanged Sentinel-2 series that covers
+# its date until after the completion, is two capture chains (atlas/verdict.py, rule 4b). Its capture is read twice first.
+RULE_BARE = "BARE_THEN_UNCHANGED"
+RULE_BARE_TEXT = ("a bare sub-metre capture inside the contract window, then a 10 m series unchanged from that date until "
+                  "after the completion, is a second capture chain; the bare capture must be confirmed by the second reader")
+
+
+def rule_of(c: dict) -> tuple[str, str]:
+    return (RULE_BARE, RULE_BARE_TEXT) if bare_then_unchanged(c) else (RULE, RULE_TEXT)
+
+
+def bare_then_unchanged(c: dict) -> bool:
+    """The 29 Oct rule can change this case: one source shows nothing (Sentinel-2, unchanged after completion), and a
+    sub-metre capture from inside the contract or before the award shows the bank bare. A capture from inside the
+    contract was never read twice, because it could not decide; the sealed Sentinel-2 finding lacks the span it covers."""
+    v = c.get("verdict") or {}
+    if v.get("reason") != "SINGLE_SOURCE_ONLY":
+        return False
+    counted = [d["finding"] for d in v.get("decisions", []) if d["counted"]]
+    if not counted or counted[0]["family"] != "optical_hr":
+        return False
+    return any(f["family"] == "optical_vhr" and f["claim"] == "absent" and f.get("site", "declared") == "declared"
+               and window_of(f["observed"], c["award"], c["completion"]) in ("before_award", "during_contract")
+               for f in c.get("findings") or [])
 
 
 def unconfirmed(c: dict) -> list[str]:
@@ -42,7 +67,9 @@ def unconfirmed(c: dict) -> list[str]:
             out.append(f"street photo {f['observed']}: {f['claim']}, one reader")
         elif f["family"] == "optical_vhr" and f.get("site", "declared") != "declared":
             out.append(f"relocation candidate {f['observed']}: one reader")
-        elif f["family"] == "optical_vhr" and window_of(f["observed"], c["award"], c["completion"]) in DECISIVE:
+        elif f["family"] == "optical_vhr" and (window_of(f["observed"], c["award"], c["completion"]) in DECISIVE
+                                               or (f["claim"] == "absent" and f.get("site", "declared") == "declared"
+                                                   and bare_then_unchanged(c))):
             x = (frames.get(f["observed"]) or {}).get("cross") or {}
             ok = x.get("structure") in (("yes", "partly") if f["claim"] == "present" else ("no",))
             if not ok:
@@ -64,7 +91,9 @@ def main(argv: list[str]) -> None:
         c = json.loads(p.read_text(encoding="utf-8"))
         if c.get("error") or not c.get("verdict") or (a.only and c["id"] not in a.only):
             continue
-        why = unconfirmed(c) or ([a.why] if a.force and a.only else [])
+        why = (unconfirmed(c) or (["one source shows nothing; a bare capture before the end of the contract can be the second "
+                                   "chain under the 29 Oct rule"] if bare_then_unchanged(c) else [])
+               or ([a.why] if a.force and a.only else []))
         if why:
             todo.append((p, c, why))
     print(f"{a.run}: {len(todo)} case(s) to audit again")
@@ -84,7 +113,8 @@ def main(argv: list[str]) -> None:
         cdir = p.parent
         n = len(list(cdir.glob("case.r*.json"))) + 1
         (cdir / f"case.r{n}.json").write_text(json.dumps(prev, ensure_ascii=False), encoding="utf-8")
-        e = lg.append(prev["id"], "atlas", "rule_revision", {"rule": RULE, "text": RULE_TEXT, "unconfirmed": why,
+        rule, rule_text = rule_of(prev)
+        e = lg.append(prev["id"], "atlas", "rule_revision", {"rule": rule, "text": rule_text, "unconfirmed": why,
                                                             "previous_verdict": prev["verdict"]["outcome"],
                                                             "previous_file": f"case.r{n}.json"})
         for ph in prev.get("photos") or []:  # the sealed photo, since Mapillary's links expire
@@ -103,7 +133,7 @@ def main(argv: list[str]) -> None:
                     lm=m.get("lm") or "meta", site=site)
         pv = prev["verdict"]
         earlier = [{"kind": "challenge", **x} if "kind" not in x else x for x in rev.get("previous", [])]
-        out["revision"] = {"n": n, "kind": "rule", "rule": RULE, "rule_text": RULE_TEXT, "rule_entry": e.hash,
+        out["revision"] = {"n": n, "kind": "rule", "rule": rule, "rule_text": rule_text, "rule_entry": e.hash,
                            "rule_seq": e.seq, **({k: rev[k] for k in ("challenge_entry", "challenge_seq") if k in rev}),
                            "previous": earlier + [{"kind": "rule", "outcome": pv.get("outcome"), "reason": pv.get("reason"),
                                                    "headline": pv.get("headline"), "file": f"case.r{n}.json",

@@ -336,7 +336,8 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
     from ..meta import label
     primary = case.facts.get("spark", SPARK)
     second = second_reader(case)
-    todo = [f for f in frames if f["window"] in DECISIVE and first[f["captured"]][1] in ("present", "absent")]
+    todo = [f for f in frames if (f["window"] in DECISIVE and first[f["captured"]][1] in ("present", "absent"))
+            or (f["window"] == "during_contract" and first[f["captured"]][1] == "absent")]
     cross, missing = cross_read(case, second, frames, todo, reach)
     checked = {id(f) for f in todo}
     for f in frames:
@@ -356,7 +357,8 @@ def run_optical(case: Case, award: str, completion: str) -> list[dict]:
     return frames
 
 
-# Windows whose readings can decide a verdict (verdict.py never counts a sub-metre reading from inside the contract).
+# Windows whose readings can decide a verdict. Inside the contract only a bare capture can: verdict.py counts it when
+# Sentinel-2 shows nothing built on the bank from then until after the completion ("bare, then unchanged").
 DECISIVE = ("before_award", "after_completion")
 
 
@@ -483,5 +485,7 @@ def run_s2(case: Case, award: str, completion: str) -> dict:
     # a change is dated by its first scene; an unchanged bank testifies as of the last scene
     when = ((date.fromisoformat(award) + timedelta(days=1)).isoformat() if straddles else change["date"]) if change else         stir["date"] if stir else after["to"]
     q = round(0.5 + 0.4 * detect, 2) if claim == "absent" else 0.8 if claim == "present" else 0.0
-    case.file(Finding(AGENT, f"Sentinel-2 (ESA) {when[:7]}, 10 m", "optical_hr", "s2", when, claim, q, note, h))
+    # a change is a season below the same season in earlier years, so the series can show one only from its second year
+    since = (date.fromisoformat(rows[0]["date"]) + timedelta(days=365)).isoformat() if claim == "absent" else ""
+    case.file(Finding(AGENT, f"Sentinel-2 (ESA) {when[:7]}, 10 m", "optical_hr", "s2", when, claim, q, note, h, since=since))
     return out

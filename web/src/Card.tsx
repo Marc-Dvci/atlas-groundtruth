@@ -10,7 +10,8 @@ const CARDS: Record<string, { eyebrow?: string; lines: string[]; then?: string[]
   close: {
     eyebrow: "Atlas · Groundtruth",
     lines: ["1,096 contracts. Two hours. $13."],
-    then: ["Wherever a government publishes what it paid for,", "Atlas can now check it from orbit, anywhere on Earth."],
+    then: ["Flood walls are the first mission.", "Roads, schools, replanted forests:",
+      "whatever a government or the United Nations pays for,", "auditors and citizens will be able to check from orbit."],
     foot: "github.com/Marc-Dvci/atlas-groundtruth",
   },
 };

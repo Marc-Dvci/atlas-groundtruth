@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { CaseView } from "./case/CaseView";
 import { Mission } from "./mission/Mission";
 import { EvalView } from "./eval/EvalView";
+import { RulingsView } from "./eval/RulingsView";
 import { LedgerView } from "./ledger/LedgerView";
 import { Card } from "./Card";
 import { LiveView } from "./live/LiveView";
@@ -25,6 +26,7 @@ export default function App() {
   if (lg) return <LedgerView run={lg[1]} id={lg[2]} />;
   const card = hash.match(/^#\/card\/([^/]+)/);
   if (card) return <Card id={card[1]} />;
+  if (hash.startsWith("#/rulings")) return <RulingsView />;
   const ev = hash.match(/^#\/eval\/([\w-]+)(?:\/([\w-]+))?/);
   if (ev) return <EvalView key={hash} run={ev[1]} answerKey={ev[2] ?? "cases"} />;
   if (hash.startsWith("#/live") || (LIVE && !hash)) return <LiveView />;
